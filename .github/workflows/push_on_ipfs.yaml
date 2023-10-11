@@ -1,0 +1,47 @@
+name: Push on IPFS
+
+on:
+  push:
+    branches:
+      - release/**
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install and Build
+        env:
+          FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+        run: |
+          npm config set "@fortawesome:registry" https://npm.fontawesome.com/
+          npm config set "//npm.fontawesome.com/:_authToken" FONTAWESOME_NPM_AUTH_TOKEN
+          npm ci
+          npm run build
+          npm run export
+          touch out/.nojekyll
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aleph-cloudsolutions
+          path: out/
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: aleph-cloudsolutions
+          path: out/
+
+      - name: Push on IPFS
+        run: |
+          find .
+          pip install 'aioipfs>=0.6.2'
+          python3 ./scripts/push_on_ipfs.py
+          export IPFS_CID=$(python3 ./scripts/push_on_ipfs.py)
+          echo $IPFS_CID

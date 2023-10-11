@@ -1,0 +1,60 @@
+{
+  "name": "front-aleph-cloud",
+  "version": "0.2.11",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix"
+  },
+  "dependencies": {
+    "@aleph-front/aleph-core": "^1.5.4",
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@helia/unixfs": "^1.4.1",
+    "@hookform/resolvers": "^3.1.1",
+    "@libp2p/mplex": "^9.0.5",
+    "@libp2p/noise": "^12.0.1",
+    "@libp2p/websockets": "^7.0.5",
+    "@types/node": "18.14.1",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "aleph-sdk-ts": "^3.6.3",
+    "eslint": "8.35.0",
+    "eslint-config-next": "13.2.1",
+    "ethers": "^6.6.2",
+    "helia": "^2.0.1",
+    "jszip": "^3.10.1",
+    "libp2p": "^0.46.7",
+    "next": "^13.3.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.45.2",
+    "react-loader-spinner": "^5.3.4",
+    "styled-components": "^5.3.10",
+    "typescript": "4.9.5",
+    "usehooks-ts": "^2.9.1",
+    "uuid": "^9.0.0",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@babel/plugin-syntax-typescript": "^7.21.4",
+    "@types/styled-components": "^5.1.26",
+    "@types/uuid": "^9.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-macros": "^3.1.0",
+    "babel-plugin-twin": "^1.1.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "tailwindcss": "^3.3.2",
+    "twin.macro": "^3.3.1"
+  },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  }
+}
