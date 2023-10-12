@@ -7,11 +7,6 @@ export const GlobalStylesOverride = createGlobalStyle`
     min-height: 100vh;
   }
 
-  // @note: Use it only for development
-  /* html {
-    font-size: 16px;
-  } */
-
   /* FIXME: */
   .unavailable-content {
     opacity: 0.3;
@@ -33,5 +28,13 @@ export const GlobalStylesOverride = createGlobalStyle`
   table {
     max-width: 100%;
     overflow: auto;
+  }
+
+  p {
+    color: ${({ theme }) => theme.color.text};
+  }
+
+  html {
+    font-size: 16px !important; 
   }
 `

@@ -1,6 +1,6 @@
-# Aleph Cloud Solutions
+# Aleph Account page
 
-Aleph Cloud Solutions is a [next.js](https://nextjs.org/) frontend dApp that allows you to easily deploy VMs on the aleph network, without worrying about the different configuration options; just launch the app, upload your code and dependencies and enjoy.
+Aleph Account page is a [next.js](https://nextjs.org/) frontend dApp that allows you to easily deploy VMs on the aleph network, without worrying about the different configuration options; just launch the app, upload your code and dependencies and enjoy.
 
 ## Develop locally
 

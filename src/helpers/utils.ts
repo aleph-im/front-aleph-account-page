@@ -314,3 +314,212 @@ export function toKebabCase(input: string): string {
 export function toSnakeCase(input: string): string {
   return toKebabCase(input).replace(/-/g, '_')
 }
+
+// ------------------------------------------
+// ------------------------------------------
+
+export function convertTimestamp(timestamp: number) {
+  const a = new Date(timestamp * 1000)
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ]
+  const year = a.getFullYear()
+  const month = months[a.getMonth()]
+  const date = a.getDate()
+  const hour = a.getHours()
+  const min = a.getMinutes()
+  const sec = a.getSeconds()
+  const time =
+    date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec
+  return time
+}
+
+/**
+ * Check if a value is null, undefined, empty string or empty array but not 0. Prevents false positive on 0 using !value
+ *
+ * @param {any} input
+ * @returns true if value is null, undefined, empty string or empty array
+ */
+export function nullButNot0(input: any) {
+  return (
+    input === undefined || input === null || input === '' || input?.length > 0
+  )
+}
+
+/**
+ * Normalises a value between a min and max value, if floor and ceil are provided, it will return the floor or ceil if the value is outside the [min, max] interval
+ *
+ * @param {number} input
+ * @param {number} min
+ * @param {number} max
+ * @param {number} floor
+ * @param {number} ceil
+ * @returns a number in the [min, max] interval
+ */
+export function normalizeValue(
+  input: number,
+  min: number,
+  max: number,
+  floor: number,
+  ceil: number,
+) {
+  if (!input) return 0
+  if (input > max) return 1
+  if (input < min) return 0
+
+  const normalized = (input - min) / (max - min)
+  if (floor === undefined || ceil === undefined) return normalized
+  if (normalized < min) return floor
+  if (normalized > max) return ceil
+  return normalized
+}
+
+/**
+ * Fetches a URL and caches the result in LocalStorage for a given time
+ *
+ * @param {string} url The URL to fetch
+ * @param {string} cacheKey The LocalStorage key to use for cachinng (must be unique)
+ * @param {number} cacheTime The time in ms to cache the data
+ * @returns
+ */
+export async function fetchAndCache(
+  url: string,
+  cacheKey: string,
+  cacheTime: number,
+) {
+  const cached = localStorage.getItem(cacheKey)
+  const now = Date.now()
+  if (cached) {
+    const { cachedAt, value } = JSON.parse(cached)
+    if (now - cachedAt < cacheTime) {
+      console.log(`Retrieved ${cacheKey} from cache`)
+      return value
+    }
+  }
+
+  try {
+    const data = await fetch(url)
+    const value = await data.json()
+
+    const toCache = JSON.stringify({
+      cachedAt: now,
+      value,
+    })
+    localStorage.setItem(cacheKey, toCache)
+    return value
+  } catch (error) {
+    console.error(`Failed to fetch ${url}`, error)
+    if (cached) return JSON.parse(cached).value
+  }
+}
+
+/**
+ * Takes a list of github releases and returns the latest, the latest prerelease and a list of outdated versions
+ *
+ * @param {Array} payload A list of github releases, returned from the API (https://api.github.com/repos/[owner]/[name]/releases)
+ * @param {Number} outdatedAfter The time in ms after which a release is considered outdated (defaults to 14 days)
+ */
+export function getLatestReleases(
+  payload: any,
+  outdatedAfter = 1000 * 60 * 60 * 24 * 14,
+) {
+  const versions = {
+    latest: null,
+    prerelease: null,
+    outdated: null,
+  }
+
+  let latestReleaseDate = 0
+  if (!payload) return versions
+
+  for (const item of payload) {
+    if (item.prerelease && !versions.prerelease) {
+      versions.prerelease = item.tag_name
+    }
+    if (!item.prerelease && !versions.latest) {
+      versions.latest = item.tag_name
+      latestReleaseDate = new Date(item.published_at).getTime()
+    }
+    if (
+      versions.latest &&
+      versions.prerelease &&
+      !versions.outdated &&
+      !item.prerelease &&
+      Date.now() - latestReleaseDate < outdatedAfter
+    ) {
+      versions.outdated = item.tag_name
+    }
+  }
+
+  return versions
+}
+
+/**
+ * Strips away the extra commit number and hash from the "git describe --tags" output
+ *
+ * @param {String} gitTag The output of a "git describe --tags" command
+ * @returns The tag name without the extra commit number and hash
+ */
+export function stripExtraTagDescription(gitTag: string) {
+  return gitTag.replace(/-\d+-g\w{7}$/gi, '')
+}
+
+/**
+ * Returns a list of issues that might explain why the node is not scored
+ *
+ */
+export function diagnoseMetrics(metrics: any) {
+  if (metrics.base_latency_ipv4 === undefined) {
+    return [
+      'Your CRN seems unreachable by our metrics. Is it up and running ? Did you configure the domain name correctly ?',
+    ]
+  }
+  if (
+    !metrics.base_latency ||
+    !metrics.diagnostic_vm_latency ||
+    !metrics.full_check_latency
+  ) {
+    return ['No IPv6 connectivity detected. Please check your configuration.']
+  }
+
+  const issues = []
+  if (metrics.base_latency > 2) {
+    issues.push('Base latency is too high (max 2 seconds)')
+  }
+  if (metrics.diagnostic_vm_latency > 2.5) {
+    issues.push('Diagnostic VM latency is too high (max 2.5 seconds)')
+  }
+  if (metrics.full_check_latency > 100) {
+    issues.push('Full check latency is too high (max 100 seconds)')
+  }
+
+  return issues
+}
+
+/**
+ * Returns the time in ms until the next score message is issued
+ * Takes a unix timestamp as input and returns a string
+ */
+export function timeUntilNextScoreMessage(metrics: any) {
+  // ! Unix timestamp is in seconds
+  const ONE_DAY = 60 * 60 * 24
+  const offset = metrics.measured_at % ONE_DAY
+  const nextMessage = ONE_DAY - offset
+
+  if (nextMessage < 60 * 60 * 2) {
+    return Math.floor(nextMessage / 60) + ' minutes'
+  }
+
+  return Math.round(nextMessage / 3600) + ' hours'
+}

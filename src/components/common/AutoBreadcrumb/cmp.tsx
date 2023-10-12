@@ -60,7 +60,5 @@ export default function AutoBreadcrumb({
     return links
   }, [router.pathname, router.asPath, nameProp, names, isHome, includeHome])
 
-  return isHome ? null : (
-    <Breadcrumb navLinks={navLinks} {...rest} tw="py-5 px-6 md:px-16" />
-  )
+  return isHome ? null : <Breadcrumb navLinks={navLinks} {...rest} />
 }

@@ -30,12 +30,12 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: aleph-cloudsolutions
+          name: aleph-account-page
           path: out/
 
       - uses: actions/download-artifact@v3
         with:
-          name: aleph-cloudsolutions
+          name: aleph-account-page
           path: out/
 
       - name: Push on IPFS

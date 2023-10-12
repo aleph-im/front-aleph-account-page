@@ -1,13 +1,12 @@
-import { AnyMessage } from '@/helpers/utils'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { any, forget } from 'aleph-sdk-ts/dist/messages'
 import E_ from '../helpers/errors'
-import { defaultConsoleChannel } from '@/helpers/constants'
+import { defaultAccountChannel } from '@/helpers/constants'
 
 export class MessageManager {
   constructor(
     protected account: Account,
-    protected channel = defaultConsoleChannel,
+    protected channel = defaultAccountChannel,
   ) {}
 
   /**
@@ -28,7 +27,7 @@ export class MessageManager {
   /**
    * Deletes a VM using a forget message
    */
-  async del(message: AnyMessage) {
+  async del(message: any) {
     try {
       const msg = await forget.Publish({
         account: this.account,

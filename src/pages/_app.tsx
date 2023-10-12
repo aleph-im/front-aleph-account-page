@@ -14,6 +14,8 @@ import { AppStateProvider } from '@/contexts/appState'
 import Header from '@/components/common/Header'
 import NotificationProvider from '@/components/common/NotificationProvider'
 import Main from '@/components/common/Main'
+import Sidebar from '@/components/common/Sidebar'
+import Viewport from '@/components/common/Viewport/cmp'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -22,10 +24,13 @@ export default function App({ Component, pageProps }: AppProps) {
       <GlobalStylesOverride />
       <AppStateProvider>
         <NotificationProvider>
-          <Header />
-          <Main>
-            <Component {...pageProps} />
-          </Main>
+          <Viewport>
+            <Sidebar />
+            <Main>
+              <Header />
+              <Component {...pageProps} />
+            </Main>
+          </Viewport>
         </NotificationProvider>
       </AppStateProvider>
     </ThemeProvider>

@@ -2,15 +2,12 @@ import { Button, Navbar } from '@aleph-front/aleph-core'
 import styled from 'styled-components'
 
 export const StyledHeader = styled.header`
-  font-size: inherit;
-  line-height: inherit;
-  box-sizing: border-box;
+  height: 104px;
   width: 100%;
-  margin: 0;
   position: sticky;
-  top: 0;
-  z-index: 10;
-  /* background-color: #141327CC; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 export const StyledNavbar = styled(Navbar)`
