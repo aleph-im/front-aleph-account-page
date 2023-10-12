@@ -95,12 +95,7 @@ export const Sidebar = () => {
   return (
     <StyledSidebar>
       <StyledNav1>
-        <Logo
-          text=""
-          size="1.5rem"
-          tw="h-8 mt-8 mb-12"
-          onClick={handleToggle}
-        />
+        <Logo text="" size="1.5rem" tw="h-8 mt-8 mb-12" />
 
         {routes.map((child) => (
           <SidebarLink
