@@ -1,6 +1,9 @@
 import { createGlobalStyle } from 'styled-components'
+import { fontAwesomeCss } from './fa'
 
-export const GlobalStylesOverride = createGlobalStyle`  
+export const GlobalStylesOverride = createGlobalStyle`
+  ${fontAwesomeCss}
+
   body, #__next {
     display: flex;
     flex-direction: column;
@@ -22,12 +25,6 @@ export const GlobalStylesOverride = createGlobalStyle`
     padding: 5px;
     border: 1px solid #FFFFFF33;
     color: inherit;
-  }
-
-  /* FIXME: */
-  table {
-    max-width: 100%;
-    overflow: auto;
   }
 
   p {
