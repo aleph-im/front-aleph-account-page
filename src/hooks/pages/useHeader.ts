@@ -46,7 +46,7 @@ export function useHeader(): UseHeaderReturn {
       setkeepAccountAlive(true)
       const acc = await connect()
       if (!acc) return
-      router.push('/dashboard')
+      // router.push('/dashboard')
     } else {
       setkeepAccountAlive(false)
       await disconnect()

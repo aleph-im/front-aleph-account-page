@@ -163,4 +163,49 @@ export class NodeManager {
       page: 1,
     })
   }
+
+  isKYCRequired(node: CCN): boolean {
+    return node.registration_url !== undefined && node.registration_url !== ''
+  }
+
+  isKYCCleared(node: CCN): boolean {
+    return this.account && node.authorized?.includes(this.account.address)
+  }
+
+  isLocked(node: CCN): boolean {
+    if (!node.locked) return false
+    return !(this.isKYCRequired(node) && this.isKYCCleared(node))
+  }
+
+  isUserNode(node: CCN): boolean {
+    if (!this.account) return false
+    return this.account.address === node.owner
+  }
+
+  isStakeable(
+    node: CCN,
+    balance: number,
+    stakeNodes: CCN[],
+  ): [boolean, string] {
+    if (!this.account) return [false, 'Please login']
+
+    if (balance < 10_000)
+      return [false, 'You need at least 10000 ALEPH to stake']
+
+    if (node.total_staked >= 750_000)
+      return [false, 'Too many ALEPH staked on that node']
+
+    if (this.isLocked(node)) return [false, 'This node is locked']
+
+    if (this.isUserNode(node))
+      return [false, "You can't stake while you operate a node"]
+
+    if (stakeNodes.length)
+      return [
+        true,
+        'Add this node to your staking (each node will have an equal part of your total balance staked)',
+      ]
+
+    return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
+  }
 }

@@ -1,26 +1,161 @@
-import { useState } from 'react'
 import Head from 'next/head'
-import { CCN, NodeManager } from '@/domain/node'
-import { useRequest } from '@/hooks/common/useRequest'
-import { Button, Tabs } from '@aleph-front/aleph-core'
+import { Button, TableColumn, Tabs, TextInput } from '@aleph-front/aleph-core'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import LinkedCell from '@/components/common/LinkedCell'
 import ScoreCell from '@/components/common/ScoreCell'
 import APYCell from '@/components/common/APYCell'
 import StakedCell from '@/components/common/StakedCell'
+import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
+import RewardCalculator from '@/components/common/RewardCalculator'
+import { CCN } from '@/domain/node'
+import { memo, useMemo } from 'react'
+import StakeButton from '@/components/common/StakeButton/cmp'
+import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import AmountCell from '@/components/common/AmountCell/cmp'
 
-export default function StakingPage() {
-  const [tab, setTab] = useState('nodes')
+type NodesProps = {
+  nodes: CCN[]
+  filteredNodes: CCN[]
+  stakeNodes: CCN[]
+  account?: Account
+  accountBalance?: number
+  showStakedAmount?: boolean
+  handleStake: (nodeHash: string) => void
+  handleUnStake: (nodeHash: string) => void
+}
 
-  async function doRequest(): Promise<CCN[]> {
-    const manager = new NodeManager({} as any)
-    return await manager.getCCNNodes()
-  }
+const Nodes = memo(
+  ({
+    nodes,
+    stakeNodes,
+    filteredNodes,
+    account,
+    accountBalance,
+    showStakedAmount,
+    handleStake: onStake,
+    handleUnStake: onUnStake,
+  }: NodesProps) => {
+    const columns = useMemo(() => {
+      const cols = [
+        {
+          label: 'EST.APY',
+          render: (row) => <APYCell node={row} nodes={nodes} />,
+        },
+        {
+          label: 'NAME',
+          sortable: true,
+          sortBy: (row) => row.name,
+          render: (row) => (
+            <NameCell
+              hash={row.hash}
+              name={row.name}
+              picture={row.picture}
+              locked={row.locked}
+            ></NameCell>
+          ),
+        },
+        {
+          label: 'STAKED',
+          sortable: true,
+          sortBy: (row) => row.total_staked,
+          render: (row) => (
+            <StakedCell staked={row.total_staked} status={row.status} />
+          ),
+        },
+        {
+          label: 'LINKED',
+          sortable: true,
+          sortBy: (row) => row.resource_nodes.length,
+          render: (row) => <LinkedCell nodes={row.crnsData} />,
+        },
+        {
+          label: 'SCORE',
+          sortable: true,
+          sortBy: (row) => row.score,
+          render: (row) => <ScoreCell score={row.score} />,
+        },
+        {
+          label: '',
+          align: 'right',
+          render: (node) => (
+            <div tw="flex gap-3 justify-end">
+              <StakeButton
+                {...{
+                  node,
+                  account,
+                  accountBalance,
+                  stakeNodes,
+                  onStake,
+                  onUnStake,
+                }}
+              />
+              <Button
+                kind="neon"
+                size="regular"
+                variant="secondary"
+                color="main0"
+              >
+                Info
+              </Button>
+            </div>
+          ),
+        },
+      ] as TableColumn<CCN>[]
 
-  const { data } = useRequest({ doRequest, triggerOnMount: true })
+      if (showStakedAmount && account) {
+        cols.splice(cols.length - 1, 0, {
+          label: 'AMOUNT',
+          sortable: true,
+          sortBy: (row) => row.stakers[account.address] || 0,
+          render: (row) => (
+            <AmountCell amount={row.stakers[account.address] || 0} />
+          ),
+        })
+      }
 
-  console.log(data)
+      return cols.map((col, i) => {
+        col.width = i === cols.length - 1 ? '100%' : `${70 / cols.length - 1}%`
+        return col
+      })
+    }, [
+      account,
+      accountBalance,
+      nodes,
+      onStake,
+      onUnStake,
+      showStakedAmount,
+      stakeNodes,
+    ])
+
+    return (
+      <NodesTable
+        columns={columns}
+        data={filteredNodes}
+        borderType="solid"
+        oddRowNoise
+      />
+    )
+  },
+)
+Nodes.displayName = 'Nodes'
+
+export const StakingPage = memo((props) => {
+  const {
+    account,
+    accountBalance,
+    nodes,
+    stakeNodes,
+    filteredNodes,
+    filteredStakeNodes,
+    tabs,
+    selectedTab,
+    filter,
+    handleTabChange,
+    handleFilterChange,
+    handleStake,
+    handleUnStake,
+  } = useStakingPage(props)
 
   return (
     <>
@@ -33,111 +168,76 @@ export default function StakingPage() {
         <h1 className="tp-h5" tw="mb-8">
           Staking
         </h1>
-        <div tw="mt-8 mb-14">
-          <h2 className="tp-h7" tw="mb-0">
-            What is staking?
-          </h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-            aliquam lectus non eros malesuada egestas eu vitae ipsum. Donec sed
-            faucibus sapien. Interdum et malesuada fames ac ante ipsum primis in
-            faucibus. Aenean at scelerisque tortor. Sed nec placerat lacus.
-            Fusce facilisis arcu in vulputate eleifend. Pellentesque at ante
-            est. Vivamus cursus lorem odio. Aenean porttitor rutrum erat sed
-            suscipit. Duis viverra, ligula et lacinia lobortis, sem ante luctus
-            sapien, id gravida justo odio vel sapien. Ut vel volutpat mauris, in
-            congue lorem. Etiam mollis, magna at finibus dictum, metus diam
-            malesuada felis, at mattis magna lectus eget enim.
-          </p>
+        <div tw="flex items-start gap-6 mt-8 mb-14">
+          <div tw="flex-auto">
+            <h2 className="tp-h7" tw="mb-0">
+              What is staking?
+            </h2>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Vestibulum aliquam lectus non eros malesuada egestas eu vitae
+              ipsum. Donec sed faucibus sapien. Interdum et malesuada fames ac
+              ante ipsum primis in faucibus. Aenean at scelerisque tortor. Sed
+              nec placerat lacus. Fusce facilisis arcu in vulputate eleifend.
+              Pellentesque at ante est. Vivamus cursus lorem odio. Aenean
+              porttitor rutrum erat sed suscipit. Duis viverra, ligula et
+              lacinia lobortis, sem ante luctus sapien, id gravida justo odio
+              vel sapien. Ut vel volutpat mauris, in congue lorem. Etiam mollis,
+              magna at finibus dictum, metus diam malesuada felis, at mattis
+              magna lectus eget enim.
+            </p>
+          </div>
+          {nodes && (
+            <div tw="flex-1">
+              <RewardCalculator nodes={nodes} />
+            </div>
+          )}
         </div>
         <div tw="mt-14">
-          <Tabs
-            tabs={[
-              { id: 'stake', name: 'My Stakes' },
-              { id: 'nodes', name: 'All core nodes' },
-            ]}
-            align="left"
-            selected={tab}
-            onTabChange={setTab}
-            tw="mb-8"
-          />
-          {tab === 'stake' ? (
-            <>STAKE</>
+          <div tw="flex items-end justify-between mb-8">
+            <Tabs
+              tabs={tabs}
+              align="left"
+              selected={selectedTab}
+              onTabChange={handleTabChange}
+            />
+            <TextInput
+              value={filter}
+              name="filter-ccn"
+              placeholder="Search me"
+              onChange={handleFilterChange}
+            />
+          </div>
+          {selectedTab === 'stake' ? (
+            <>
+              <Nodes
+                {...{
+                  nodes,
+                  filteredNodes: filteredStakeNodes,
+                  stakeNodes,
+                  accountBalance,
+                  account,
+                  handleStake,
+                  handleUnStake,
+                  showStakedAmount: true,
+                }}
+              />
+            </>
           ) : (
             <>
-              {!data ? (
+              {!nodes ? (
                 <>Loading...</>
               ) : (
-                <NodesTable
-                  columns={[
-                    {
-                      label: 'EST.APY',
-                      width: '10%',
-                      render: (row) => <APYCell node={row} nodes={data} />,
-                    },
-                    {
-                      label: 'NAME',
-                      width: '10%',
-                      render: (row) => (
-                        <NameCell
-                          hash={row.hash}
-                          name={row.name}
-                          picture={row.picture}
-                          locked={row.locked}
-                        ></NameCell>
-                      ),
-                    },
-                    {
-                      label: 'STAKED',
-                      width: '20%',
-                      render: (row) => (
-                        <StakedCell
-                          staked={row.total_staked}
-                          status={row.status}
-                        />
-                      ),
-                    },
-                    {
-                      label: 'LINKED',
-                      width: '10%',
-                      render: (row) => (
-                        <LinkedCell nodes={row.resource_nodes} />
-                      ),
-                    },
-                    {
-                      label: 'SCORE',
-                      width: '20%',
-                      render: (row) => <ScoreCell score={row.score} />,
-                    },
-                    {
-                      label: '',
-                      align: 'right',
-                      width: '30%',
-                      render: () => (
-                        <div tw="flex gap-3 justify-end">
-                          <Button
-                            kind="neon"
-                            size="regular"
-                            variant="secondary"
-                            color="main0"
-                          >
-                            Stake
-                          </Button>
-                          <Button
-                            kind="neon"
-                            size="regular"
-                            variant="secondary"
-                            color="main0"
-                          >
-                            Info
-                          </Button>
-                        </div>
-                      ),
-                    },
-                  ]}
-                  data={data}
-                  borderType="solid"
-                  oddRowNoise
+                <Nodes
+                  {...{
+                    nodes,
+                    filteredNodes,
+                    stakeNodes,
+                    accountBalance,
+                    account,
+                    handleStake,
+                    handleUnStake,
+                  }}
                 />
               )}
             </>
@@ -146,4 +246,7 @@ export default function StakingPage() {
       </section>
     </>
   )
-}
+})
+StakingPage.displayName = 'StakingPage'
+
+export default StakingPage

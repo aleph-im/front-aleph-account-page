@@ -1,13 +1,48 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { defaultAccountChannel } from '@/helpers/constants'
+import { apiServer, defaultAccountChannel } from '@/helpers/constants'
 import { CCN } from './node'
 import { normalizeValue } from '@/helpers/utils'
+import { post } from 'aleph-sdk-ts/dist/messages'
+import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
 
-export class RewardManager {
+export class StakeManager {
   constructor(
     protected account: Account,
     protected channel = defaultAccountChannel,
   ) {}
+
+  // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L204
+  // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L289
+  async stake(nodeHash: string): Promise<void> {
+    await post.Publish({
+      account: this.account,
+      postType: 'corechan-operation',
+      storageEngine: ItemType.inline,
+      ref: nodeHash,
+      APIServer: apiServer,
+      channel: 'FOUNDATION',
+      content: {
+        tags: ['stake-split', 'mainnet'],
+        action: 'stake-split',
+      },
+    })
+  }
+
+  // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L268
+  async unStake(nodeHash: string): Promise<void> {
+    await post.Publish({
+      account: this.account,
+      postType: 'corechan-operation',
+      storageEngine: ItemType.inline,
+      ref: nodeHash,
+      APIServer: apiServer,
+      channel: 'FOUNDATION',
+      content: {
+        tags: ['unstake', 'mainnet'],
+        action: 'unstake',
+      },
+    })
+  }
 
   activeNodes(nodes: CCN[]): CCN[] {
     return nodes.filter((node) => node.status === 'active')
@@ -19,11 +54,16 @@ export class RewardManager {
 
   totalPerDay(nodes: CCN[]): number {
     const activeNodes = this.activeNodes(nodes).length
+    if (!activeNodes) return activeNodes
+
     return 15000 * ((Math.log10(activeNodes) + 1) / 3)
   }
 
   totalPerAlephPerDay(nodes: CCN[]): number {
-    return this.totalPerDay(nodes) / this.totalStakedInActive(nodes)
+    const totalStakedInActive = this.totalStakedInActive(nodes)
+    if (!totalStakedInActive) return 0
+
+    return this.totalPerDay(nodes) / totalStakedInActive
   }
 
   currentAPY(nodes: CCN[]): number {

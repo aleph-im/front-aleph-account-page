@@ -1,15 +1,16 @@
 import { memo, useMemo } from 'react'
 import { StyledAPYIcon } from './styles'
 import { CCN } from '@/domain/node'
-import { RewardManager } from '@/domain/reward'
+import { StakeManager } from '@/domain/stake'
 import { Tooltip } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L586
 export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
-  const apyManager = new RewardManager({} as any)
+  // @todo: Refactor this (use singleton)
+  const rewardManager = new StakeManager({} as any)
 
-  const nodeAPY = apyManager.computeEstimatedStakersAPY(node, nodes)
-  const currentAPY = apyManager.currentAPY(nodes)
+  const nodeAPY = rewardManager.computeEstimatedStakersAPY(node, nodes)
+  const currentAPY = rewardManager.currentAPY(nodes)
   const performance = nodeAPY / currentAPY
 
   const isNotFullyLinked = useMemo(

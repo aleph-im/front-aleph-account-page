@@ -30,7 +30,7 @@ export const NameCell = memo(
           <Icon name="circle-nodes" size="xl" tw="rounded-full" />
         )}
         <div className="fs-xs" tw="leading-4">
-          <div>CCN-ID {hash.slice(-10)}</div>
+          <div tw="whitespace-nowrap">ID: {hash.slice(-10)}</div>
           <div tw="flex items-center gap-1">
             {locked && (
               <Tooltip
