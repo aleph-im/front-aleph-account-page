@@ -1,13 +1,12 @@
 import { createGlobalStyle } from 'styled-components'
-import { fontAwesomeCss } from './fa'
 
 export const GlobalStylesOverride = createGlobalStyle`
-  ${fontAwesomeCss}
+  html, body, #__next {
+    height: 100%;
+  }
 
-  body, #__next {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  section {
+    padding: 0;
   }
 
   /* FIXME: */

@@ -4,35 +4,12 @@ import { StyledLink, StyledNav1, StyledNav2, StyledSidebar } from './styles'
 import {
   AnchorHTMLAttributes,
   ReactNode,
+  memo,
   useCallback,
   useMemo,
   useState,
 } from 'react'
 import { useRouter } from 'next/router'
-
-export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
-  href: string
-  icon?: IconName
-  children?: ReactNode
-  isActive?: boolean
-}
-
-export const SidebarLink = ({
-  href,
-  icon,
-  isActive,
-  children,
-}: SidebarLinkProps) => {
-  const router = useRouter()
-  isActive = isActive || router.pathname.indexOf(href) >= 0
-
-  return (
-    <StyledLink href={href} $isActive={isActive} $hasText={!!children}>
-      {icon && <Icon name={icon} size="lg" tw="p-1" />}
-      {children}
-    </StyledLink>
-  )
-}
 
 export type Route = {
   name?: string
@@ -78,7 +55,29 @@ const routes: Route[] = [
   },
 ]
 
-export const Sidebar = () => {
+export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href: string
+  icon?: IconName
+  children?: ReactNode
+  isActive?: boolean
+}
+
+export const SidebarLink = memo(
+  ({ href, icon, isActive, children }: SidebarLinkProps) => {
+    const router = useRouter()
+    isActive = isActive || router.pathname.indexOf(href) >= 0
+
+    return (
+      <StyledLink href={href} $isActive={isActive} $hasText={!!children}>
+        {icon && <Icon name={icon} size="lg" tw="p-1" />}
+        {children}
+      </StyledLink>
+    )
+  },
+)
+SidebarLink.displayName = 'SidebarLink'
+
+export const Sidebar = memo(() => {
   const [open, setOpen] = useState(true)
 
   const handleToggle = useCallback(() => {
@@ -128,6 +127,7 @@ export const Sidebar = () => {
       </StyledNav2>
     </StyledSidebar>
   )
-}
+})
+Sidebar.displayName = 'Sidebar'
 
 export default Sidebar

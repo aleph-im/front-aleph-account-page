@@ -1,17 +1,12 @@
-import {
-  Button,
-  Icon,
-  NavbarLink,
-  NavbarLinkList,
-  WalletPicker,
-} from '@aleph-front/aleph-core'
+import { Button, Icon, WalletPicker } from '@aleph-front/aleph-core'
 import { StyledHeader, StyledButton } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import { useHeader } from '@/hooks/pages/useHeader'
 import { breadcrumbNames } from '@/helpers/constants'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb/cmp'
+import { memo } from 'react'
 
-export const Header = () => {
+export const Header = memo(() => {
   const {
     theme,
     account,
@@ -97,6 +92,7 @@ export const Header = () => {
       </div>
     </StyledHeader>
   )
-}
+})
+Header.displayName = 'Header'
 
 export default Header

@@ -9,6 +9,7 @@ import NotificationProvider from '@/components/common/NotificationProvider'
 import Main from '@/components/common/Main'
 import Sidebar from '@/components/common/Sidebar'
 import Viewport from '@/components/common/Viewport/cmp'
+import Content from '@/components/common/Content/cmp'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -21,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
             <Sidebar />
             <Main>
               <Header />
-              <Component {...pageProps} />
+              <Content>
+                <Component {...pageProps} />
+              </Content>
             </Main>
           </Viewport>
         </NotificationProvider>
