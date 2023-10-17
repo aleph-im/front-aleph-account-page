@@ -1,5 +1,11 @@
 import Head from 'next/head'
-import { Button, TableColumn, Tabs, TextInput } from '@aleph-front/aleph-core'
+import {
+  Button,
+  Checkbox,
+  TableColumn,
+  Tabs,
+  TextInput,
+} from '@aleph-front/aleph-core'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import LinkedCell from '@/components/common/LinkedCell'
@@ -151,10 +157,12 @@ export const StakingPage = memo((props) => {
     tabs,
     selectedTab,
     filter,
+    stakeableOnly,
     handleTabChange,
     handleFilterChange,
     handleStake,
     handleUnStake,
+    handleChangeStakeableOnly,
   } = useStakingPage(props)
 
   return (
@@ -195,12 +203,20 @@ export const StakingPage = memo((props) => {
         </div>
         <div tw="mt-14">
           <div tw="flex items-end justify-between mb-8">
-            <Tabs
-              tabs={tabs}
-              align="left"
-              selected={selectedTab}
-              onTabChange={handleTabChange}
-            />
+            <div tw="flex items-center gap-4">
+              <Tabs
+                tabs={tabs}
+                align="left"
+                selected={selectedTab}
+                onTabChange={handleTabChange}
+              />
+              <Checkbox
+                label="Stakeable"
+                checked={stakeableOnly}
+                onChange={handleChangeStakeableOnly}
+                disabled={selectedTab !== 'nodes'}
+              />
+            </div>
             <TextInput
               value={filter}
               name="filter-ccn"

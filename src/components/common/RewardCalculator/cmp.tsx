@@ -20,7 +20,7 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
 
   const data = useMemo(() => {
     // @todo: Refactor this (use singleton)
-    const rewardManager = new StakeManager({} as any)
+    const rewardManager = new StakeManager()
 
     const rewards = rewardManager.totalPerAlephPerDay(nodes) * (value || 0)
     const apy = rewardManager.currentAPY(nodes) * 100

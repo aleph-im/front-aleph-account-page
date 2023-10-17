@@ -23,10 +23,7 @@ export const StakeButton = memo(
     onUnStake,
   }: StakeButtonProps) => {
     // @todo: Refactor this (use singleton)
-    const nodeManager = useMemo(
-      () => new NodeManager(account as any),
-      [account],
-    )
+    const nodeManager = useMemo(() => new NodeManager(account), [account])
 
     const isStakeNode = useMemo(() => {
       if (!account) return false

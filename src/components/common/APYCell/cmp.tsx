@@ -7,7 +7,7 @@ import { Tooltip } from '@aleph-front/aleph-core'
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L586
 export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
   // @todo: Refactor this (use singleton)
-  const rewardManager = new StakeManager({} as any)
+  const rewardManager = new StakeManager()
 
   const nodeAPY = rewardManager.computeEstimatedStakersAPY(node, nodes)
   const currentAPY = rewardManager.currentAPY(nodes)

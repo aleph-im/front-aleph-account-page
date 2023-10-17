@@ -94,7 +94,7 @@ export type CRNScore = BaseNodeScore & {
 
 export class NodeManager {
   constructor(
-    protected account: Account,
+    protected account?: Account,
     protected channel = defaultAccountChannel,
   ) {}
 
@@ -169,7 +169,8 @@ export class NodeManager {
   }
 
   isKYCCleared(node: CCN): boolean {
-    return this.account && node.authorized?.includes(this.account.address)
+    if (!this.account) return false
+    return node.authorized?.includes(this.account.address)
   }
 
   isLocked(node: CCN): boolean {
@@ -180,6 +181,11 @@ export class NodeManager {
   isUserNode(node: CCN): boolean {
     if (!this.account) return false
     return this.account.address === node.owner
+  }
+
+  isUserStake(node: CCN): boolean {
+    if (!this.account) return false
+    return node.stakers[this.account.address] !== undefined
   }
 
   isStakeable(

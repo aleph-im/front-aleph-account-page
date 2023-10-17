@@ -7,13 +7,15 @@ import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
 
 export class StakeManager {
   constructor(
-    protected account: Account,
+    protected account?: Account,
     protected channel = defaultAccountChannel,
   ) {}
 
   // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L204
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L289
   async stake(nodeHash: string): Promise<void> {
+    if (!this.account) throw new Error('Invalid account')
+
     await post.Publish({
       account: this.account,
       postType: 'corechan-operation',
@@ -30,6 +32,8 @@ export class StakeManager {
 
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L268
   async unStake(nodeHash: string): Promise<void> {
+    if (!this.account) throw new Error('Invalid account')
+
     await post.Publish({
       account: this.account,
       postType: 'corechan-operation',
