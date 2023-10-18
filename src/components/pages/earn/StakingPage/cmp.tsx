@@ -1,150 +1,9 @@
+import { memo } from 'react'
 import Head from 'next/head'
-import {
-  Button,
-  Checkbox,
-  TableColumn,
-  Tabs,
-  TextInput,
-} from '@aleph-front/aleph-core'
-import NodesTable from '@/components/common/NodesTable'
-import NameCell from '@/components/common/NameCell'
-import LinkedCell from '@/components/common/LinkedCell'
-import ScoreCell from '@/components/common/ScoreCell'
-import APYCell from '@/components/common/APYCell'
-import StakedCell from '@/components/common/StakedCell'
+import { Checkbox, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
-import { CCN } from '@/domain/node'
-import { memo, useMemo } from 'react'
-import StakeButton from '@/components/common/StakeButton/cmp'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import AmountCell from '@/components/common/AmountCell/cmp'
-
-type NodesProps = {
-  nodes: CCN[]
-  filteredNodes: CCN[]
-  stakeNodes: CCN[]
-  account?: Account
-  accountBalance?: number
-  showStakedAmount?: boolean
-  handleStake: (nodeHash: string) => void
-  handleUnStake: (nodeHash: string) => void
-}
-
-const Nodes = memo(
-  ({
-    nodes,
-    stakeNodes,
-    filteredNodes,
-    account,
-    accountBalance,
-    showStakedAmount,
-    handleStake: onStake,
-    handleUnStake: onUnStake,
-  }: NodesProps) => {
-    const columns = useMemo(() => {
-      const cols = [
-        {
-          label: 'EST.APY',
-          render: (row) => <APYCell node={row} nodes={nodes} />,
-        },
-        {
-          label: 'NAME',
-          sortable: true,
-          sortBy: (row) => row.name,
-          render: (row) => (
-            <NameCell
-              hash={row.hash}
-              name={row.name}
-              picture={row.picture}
-              locked={row.locked}
-            ></NameCell>
-          ),
-        },
-        {
-          label: 'STAKED',
-          sortable: true,
-          sortBy: (row) => row.total_staked,
-          render: (row) => (
-            <StakedCell staked={row.total_staked} status={row.status} />
-          ),
-        },
-        {
-          label: 'LINKED',
-          sortable: true,
-          sortBy: (row) => row.resource_nodes.length,
-          render: (row) => <LinkedCell nodes={row.crnsData} />,
-        },
-        {
-          label: 'SCORE',
-          sortable: true,
-          sortBy: (row) => row.score,
-          render: (row) => <ScoreCell score={row.score} />,
-        },
-        {
-          label: '',
-          align: 'right',
-          render: (node) => (
-            <div tw="flex gap-3 justify-end">
-              <StakeButton
-                {...{
-                  node,
-                  account,
-                  accountBalance,
-                  stakeNodes,
-                  onStake,
-                  onUnStake,
-                }}
-              />
-              <Button
-                kind="neon"
-                size="regular"
-                variant="secondary"
-                color="main0"
-              >
-                Info
-              </Button>
-            </div>
-          ),
-        },
-      ] as TableColumn<CCN>[]
-
-      if (showStakedAmount && account) {
-        cols.splice(cols.length - 1, 0, {
-          label: 'AMOUNT',
-          sortable: true,
-          sortBy: (row) => row.stakers[account.address] || 0,
-          render: (row) => (
-            <AmountCell amount={row.stakers[account.address] || 0} />
-          ),
-        })
-      }
-
-      return cols.map((col, i) => {
-        col.width = i === cols.length - 1 ? '100%' : `${70 / cols.length - 1}%`
-        return col
-      })
-    }, [
-      account,
-      accountBalance,
-      nodes,
-      onStake,
-      onUnStake,
-      showStakedAmount,
-      stakeNodes,
-    ])
-
-    return (
-      <NodesTable
-        columns={columns}
-        data={filteredNodes}
-        borderType="solid"
-        oddRowNoise
-      />
-    )
-  },
-)
-Nodes.displayName = 'Nodes'
+import StakingNodesTable from '@/components/common/StakingNodesTable'
 
 export const StakingPage = memo((props) => {
   const {
@@ -201,64 +60,64 @@ export const StakingPage = memo((props) => {
             </div>
           )}
         </div>
-        <div tw="mt-14">
-          <div tw="flex items-end justify-between mb-8">
-            <div tw="flex items-center gap-4">
-              <Tabs
-                tabs={tabs}
-                align="left"
-                selected={selectedTab}
-                onTabChange={handleTabChange}
-              />
-              <Checkbox
-                label="Stakeable"
-                checked={stakeableOnly}
-                onChange={handleChangeStakeableOnly}
-                disabled={selectedTab !== 'nodes'}
-              />
-            </div>
-            <TextInput
-              value={filter}
-              name="filter-ccn"
-              placeholder="Search me"
-              onChange={handleFilterChange}
+      </section>
+      <section tw="mt-14">
+        <div tw="flex items-end justify-between mb-8">
+          <div tw="flex items-center gap-4">
+            <Tabs
+              tabs={tabs}
+              align="left"
+              selected={selectedTab}
+              onTabChange={handleTabChange}
+            />
+            <Checkbox
+              label="Ready to stake"
+              checked={stakeableOnly}
+              onChange={handleChangeStakeableOnly}
+              disabled={selectedTab !== 'nodes'}
             />
           </div>
-          {selectedTab === 'stake' ? (
-            <>
-              <Nodes
+          <TextInput
+            value={filter}
+            name="filter-ccn"
+            placeholder="Search me"
+            onChange={handleFilterChange}
+          />
+        </div>
+        {selectedTab === 'stake' ? (
+          <>
+            <StakingNodesTable
+              {...{
+                nodes,
+                filteredNodes: filteredStakeNodes,
+                stakeNodes,
+                accountBalance,
+                account,
+                handleStake,
+                handleUnStake,
+                showStakedAmount: true,
+              }}
+            />
+          </>
+        ) : (
+          <>
+            {!nodes ? (
+              <>Loading...</>
+            ) : (
+              <StakingNodesTable
                 {...{
                   nodes,
-                  filteredNodes: filteredStakeNodes,
+                  filteredNodes,
                   stakeNodes,
                   accountBalance,
                   account,
                   handleStake,
                   handleUnStake,
-                  showStakedAmount: true,
                 }}
               />
-            </>
-          ) : (
-            <>
-              {!nodes ? (
-                <>Loading...</>
-              ) : (
-                <Nodes
-                  {...{
-                    nodes,
-                    filteredNodes,
-                    stakeNodes,
-                    accountBalance,
-                    account,
-                    handleStake,
-                    handleUnStake,
-                  }}
-                />
-              )}
-            </>
-          )}
-        </div>
+            )}
+          </>
+        )}
       </section>
     </>
   )

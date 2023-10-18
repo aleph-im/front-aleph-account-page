@@ -1,87 +1,43 @@
 import { useAppState } from '@/contexts/appState'
 import { CCN, NodeManager } from '@/domain/node'
 import { StakeManager } from '@/domain/stake'
-import { useRequest } from '@/hooks/common/useRequest'
-import { TabsProps, useDebounceState } from '@aleph-front/aleph-core'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import {
+  UseCoreChannelNodesReturn,
+  useCoreChannelNodes,
+} from '@/hooks/common/useCoreChannelNodes'
+import { TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
 }
 
-export type UseStakingPageReturn = {
-  account?: Account
-  accountBalance?: number
-  nodes: CCN[]
+export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   stakeNodes: CCN[]
-  filteredNodes: CCN[]
   filteredStakeNodes: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
-  filter: string
   stakeableOnly: boolean
   handleTabChange: (tab: string) => void
-  handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleStake: (nodeHash: string) => void
   handleUnStake: (nodeHash: string) => void
   handleChangeStakeableOnly: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-export function useStakingPage({
-  nodes: prefetchNodes,
-}: UseStakingPageProps): UseStakingPageReturn {
+export function useStakingPage(
+  props: UseStakingPageProps,
+): UseStakingPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-  const filterNodes = useCallback(
-    (nodes: CCN[], query: string, stakeableOnly = false): CCN[] => {
-      if (stakeableOnly) {
-        nodes = nodes.filter(
-          (node) =>
-            nodeManager.isStakeable(node, accountBalance, [])[0] &&
-            !nodeManager.isUserStake(node),
-        )
-      }
-
-      if (!query) return nodes
-
-      return nodes.filter((node) =>
-        node.name.toLowerCase().includes(query.toLowerCase()),
-      )
-    },
-    [accountBalance, nodeManager],
-  )
-
-  // -----------------------------
-
-  const doRequest = useCallback(async () => {
-    return await nodeManager.getCCNNodes()
-  }, [nodeManager])
-
-  // @note: Quick fix to refresh node list after staking/unstaking (@todo: Move nodes to app state && use ws feed)
-  const [lastUpdate, setLastUpdate] = useState(Date.now())
-  const debouncedLastUpdate = useDebounceState(lastUpdate, 1000 * 10)
-
-  const { data } = useRequest({
-    doRequest,
-    triggerOnMount: true,
-    triggerDeps: [debouncedLastUpdate],
-    onSuccess: () => 'ignore',
-  })
-
-  // -----------------------------
-
-  const [filter, setFilter] = useState('')
-
-  const debouncedFilter = useDebounceState(filter, 200)
-
-  const handleFilterChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const filter = e.target.value
-    setFilter(filter)
-  }, [])
+  const {
+    nodes,
+    filteredNodes: baseFilteredNodes,
+    setLastUpdate,
+    ...rest
+  } = useCoreChannelNodes(props)
 
   // -----------------------------
 
@@ -97,25 +53,30 @@ export function useStakingPage({
 
   // -----------------------------
 
-  const nodes = useMemo(
-    () => (prefetchNodes || data || []).sort((a, b) => b.score - a.score),
-    [prefetchNodes, data],
+  const filterStakeNodes = useCallback(
+    (nodes: CCN[]) => nodes.filter((node) => nodeManager.isUserStake(node)),
+    [nodeManager],
   )
 
   const stakeNodes = useMemo(
-    () => nodes.filter((node) => nodeManager.isUserStake(node)),
-    [nodes, nodeManager],
-  )
-
-  const filteredNodes = useMemo(
-    () => filterNodes(nodes, debouncedFilter, stakeableOnly),
-    [filterNodes, debouncedFilter, nodes, stakeableOnly],
+    () => filterStakeNodes(nodes),
+    [filterStakeNodes, nodes],
   )
 
   const filteredStakeNodes = useMemo(
-    () => filterNodes(stakeNodes, debouncedFilter),
-    [filterNodes, debouncedFilter, stakeNodes],
+    () => filterStakeNodes(baseFilteredNodes),
+    [filterStakeNodes, baseFilteredNodes],
   )
+
+  const filteredNodes = useMemo(() => {
+    if (!stakeableOnly) return baseFilteredNodes
+
+    return baseFilteredNodes.filter(
+      (node) =>
+        nodeManager.isStakeable(node, accountBalance, [])[0] &&
+        !nodeManager.isUserStake(node),
+    )
+  }, [accountBalance, nodeManager, baseFilteredNodes, stakeableOnly])
 
   // -----------------------------
 
@@ -140,7 +101,7 @@ export function useStakingPage({
       await stakeManager.stake(nodeHash)
       setLastUpdate(Date.now())
     },
-    [stakeManager],
+    [setLastUpdate, stakeManager],
   )
 
   const handleUnStake = useCallback(
@@ -148,7 +109,7 @@ export function useStakingPage({
       await stakeManager.unStake(nodeHash)
       setLastUpdate(Date.now())
     },
-    [stakeManager],
+    [setLastUpdate, stakeManager],
   )
 
   // -----------------------------
@@ -162,12 +123,12 @@ export function useStakingPage({
     filteredStakeNodes,
     selectedTab,
     tabs,
-    filter,
     stakeableOnly,
+    ...rest,
     handleTabChange,
-    handleFilterChange,
     handleStake,
     handleUnStake,
     handleChangeStakeableOnly,
+    setLastUpdate,
   }
 }

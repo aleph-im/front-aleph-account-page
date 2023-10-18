@@ -1,8 +1,21 @@
 import { defaultAccountChannel, scoringAddress } from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
+import {
+  fetchAndCache,
+  getLatestReleases,
+  stripExtraTagDescription,
+} from '@/helpers/utils'
 
 const { post } = messages
+
+export type NodeType = 'ccn' | 'crn'
+
+export type NodeLastVersions = {
+  latest: string | null
+  prerelease: string | null
+  outdated: string | null
+}
 
 export type BaseNode = {
   address: string
@@ -32,6 +45,7 @@ export type CCN = BaseNode & {
   stakers: Record<string, number>
   total_staked: number
   scoreData?: CCNScore
+  metricsData?: CCNMetrics
   crnsData: CRN[]
 }
 
@@ -40,6 +54,7 @@ export type CRN = BaseNode & {
   parent: string
   type: string
   scoreData?: CRNScore
+  metricsData?: CRNMetrics
 }
 
 export type BaseNodeScore = {
@@ -92,6 +107,31 @@ export type CRNScore = BaseNodeScore & {
   }
 }
 
+export type BaseNodeMetrics = {
+  asn: number
+  url: string
+  as_name: string
+  node_id: string
+  version: string
+  measured_at: number
+  base_latency: number
+  base_latency_ipv4: number
+}
+
+export type CCNMetrics = BaseNodeMetrics & {
+  txs_total: number
+  metrics_latency: number
+  pending_messages: number
+  aggregate_latency: number
+  file_download_latency: number
+  eth_height_remaining: number
+}
+
+export type CRNMetrics = BaseNodeMetrics & {
+  full_check_latency: number
+  diagnostic_vm_latency: number
+}
+
 export class NodeManager {
   constructor(
     protected account?: Account,
@@ -107,61 +147,32 @@ export class NodeManager {
     const crns: CRN[] = content?.data?.corechannel?.resource_nodes
     let ccns: CCN[] = content?.data?.corechannel?.nodes
 
-    const scores = await this.getScores()
-    const scoresMap = new Map(scores.map((score) => [score.node_id, score]))
-
-    ccns = ccns.map((ccn) => {
-      const scoreData = scoresMap.get(ccn.hash)
-      if (!scoreData) return ccn
-
-      return {
-        ...ccn,
-        score: scoreData.total_score,
-        scoreData,
-      }
-    })
-
-    const crnsMap = crns.reduce((ac, cu) => {
-      const crns = (ac[cu.parent] = ac[cu.parent] || [])
-      crns.push(cu)
-      return ac
-    }, {} as Record<string, CRN[]>)
-
-    ccns = ccns.map((ccn) => {
-      const crnsData = crnsMap[ccn.hash] || []
-      if (!crnsData) return ccn
-
-      return {
-        ...ccn,
-        crnsData,
-      }
-    })
+    ccns = await this.parseResourceNodes(ccns, crns)
+    ccns = await this.parseScores(ccns)
+    ccns = await this.parseMetrics(ccns)
 
     console.log(ccns)
 
     return ccns
   }
 
-  protected async getScores(): Promise<CCNScore[]> {
-    const res = await post.Get({
-      types: 'aleph-scoring-scores',
-      addresses: [scoringAddress],
-      pagination: 1,
-      page: 1,
-    })
+  async getLatestCCNVersion(): Promise<NodeLastVersions> {
+    const response = await fetchAndCache(
+      'https://api.github.com/repos/aleph-im/pyaleph/releases',
+      'ccn_versions',
+      300_000,
+    )
 
-    console.log(res)
-
-    return (res.posts[0]?.content as any)?.scores?.ccn
+    return getLatestReleases(response)
   }
 
-  protected async getMetrics() {
-    return post.Get({
-      types: 'aleph-network-metrics',
-      addresses: [scoringAddress],
-      pagination: 1,
-      page: 1,
-    })
+  async getLatestCRNVersion(): Promise<NodeLastVersions> {
+    const response = await fetchAndCache(
+      'https://api.github.com/repos/aleph-im/aleph-vm/releases',
+      'crn_versions',
+      300_000,
+    )
+    return getLatestReleases(response)
   }
 
   isKYCRequired(node: CCN): boolean {
@@ -213,5 +224,111 @@ export class NodeManager {
       ]
 
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
+  }
+
+  isNodeExperimental(node: CCN, lastVersion: NodeLastVersions): boolean {
+    const closestTag = stripExtraTagDescription(node.metricsData?.version || '')
+
+    return (
+      closestTag !== node.metricsData?.version &&
+      closestTag === lastVersion.prerelease
+    )
+  }
+
+  isNodeLatest(node: CCN, lastVersion: NodeLastVersions) {
+    return node.metricsData?.version === lastVersion.latest
+  }
+
+  isNodePrerelease(node: CCN, lastVersion: NodeLastVersions) {
+    return node.metricsData?.version === lastVersion.prerelease
+  }
+
+  isNodeUptodate(node: CCN, lastVersion: NodeLastVersions) {
+    return (
+      this.isNodeLatest(node, lastVersion) ||
+      this.isNodePrerelease(node, lastVersion) ||
+      this.isNodeExperimental(node, lastVersion)
+    )
+  }
+
+  isNodeOutdated(node: CCN, lastVersion: NodeLastVersions) {
+    return lastVersion.outdated === node.metricsData?.version
+  }
+
+  protected async parseResourceNodes(ccns: CCN[], crns: CRN[]): Promise<CCN[]> {
+    const crnsMap = crns.reduce((ac, cu) => {
+      const crns = (ac[cu.parent] = ac[cu.parent] || [])
+      crns.push(cu)
+      return ac
+    }, {} as Record<string, CRN[]>)
+
+    return ccns.map((ccn) => {
+      const crnsData = crnsMap[ccn.hash] || []
+      if (!crnsData) return ccn
+
+      return {
+        ...ccn,
+        crnsData,
+      }
+    })
+  }
+
+  protected async parseScores(ccns: CCN[]): Promise<CCN[]> {
+    const scores = await this.getScores()
+    const scoresMap = new Map(scores.map((score) => [score.node_id, score]))
+
+    return ccns.map((ccn) => {
+      const scoreData = scoresMap.get(ccn.hash)
+      if (!scoreData) return ccn
+
+      return {
+        ...ccn,
+        score: scoreData.total_score,
+        scoreData,
+      }
+    })
+  }
+
+  protected async parseMetrics(ccns: CCN[]): Promise<CCN[]> {
+    const metrics = await this.getMetrics()
+    const metricsMap = new Map(
+      metrics.map((metrics) => [metrics.node_id, metrics]),
+    )
+
+    return ccns.map((ccn) => {
+      const metricsData = metricsMap.get(ccn.hash)
+      if (!metricsData) return ccn
+
+      return {
+        ...ccn,
+        metricsData,
+      }
+    })
+  }
+
+  protected async getScores(): Promise<CCNScore[]> {
+    const res = await post.Get({
+      types: 'aleph-scoring-scores',
+      addresses: [scoringAddress],
+      pagination: 1,
+      page: 1,
+    })
+
+    console.log(res)
+
+    return (res.posts[0]?.content as any)?.scores?.ccn
+  }
+
+  protected async getMetrics(): Promise<CCNMetrics[]> {
+    const res = await post.Get({
+      types: 'aleph-network-metrics',
+      addresses: [scoringAddress],
+      pagination: 1,
+      page: 1,
+    })
+
+    console.log(res)
+
+    return (res.posts[0]?.content as any)?.metrics?.ccn
   }
 }
