@@ -1,6 +1,6 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { apiServer, defaultAccountChannel } from '@/helpers/constants'
-import { CCN } from './node'
+import { AlephNode, CCN, CRN } from './node'
 import { normalizeValue } from '@/helpers/utils'
 import { post } from 'aleph-sdk-ts/dist/messages'
 import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
@@ -48,12 +48,27 @@ export class StakeManager {
     })
   }
 
-  activeNodes(nodes: CCN[]): CCN[] {
-    return nodes.filter((node) => node.status === 'active')
+  // @todo: Refactor and inject nodeManager as dep
+  isCRN(node: AlephNode): node is CRN {
+    return Object.hasOwn(node, 'parent')
+  }
+
+  activeNodes<T extends AlephNode>(nodes: T[]): T[] {
+    return nodes.filter((node) =>
+      this.isCRN(node) ? node.status === 'linked' : node.status === 'active',
+    )
+  }
+
+  totalStaked(nodes: CCN[]): number {
+    return nodes.reduce((ac, cu) => ac + cu.total_staked, 0)
+  }
+
+  totalStakedByOperators(nodes: (CCN | CRN)[]): number {
+    return nodes.length * 200_000
   }
 
   totalStakedInActive(nodes: CCN[]): number {
-    return this.activeNodes(nodes).reduce((ac, cu) => ac + cu.total_staked, 0)
+    return this.totalStaked(this.activeNodes(nodes))
   }
 
   totalPerDay(nodes: CCN[]): number {
@@ -106,5 +121,15 @@ export class StakeManager {
     }
 
     return estRewards
+  }
+
+  computeCRNRewards(node: CRN): number {
+    if (!node.parent) return 0
+    if (!node.score || !node.decentralization) return 0
+
+    const { decentralization, score } = node
+    const maxRewards = 500 + decentralization * 2500
+
+    return maxRewards * normalizeValue(score, 0.2, 0.8, 0, 1)
   }
 }

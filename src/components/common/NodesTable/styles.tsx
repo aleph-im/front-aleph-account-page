@@ -1,9 +1,22 @@
-import { CCN } from '@/domain/node'
-import { Table } from '@aleph-front/aleph-core'
+import { AlephNode } from '@/domain/node'
+import { Table, TableProps } from '@aleph-front/aleph-core'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
-export const StyledTable = styled(Table<CCN>)`
+export type StyledTableProps<T extends AlephNode> = Omit<
+  TableProps<T>,
+  'borderType' | 'oddRowNoise'
+>
+
+export const StyledTable = styled(Table<any>).attrs(
+  (props: StyledTableProps<any>) => {
+    return {
+      borderType: 'solid',
+      oddRowNoise: true,
+      ...props,
+    }
+  },
+)`
   thead th {
     font-size: 0.8125rem;
     ${tw`whitespace-nowrap`}

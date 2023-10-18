@@ -70,13 +70,14 @@ export function useStakingPage(
 
   const filteredNodes = useMemo(() => {
     if (!stakeableOnly) return baseFilteredNodes
+    if (!account) return baseFilteredNodes
 
     return baseFilteredNodes.filter(
       (node) =>
         nodeManager.isStakeable(node, accountBalance, [])[0] &&
         !nodeManager.isUserStake(node),
     )
-  }, [accountBalance, nodeManager, baseFilteredNodes, stakeableOnly])
+  }, [stakeableOnly, baseFilteredNodes, account, nodeManager, accountBalance])
 
   // -----------------------------
 
@@ -85,7 +86,7 @@ export function useStakingPage(
 
   const tabs = useMemo(() => {
     const tabs = [
-      { id: 'stake', name: 'My Stakes', disabled: !stakeNodes.length },
+      { id: 'stake', name: 'My stakes', disabled: !stakeNodes.length },
       { id: 'nodes', name: 'All core nodes' },
     ]
 

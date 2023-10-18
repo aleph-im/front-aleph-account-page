@@ -1,20 +1,13 @@
-import tw from 'twin.macro'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
+import ColorDot from '../ColorDot'
 
-export const StyledScoreIcon = styled.div<{ $score: number }>(
-  ({ theme, $score }) => {
-    const color =
-      $score >= 0.8
-        ? theme.color.main1
-        : $score >= 0.5
-        ? theme.color.main0
-        : theme.color.error
+export const StyledScoreIcon = styled(ColorDot).attrs<{ $score: number }>(
+  ({ $score, ...rest }) => {
+    const $color = $score >= 0.8 ? 'main1' : $score >= 0.5 ? 'main0' : 'error'
 
-    return [
-      tw`h-4 w-4 rounded-full`,
-      css`
-        background-color: ${color};
-      `,
-    ]
+    return {
+      $color,
+      ...rest,
+    }
   },
-)
+)``

@@ -36,7 +36,7 @@ export const StakingNodesTable = memo(
     const columns = useMemo(() => {
       const cols = [
         {
-          label: 'EST.APY',
+          label: 'EST. APY',
           render: (row) => <APYCell node={row} nodes={nodes} />,
         },
         {

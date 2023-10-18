@@ -1,27 +1,27 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeManager } from '@/domain/node'
+import { CRN, NodeManager } from '@/domain/node'
 import { useRequest } from '@/hooks/common/useRequest'
 import { useDebounceState } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
-export type UseCoreChannelNodesProps = {
-  nodes?: CCN[]
+export type UseComputeResourceNodesProps = {
+  nodes?: CRN[]
 }
 
-export type UseCoreChannelNodesReturn = {
+export type UseComputeResourceNodesReturn = {
   account?: Account
   accountBalance?: number
-  nodes: CCN[]
-  filteredNodes: CCN[]
+  nodes: CRN[]
+  filteredNodes: CRN[]
   filter: string
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   setLastUpdate: (now: number) => void
 }
 
-export function useCoreChannelNodes({
+export function useComputeResourceNodes({
   nodes: prefetchNodes,
-}: UseCoreChannelNodesProps): UseCoreChannelNodesReturn {
+}: UseComputeResourceNodesProps): UseComputeResourceNodesReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
 
   // @todo: Refactor this (use singleton)
@@ -30,7 +30,7 @@ export function useCoreChannelNodes({
   // -----------------------------
 
   const doRequest = useCallback(async () => {
-    return await nodeManager.getCCNNodes()
+    return await nodeManager.getCRNNodes()
   }, [nodeManager])
 
   // @note: Quick fix to refresh node list after staking/unstaking (@todo: Move nodes to app state && use ws feed)
@@ -57,10 +57,14 @@ export function useCoreChannelNodes({
 
   // -----------------------------
 
-  const filterNodes = useCallback((nodes: CCN[], query: string): CCN[] => {
+  const filterNodes = useCallback((nodes: CRN[], query: string): CRN[] => {
     if (!query) return nodes
-    return nodes.filter((node) =>
-      node.name.toLowerCase().includes(query.toLowerCase()),
+    return nodes.filter(
+      (node) =>
+        node.name.toLowerCase().includes(query.toLowerCase()) ||
+        (node.parentData?.name || '')
+          .toLowerCase()
+          .includes(query.toLowerCase()),
     )
   }, [])
 

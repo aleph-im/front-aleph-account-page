@@ -1,20 +1,15 @@
-import tw from 'twin.macro'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
+import ColorDot from '../ColorDot'
 
-export const StyledVersionIcon = styled.div<{ $status: number }>(
-  ({ theme, $status }) => {
-    const color =
-      $status >= 0.8
-        ? theme.color.main1
-        : $status >= 0.5
-        ? theme.color.main0
-        : theme.color.error
+export type StyledVersionIconProps = { $status: number }
 
-    return [
-      tw`h-4 w-4 rounded-full`,
-      css`
-        background-color: ${color};
-      `,
-    ]
+export const StyledVersionIcon = styled(ColorDot).attrs<StyledVersionIconProps>(
+  ({ $status, ...rest }) => {
+    const $color = $status >= 0.8 ? 'main1' : $status >= 0.5 ? 'main0' : 'error'
+
+    return {
+      $color,
+      ...rest,
+    }
   },
-)
+)<StyledVersionIconProps>``

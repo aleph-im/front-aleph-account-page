@@ -52,12 +52,13 @@ export const CoreChannelNodesTable = memo(
           ),
         },
         {
-          label: 'EST.APY',
+          label: 'EST. APY',
           render: (row) => <APYCell node={row} nodes={nodes} />,
         },
         {
           label: 'VERSION',
           sortable: true,
+          width: '20%',
           sortBy: (row) => row.metricsData?.version,
           render: (row) => <VersionCell node={row} nodes={nodes} />,
         },
@@ -80,19 +81,12 @@ export const CoreChannelNodesTable = memo(
       ] as TableColumn<CCN>[]
 
       return cols.map((col, i) => {
-        col.width = i === cols.length - 1 ? '100%' : `${70 / cols.length - 1}%`
+        col.width = i === cols.length - 1 ? '100%' : `${80 / cols.length - 2}%`
         return col
       })
     }, [nodes])
 
-    return (
-      <NodesTable
-        columns={columns}
-        data={filteredNodes}
-        borderType="solid"
-        oddRowNoise
-      />
-    )
+    return <NodesTable columns={columns} data={filteredNodes} />
   },
 )
 CoreChannelNodesTable.displayName = 'CoreChannelNodesTable'

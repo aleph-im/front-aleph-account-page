@@ -2,7 +2,9 @@ import { memo } from 'react'
 import Head from 'next/head'
 import { Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useCoreChannelNodesPage } from '@/hooks/pages/earn/useCoreChannelNodesPage'
-import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable/cmp'
+import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable'
+import StakeChart from '@/components/common/StakeChart'
+import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -27,6 +29,23 @@ export const CoreChannelNodesPage = memo((props) => {
         <h1 className="tp-h5" tw="mb-8">
           Core nodes
         </h1>
+      </section>
+      <section>
+        <div tw="flex items-stretch gap-9">
+          <StakeChart nodes={nodes} />
+          <ActiveNodeChart nodes={nodes} title="CORE CHANNEL NODES" />
+          <div>
+            <h1 className="tp-h7" tw="mb-0">
+              What is a core node?
+            </h1>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Vestibulum aliquam lectus non eros malesuada egestas eu vitae
+              ipsum. Donec sed faucibus sapien. Interdum et malesuada fames ac
+              ante ipsum primis in faucibus. Aenean at scelerisque tortor.
+            </p>
+          </div>
+        </div>
       </section>
       <section tw="mt-14">
         <div tw="flex items-end justify-between mb-8">

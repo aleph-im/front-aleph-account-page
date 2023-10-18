@@ -1,7 +1,7 @@
 import tw from 'twin.macro'
 import styled, { css } from 'styled-components'
 
-export const StyledLinkIcon = styled.div<{ $score?: number }>(
+export const StyledDotIcon = styled.div<{ $score?: number }>(
   ({ theme, $score }) => {
     const color =
       $score === undefined

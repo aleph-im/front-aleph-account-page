@@ -1,38 +1,39 @@
 import { useCallback, useMemo, useState } from 'react'
 import { TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeManager } from '@/domain/node'
+import { CRN, NodeManager } from '@/domain/node'
 import {
-  UseCoreChannelNodesReturn,
-  useCoreChannelNodes,
-} from '@/hooks/common/useCoreChannelNodes'
+  UseComputeResourceNodesReturn,
+  useComputeResourceNodes,
+} from '@/hooks/common/useComputeResourceNodes'
 
-export type UseCoreChannelNodesPageProps = {
-  nodes?: CCN[]
+export type UseComputeResourceNodesPageProps = {
+  nodes?: CRN[]
 }
 
-export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
-  userNodes: CCN[]
-  filteredUserNodes: CCN[]
-  selectedTab: string
-  tabs: TabsProps['tabs']
-  handleTabChange: (tab: string) => void
-}
+export type UseComputeResourceNodesPageReturn =
+  UseComputeResourceNodesReturn & {
+    userNodes: CRN[]
+    filteredUserNodes: CRN[]
+    selectedTab: string
+    tabs: TabsProps['tabs']
+    handleTabChange: (tab: string) => void
+  }
 
-export function useCoreChannelNodesPage(
-  props: UseCoreChannelNodesPageProps,
-): UseCoreChannelNodesPageReturn {
+export function useComputeResourceNodesPage(
+  props: UseComputeResourceNodesPageProps,
+): UseComputeResourceNodesPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-  const { nodes, filteredNodes, ...rest } = useCoreChannelNodes(props)
+  const { nodes, filteredNodes, ...rest } = useComputeResourceNodes(props)
 
   // -----------------------------
 
   const filterUserNodes = useCallback(
-    (nodes: CCN[]) => nodes.filter((node) => nodeManager.isUserNode(node)),
+    (nodes: CRN[]) => nodes.filter((node) => nodeManager.isUserNode(node)),
     [nodeManager],
   )
 
@@ -53,8 +54,8 @@ export function useCoreChannelNodesPage(
 
   const tabs = useMemo(() => {
     const tabs = [
-      { id: 'user', name: 'My core nodes', disabled: !userNodes.length },
-      { id: 'nodes', name: 'All core nodes' },
+      { id: 'user', name: 'My compute nodes', disabled: !userNodes.length },
+      { id: 'nodes', name: 'All compute nodes' },
     ]
 
     return tabs
