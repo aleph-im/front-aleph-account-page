@@ -184,22 +184,21 @@ export class NodeManager {
   }
 
   async getLatestCCNVersion(): Promise<NodeLastVersions> {
-    const response = await fetchAndCache(
+    return fetchAndCache(
       'https://api.github.com/repos/aleph-im/pyaleph/releases',
       'ccn_versions',
       300_000,
+      getLatestReleases,
     )
-
-    return getLatestReleases(response)
   }
 
   async getLatestCRNVersion(): Promise<NodeLastVersions> {
-    const response = await fetchAndCache(
+    return fetchAndCache(
       'https://api.github.com/repos/aleph-im/aleph-vm/releases',
       'crn_versions',
       300_000,
+      getLatestReleases,
     )
-    return getLatestReleases(response)
   }
 
   isCRN(node: AlephNode): node is CRN {
@@ -311,7 +310,7 @@ export class NodeManager {
     }, {} as Record<string, CCN>)
 
     return crns.map((crn) => {
-      const parentData = ccnsMap[crn.parent] || []
+      const parentData = ccnsMap[crn.parent]
       if (!parentData) return crn
 
       return {
@@ -377,8 +376,6 @@ export class NodeManager {
       page: 1,
     })
 
-    console.log(res)
-
     return (res.posts[0]?.content as any)?.scores
   }
 
@@ -392,8 +389,6 @@ export class NodeManager {
       pagination: 1,
       page: 1,
     })
-
-    console.log(res)
 
     return (res.posts[0]?.content as any)?.metrics
   }

@@ -1,5 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeManager } from '@/domain/node'
+import { CCN, NodeLastVersions, NodeManager } from '@/domain/node'
 import { useRequest } from '@/hooks/common/useRequest'
 import { useDebounceState } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
@@ -15,6 +15,7 @@ export type UseCoreChannelNodesReturn = {
   nodes: CCN[]
   filteredNodes: CCN[]
   filter: string
+  lastVersion?: NodeLastVersions
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   setLastUpdate: (now: number) => void
 }
@@ -42,6 +43,20 @@ export function useCoreChannelNodes({
     triggerOnMount: true,
     triggerDeps: [debouncedLastUpdate],
     onSuccess: () => null,
+  })
+
+  // -----------------------------
+
+  const doVersionRequest = useCallback(
+    () => nodeManager.getLatestCCNVersion(),
+    [nodeManager],
+  )
+
+  const { data: lastVersion } = useRequest({
+    doRequest: doVersionRequest,
+    triggerOnMount: true,
+    onSuccess: () => null,
+    onError: () => null,
   })
 
   // -----------------------------
@@ -82,6 +97,7 @@ export function useCoreChannelNodes({
     nodes,
     filteredNodes,
     filter,
+    lastVersion,
     handleFilterChange,
     setLastUpdate,
   }

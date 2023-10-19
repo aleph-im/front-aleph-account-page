@@ -48,7 +48,6 @@ export const StakingNodesTable = memo(
               hash={row.hash}
               name={row.name}
               picture={row.picture}
-              locked={row.locked}
             ></NameCell>
           ),
         },
@@ -57,7 +56,11 @@ export const StakingNodesTable = memo(
           sortable: true,
           sortBy: (row) => row.total_staked,
           render: (row) => (
-            <StakedCell staked={row.total_staked} status={row.status} />
+            <StakedCell
+              staked={row.total_staked}
+              status={row.status}
+              locked={row.locked}
+            />
           ),
         },
         {

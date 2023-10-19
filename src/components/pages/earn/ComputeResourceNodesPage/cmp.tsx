@@ -13,6 +13,7 @@ export const ComputeResourceNodesPage = memo((props) => {
     tabs,
     selectedTab,
     filter,
+    lastVersion,
     handleTabChange,
     handleFilterChange,
   } = useComputeResourceNodesPage(props)
@@ -66,6 +67,7 @@ export const ComputeResourceNodesPage = memo((props) => {
               {...{
                 nodes,
                 filteredNodes: filteredUserNodes,
+                lastVersion,
               }}
             />
           </>
@@ -78,6 +80,7 @@ export const ComputeResourceNodesPage = memo((props) => {
                 {...{
                   nodes,
                   filteredNodes,
+                  lastVersion,
                 }}
               />
             )}

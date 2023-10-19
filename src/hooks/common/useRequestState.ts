@@ -14,9 +14,9 @@ export type RequestCallbacksReturn<T> = {
 }
 
 export type RequestState<T> = {
-  data: T | null
+  data: T | undefined
   loading: boolean
-  error: Error | null
+  error: Error | undefined
 }
 
 export type UseRequestStateProps<T> = RequestCallbacks<T>
@@ -34,14 +34,14 @@ export function useRequestState<T>({
   const noti = useNotification()
 
   const [state, setState] = useState<RequestState<T>>({
-    data: null,
+    data: undefined,
     loading: false,
-    error: null,
+    error: undefined,
   })
 
   const onSuccess = useCallback(
     (data: T) => {
-      setState({ data, loading: false, error: null })
+      setState({ data, loading: false, error: undefined })
 
       function defaultSuccessHandler() {
         noti &&
@@ -60,7 +60,7 @@ export function useRequestState<T>({
 
   const onError = useCallback(
     (error: Error) => {
-      setState({ data: null, loading: false, error })
+      setState({ data: undefined, loading: false, error })
 
       function defaultErrorHandler(error: Error) {
         const text = error.message
@@ -83,7 +83,7 @@ export function useRequestState<T>({
   )
 
   const onLoad = useCallback(() => {
-    setState({ data: null, loading: true, error: null })
+    setState({ data: undefined, loading: true, error: undefined })
 
     loadProp && loadProp()
   }, [loadProp])

@@ -14,6 +14,7 @@ export const CoreChannelNodesPage = memo((props) => {
     tabs,
     selectedTab,
     filter,
+    lastVersion,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -68,6 +69,7 @@ export const CoreChannelNodesPage = memo((props) => {
               {...{
                 nodes,
                 filteredNodes: filteredUserNodes,
+                lastVersion,
               }}
             />
           </>
@@ -80,6 +82,7 @@ export const CoreChannelNodesPage = memo((props) => {
                 {...{
                   nodes,
                   filteredNodes,
+                  lastVersion,
                 }}
               />
             )}

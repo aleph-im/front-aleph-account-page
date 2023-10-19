@@ -393,13 +393,15 @@ export function normalizeValue(
  * @param {number} cacheTime The time in ms to cache the data
  * @returns
  */
-export async function fetchAndCache(
+export async function fetchAndCache<T = unknown, P = unknown>(
   url: string,
   cacheKey: string,
   cacheTime: number,
-) {
+  parse?: (data: T) => P,
+): Promise<P> {
   const cached = localStorage.getItem(cacheKey)
   const now = Date.now()
+
   if (cached) {
     const { cachedAt, value } = JSON.parse(cached)
     if (now - cachedAt < cacheTime) {
@@ -410,17 +412,24 @@ export async function fetchAndCache(
 
   try {
     const data = await fetch(url)
-    const value = await data.json()
+    let value = await data.json()
+
+    if (parse) {
+      value = parse(value)
+    }
 
     const toCache = JSON.stringify({
       cachedAt: now,
       value,
     })
+
     localStorage.setItem(cacheKey, toCache)
+
     return value
   } catch (error) {
     console.error(`Failed to fetch ${url}`, error)
     if (cached) return JSON.parse(cached).value
+    throw error
   }
 }
 

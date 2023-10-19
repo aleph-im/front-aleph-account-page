@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Button, TableColumn } from '@aleph-front/aleph-core'
-import { CCN } from '@/domain/node'
+import { CCN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import LinkedCell from '@/components/common/LinkedCell'
@@ -12,10 +12,11 @@ import VersionCell from '../VersionCell/cmp'
 export type CoreChannelNodesTableProps = {
   nodes: CCN[]
   filteredNodes: CCN[]
+  lastVersion?: NodeLastVersions
 }
 
 export const CoreChannelNodesTable = memo(
-  ({ nodes, filteredNodes }: CoreChannelNodesTableProps) => {
+  ({ nodes, filteredNodes, lastVersion }: CoreChannelNodesTableProps) => {
     const columns = useMemo(() => {
       const cols = [
         {
@@ -39,7 +40,6 @@ export const CoreChannelNodesTable = memo(
               hash={row.hash}
               name={row.name}
               picture={row.picture}
-              locked={row.locked}
             ></NameCell>
           ),
         },
@@ -48,7 +48,11 @@ export const CoreChannelNodesTable = memo(
           sortable: true,
           sortBy: (row) => row.total_staked,
           render: (row) => (
-            <StakedCell staked={row.total_staked} status={row.status} />
+            <StakedCell
+              staked={row.total_staked}
+              status={row.status}
+              locked={row.locked}
+            />
           ),
         },
         {
@@ -60,7 +64,9 @@ export const CoreChannelNodesTable = memo(
           sortable: true,
           width: '20%',
           sortBy: (row) => row.metricsData?.version,
-          render: (row) => <VersionCell node={row} nodes={nodes} />,
+          render: (row) => (
+            <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
+          ),
         },
         {
           label: '',
@@ -84,7 +90,7 @@ export const CoreChannelNodesTable = memo(
         col.width = i === cols.length - 1 ? '100%' : `${80 / cols.length - 2}%`
         return col
       })
-    }, [nodes])
+    }, [lastVersion, nodes])
 
     return <NodesTable columns={columns} data={filteredNodes} />
   },

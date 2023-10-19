@@ -38,20 +38,23 @@ export const StakingPage = memo((props) => {
         <div tw="flex items-start gap-6 mt-8 mb-14">
           <div tw="flex-auto">
             <h2 className="tp-h7" tw="mb-0">
-              What is staking?
+              What is staking with Aleph.im?
             </h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Vestibulum aliquam lectus non eros malesuada egestas eu vitae
-              ipsum. Donec sed faucibus sapien. Interdum et malesuada fames ac
-              ante ipsum primis in faucibus. Aenean at scelerisque tortor. Sed
-              nec placerat lacus. Fusce facilisis arcu in vulputate eleifend.
-              Pellentesque at ante est. Vivamus cursus lorem odio. Aenean
-              porttitor rutrum erat sed suscipit. Duis viverra, ligula et
-              lacinia lobortis, sem ante luctus sapien, id gravida justo odio
-              vel sapien. Ut vel volutpat mauris, in congue lorem. Etiam mollis,
-              magna at finibus dictum, metus diam malesuada felis, at mattis
-              magna lectus eget enim.
+              Staking is the heartbeat of our dynamic peer-to-peer network,
+              driving security, decentralization, and rewards. Stakers, the
+              lifeblood of our ecosystem, with a minimum stake of 10,000 Aleph
+              tokens, form the network&apos;s foundation. Rewards are
+              distributed every 10 days and are auto-compounded, allowing your
+              stake to grow organically. The Annual Percentage Yield (APY)
+              depends on factors like linked Compute Resource Nodes (CRNs) and
+              node scoring, ensuring a fair and dynamic staking experience.
+              Aleph.im staking empowers you to control the controllers, shaping
+              decentralized connectivity while earning rewards for your
+              participation. Plus, it&apos;s non-custodial.{' '}
+              <strong className="text-main1" tw="font-bold">
+                Join us today!
+              </strong>
             </p>
           </div>
           {nodes && (

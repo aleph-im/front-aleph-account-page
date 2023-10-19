@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { TableColumn } from '@aleph-front/aleph-core'
-import { CRN } from '@/domain/node'
+import { CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import ScoreCell from '@/components/common/ScoreCell'
@@ -11,10 +11,11 @@ import CRNRewardsCell from '../CRNRewardsCell'
 export type ComputeResourceNodesTableProps = {
   nodes: CRN[]
   filteredNodes: CRN[]
+  lastVersion?: NodeLastVersions
 }
 
 export const ComputeResourceNodesTable = memo(
-  ({ nodes, filteredNodes }: ComputeResourceNodesTableProps) => {
+  ({ nodes, filteredNodes, lastVersion }: ComputeResourceNodesTableProps) => {
     const columns = useMemo(() => {
       const cols = [
         {
@@ -28,12 +29,17 @@ export const ComputeResourceNodesTable = memo(
           sortable: true,
           sortBy: (row) => row.parentData?.name,
           render: (row) => (
-            <NameCell
-              hash={row.parentData?.hash || '-'}
-              name={row.parentData?.name || '-'}
-              picture={row.parentData?.picture}
-              locked={row.parentData?.locked}
-            ></NameCell>
+            <>
+              {row.parentData ? (
+                <NameCell
+                  hash={row.parentData.hash}
+                  name={row.parentData.name}
+                  picture={row.parentData.picture}
+                ></NameCell>
+              ) : (
+                '-'
+              )}
+            </>
           ),
         },
         {
@@ -45,7 +51,6 @@ export const ComputeResourceNodesTable = memo(
               hash={row.hash}
               name={row.name}
               picture={row.picture}
-              locked={row.locked}
             ></NameCell>
           ),
         },
@@ -59,13 +64,16 @@ export const ComputeResourceNodesTable = memo(
         },
         {
           label: 'EST. REWARDS',
+          align: 'right',
           render: (row) => <CRNRewardsCell node={row} />,
         },
         {
           label: 'VERSION',
           sortable: true,
           sortBy: (row) => row.metricsData?.version,
-          render: (row) => <VersionCell node={row} nodes={nodes} />,
+          render: (row) => (
+            <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
+          ),
         },
       ] as TableColumn<CRN>[]
 
@@ -73,7 +81,7 @@ export const ComputeResourceNodesTable = memo(
         col.width = i === cols.length - 1 ? '100%' : `${80 / cols.length - 1}%`
         return col
       })
-    }, [nodes])
+    }, [lastVersion, nodes])
 
     return <NodesTable columns={columns} data={filteredNodes} />
   },

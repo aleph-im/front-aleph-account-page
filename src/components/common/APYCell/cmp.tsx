@@ -13,10 +13,14 @@ export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
   const currentAPY = rewardManager.currentAPY(nodes)
   const performance = nodeAPY / currentAPY
 
-  const isNotFullyLinked = useMemo(
-    () => node.crnsData.length < 3 || node.crnsData.find((f) => f.score < 0.2),
+  const isNotFullyLinked = useMemo(() => node.crnsData.length < 3, [node])
+
+  const badScoredLinkedNodes = useMemo(
+    () => node.crnsData.filter((f) => f.score < 0.2).length,
     [node],
   )
+
+  const showTooltip = isNotFullyLinked || !!badScoredLinkedNodes
 
   const data = (
     <div tw="flex gap-3 items-center">
@@ -27,22 +31,37 @@ export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
 
   return (
     <>
-      {isNotFullyLinked ? (
+      {showTooltip ? (
         <Tooltip
           my="top-center"
           at="bottom-center"
+          offset={{ x: 0, y: 10 }}
+          header="Staking performance"
           content={
-            <div className="fs-sm">
-              <div>
-                <div>{3 - node.crnsData.length} missing CRN</div>
-                <div className="fs-xs">
-                  Link 3 functioning CRN to that Node to maximise its rewards
+            <div className="fs-sm" tw="flex flex-col gap-4 mt-4">
+              {isNotFullyLinked && (
+                <div>
+                  <div tw="font-bold leading-4">
+                    {3 - node.crnsData.length} missing CRNs
+                  </div>
+                  <div className="fs-xs">
+                    Link 3 functioning CRN to that node to maximise its rewards
+                  </div>
                 </div>
-              </div>
-              <div>Performance: {Number(performance * 100).toFixed(2)}%</div>
+              )}
+              {!badScoredLinkedNodes && (
+                <div>
+                  <div tw="font-bold leading-4">
+                    {badScoredLinkedNodes} bad scored CRNs
+                  </div>
+                  <div className="fs-xs">
+                    Improve the score of your linked CRNs to maximise its
+                    rewards
+                  </div>
+                </div>
+              )}
             </div>
           }
-          header="Staking performance"
         >
           {data}
         </Tooltip>

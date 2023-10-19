@@ -1,27 +1,22 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { StyledVersionIcon } from './styles'
-import { AlephNode, NodeManager } from '@/domain/node'
-import { Tooltip } from '@aleph-front/aleph-core'
-import { useRequest } from '@/hooks/common/useRequest'
+import { AlephNode, NodeLastVersions, NodeManager } from '@/domain/node'
+import { Icon, Tooltip } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L200
 export const VersionCell = memo(
-  ({ node }: { node: AlephNode; nodes: AlephNode[] }) => {
+  ({
+    node,
+    lastVersion,
+  }: {
+    node: AlephNode
+    nodes: AlephNode[]
+    lastVersion?: NodeLastVersions
+  }) => {
     const nodeManager = useMemo(() => new NodeManager(), [])
 
-    const doRequest = useCallback(
-      () => nodeManager.getLatestVersion(node),
-      [node, nodeManager],
-    )
-
-    const { data: lastVersion } = useRequest({
-      doRequest,
-      triggerOnMount: true,
-      onSuccess: () => null,
-    })
-
     const versionStatus = useMemo(() => {
-      if (!lastVersion) return 0
+      if (!lastVersion) return -1
 
       return nodeManager.isNodeUptodate(node, lastVersion) &&
         !nodeManager.isNodeExperimental(node, lastVersion)
@@ -46,19 +41,30 @@ export const VersionCell = memo(
         : 'obsolete'
     }, [node, lastVersion, nodeManager])
 
+    const data = (
+      <div tw="flex gap-3 items-center whitespace-nowrap">
+        <StyledVersionIcon $status={versionStatus} />
+        {node.metricsData?.version || '-'}
+      </div>
+    )
+
     return (
       <>
-        <Tooltip
-          my="top-center"
-          at="bottom-center"
-          content={<div className="fs-sm">({versionLabel})</div>}
-          header="Staking performance"
-        >
-          <div tw="flex gap-3 items-center whitespace-nowrap">
-            <StyledVersionIcon $status={versionStatus} />
-            {node.metricsData?.version || '-'}
-          </div>
-        </Tooltip>
+        {versionStatus < 1 ? (
+          <Tooltip
+            my="top-center"
+            at="bottom-center"
+            header="Version"
+            offset={{ x: 0, y: 10 }}
+            content={versionLabel}
+          >
+            <div tw="flex items-center gap-2">
+              {data} <Icon name="info-circle" size="sm" />
+            </div>
+          </Tooltip>
+        ) : (
+          data
+        )}
       </>
     )
   },

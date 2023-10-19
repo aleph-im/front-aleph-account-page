@@ -1,5 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { CRN, NodeManager } from '@/domain/node'
+import { CRN, NodeLastVersions, NodeManager } from '@/domain/node'
 import { useRequest } from '@/hooks/common/useRequest'
 import { useDebounceState } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
@@ -15,6 +15,7 @@ export type UseComputeResourceNodesReturn = {
   nodes: CRN[]
   filteredNodes: CRN[]
   filter: string
+  lastVersion?: NodeLastVersions
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   setLastUpdate: (now: number) => void
 }
@@ -42,6 +43,20 @@ export function useComputeResourceNodes({
     triggerOnMount: true,
     triggerDeps: [debouncedLastUpdate],
     onSuccess: () => null,
+  })
+
+  // -----------------------------
+
+  const doVersionRequest = useCallback(
+    () => nodeManager.getLatestCRNVersion(),
+    [nodeManager],
+  )
+
+  const { data: lastVersion } = useRequest({
+    doRequest: doVersionRequest,
+    triggerOnMount: true,
+    onSuccess: () => null,
+    onError: () => null,
   })
 
   // -----------------------------
@@ -86,6 +101,7 @@ export function useComputeResourceNodes({
     nodes,
     filteredNodes,
     filter,
+    lastVersion,
     handleFilterChange,
     setLastUpdate,
   }
