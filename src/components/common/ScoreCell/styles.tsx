@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 import ColorDot from '../ColorDot'
 
-export const StyledScoreIcon = styled(ColorDot).attrs<{ $score: number }>(
+export type StyledScoreIconProps = { $score: number }
+
+export const StyledScoreIcon = styled(ColorDot).attrs<StyledScoreIconProps>(
   ({ $score, ...rest }) => {
     const $color = $score >= 0.8 ? 'main1' : $score >= 0.5 ? 'main0' : 'error'
 
@@ -10,4 +12,4 @@ export const StyledScoreIcon = styled(ColorDot).attrs<{ $score: number }>(
       ...rest,
     }
   },
-)``
+)<StyledScoreIconProps>``
