@@ -1,4 +1,8 @@
-import { defaultAccountChannel, scoringAddress } from '@/helpers/constants'
+import {
+  apiServer,
+  defaultAccountChannel,
+  scoringAddress,
+} from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
 import {
@@ -143,7 +147,7 @@ export class NodeManager {
 
   async getCCNNodes(): Promise<CCN[]> {
     const res = await fetch(
-      'https://api2.aleph.im/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100',
+      `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
     )
 
     const content = await res.json()
@@ -161,7 +165,7 @@ export class NodeManager {
 
   async getCRNNodes(): Promise<CRN[]> {
     const res = await fetch(
-      'https://api2.aleph.im/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100',
+      `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
     )
 
     const content = await res.json()

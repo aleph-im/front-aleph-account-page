@@ -5,6 +5,7 @@ import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
+import { useUserStakingRewards } from '@/hooks/common/useUserStakingRewards'
 import { TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
@@ -18,6 +19,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   selectedTab: string
   tabs: TabsProps['tabs']
   stakeableOnly: boolean
+  userRewards?: number
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
   handleUnStake: (nodeHash: string) => void
@@ -28,6 +30,10 @@ export function useStakingPage(
   props: UseStakingPageProps,
 ): UseStakingPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
+
+  const { rewards: userRewards } = useUserStakingRewards()
+
+  // -----------------------------
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
@@ -125,6 +131,7 @@ export function useStakingPage(
     selectedTab,
     tabs,
     stakeableOnly,
+    userRewards,
     ...rest,
     handleTabChange,
     handleStake,

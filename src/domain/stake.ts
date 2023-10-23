@@ -1,5 +1,9 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { apiServer, defaultAccountChannel } from '@/helpers/constants'
+import {
+  apiServer,
+  defaultAccountChannel,
+  rewardsAddress,
+} from '@/helpers/constants'
 import { AlephNode, CCN, CRN } from './node'
 import { normalizeValue } from '@/helpers/utils'
 import { post } from 'aleph-sdk-ts/dist/messages'
@@ -10,6 +14,26 @@ export class StakeManager {
     protected account?: Account,
     protected channel = defaultAccountChannel,
   ) {}
+
+  async getLastStakingRewards(): Promise<Record<string, number>> {
+    const res = await post.Get({
+      types: 'staking-rewards-distribution',
+      addresses: [rewardsAddress],
+      tags: ['distribution'],
+      pagination: 1,
+      page: 1,
+    })
+
+    return (res.posts[0]?.content as any)?.rewards
+  }
+
+  async getLastUserStakingRewards(): Promise<number> {
+    if (!this.account) return 0
+
+    const rewards = await this.getLastStakingRewards()
+
+    return rewards[this.account.address]
+  }
 
   // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L204
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L289

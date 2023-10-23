@@ -1,3 +1,4 @@
+import { apiServer } from './constants'
 import E_ from './errors'
 import { ProgramMessage, StoreMessage } from 'aleph-sdk-ts/dist/messages/types'
 
@@ -34,7 +35,7 @@ export const ellipseAddress = (address: string) => {
 export const getERC20Balance = async (address: string) => {
   try {
     const query = await fetch(
-      `https://api2.aleph.im/api/v0/addresses/${address}/balance`,
+      `${apiServer}/api/v0/addresses/${address}/balance`,
     )
 
     // @note: 404 means the balance is 0, don't throw error in that case
