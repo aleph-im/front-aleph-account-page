@@ -73,14 +73,12 @@ export const StakingPage = memo((props) => {
               selected={selectedTab}
               onTabChange={handleTabChange}
             />
-            {!!account && (
-              <Checkbox
-                label="Ready to stake"
-                checked={stakeableOnly}
-                onChange={handleChangeStakeableOnly}
-                disabled={selectedTab !== 'nodes'}
-              />
-            )}
+            <Checkbox
+              label="Ready to stake"
+              checked={stakeableOnly}
+              onChange={handleChangeStakeableOnly}
+              disabled={!account || selectedTab !== 'nodes'}
+            />
           </div>
           <TextInput
             value={filter}
