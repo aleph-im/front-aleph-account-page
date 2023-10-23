@@ -49,7 +49,12 @@ export const StakeButton = memo(
 
     return (
       <>
-        <Tooltip my="center-right" at="center-left" content={tooltipContent}>
+        <Tooltip
+          my="center-right"
+          at="center-left"
+          header=""
+          content={tooltipContent}
+        >
           {!isStakeNode ? (
             <Button
               kind="neon"

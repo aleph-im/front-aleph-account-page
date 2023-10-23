@@ -33,8 +33,8 @@ export const StakedCell = memo(
               <Tooltip
                 my="top-center"
                 at="bottom-center"
-                content="No staker can join this node."
                 header="Staking locked"
+                content="No staker can join this node."
               >
                 <Icon name="lock" size="xs" />
               </Tooltip>
