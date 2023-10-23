@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useComputeResourceNodesPage } from '@/hooks/pages/earn/useComputeResourceNodesPage'
 import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
@@ -66,6 +66,7 @@ export const ComputeResourceNodesPage = memo((props) => {
             name="filter-ccn"
             placeholder="Search me"
             onChange={handleFilterChange}
+            icon={<Icon name="search" />}
           />
         </div>
         {selectedTab === 'user' ? (

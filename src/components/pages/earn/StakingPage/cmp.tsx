@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Checkbox, Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
@@ -77,6 +77,7 @@ export const StakingPage = memo((props) => {
               label="Ready to stake"
               checked={stakeableOnly}
               onChange={handleChangeStakeableOnly}
+              size="xs"
               disabled={!account || selectedTab !== 'nodes'}
             />
           </div>
@@ -85,6 +86,7 @@ export const StakingPage = memo((props) => {
             name="filter-ccn"
             placeholder="Search me"
             onChange={handleFilterChange}
+            icon={<Icon name="search" />}
           />
         </div>
         {selectedTab === 'stake' ? (

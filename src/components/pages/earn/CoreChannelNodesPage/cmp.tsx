@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useCoreChannelNodesPage } from '@/hooks/pages/earn/useCoreChannelNodesPage'
 import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable'
 import StakeChart from '@/components/common/StakeChart'
@@ -68,6 +68,7 @@ export const CoreChannelNodesPage = memo((props) => {
             name="filter-ccn"
             placeholder="Search me"
             onChange={handleFilterChange}
+            icon={<Icon name="search" />}
           />
         </div>
         {selectedTab === 'user' ? (
