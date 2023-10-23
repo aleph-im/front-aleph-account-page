@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react'
-import { Button, Tooltip } from '@aleph-front/aleph-core'
+import { Button } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { CCN, NodeManager } from '@/domain/node'
 
@@ -30,13 +30,13 @@ export const StakeButton = memo(
       return !!node.stakers[account.address]
     }, [account, node])
 
-    const [isDisabled, tooltipContent] = useMemo(() => {
-      const [canStake, message] = nodeManager.isStakeable(
+    const isDisabled = useMemo(() => {
+      const [canStake] = nodeManager.isStakeable(
         node,
         accountBalance,
         stakeNodes,
       )
-      return [!canStake, message]
+      return !canStake
     }, [nodeManager, node, accountBalance, stakeNodes])
 
     const handleOnClick = useCallback(() => {
@@ -49,35 +49,28 @@ export const StakeButton = memo(
 
     return (
       <>
-        <Tooltip
-          my="center-right"
-          at="center-left"
-          header=""
-          content={tooltipContent}
-        >
-          {!isStakeNode ? (
-            <Button
-              kind="neon"
-              size="regular"
-              variant="secondary"
-              color="main0"
-              onClick={handleOnClick}
-              disabled={isDisabled}
-            >
-              Stake
-            </Button>
-          ) : (
-            <Button
-              kind="neon"
-              size="regular"
-              variant="secondary"
-              color="main2"
-              onClick={handleOnClick}
-            >
-              UnStake
-            </Button>
-          )}
-        </Tooltip>
+        {!isStakeNode ? (
+          <Button
+            kind="neon"
+            size="regular"
+            variant="secondary"
+            color="main0"
+            onClick={handleOnClick}
+            disabled={isDisabled}
+          >
+            Stake
+          </Button>
+        ) : (
+          <Button
+            kind="neon"
+            size="regular"
+            variant="secondary"
+            color="main2"
+            onClick={handleOnClick}
+          >
+            UnStake
+          </Button>
+        )}
       </>
     )
   },

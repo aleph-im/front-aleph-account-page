@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { StyledProgressBar } from './styles'
-import { Icon, Tooltip } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L137
 export const StakedCell = memo(
@@ -29,16 +29,7 @@ export const StakedCell = memo(
           </div>
           <div tw="flex items-center gap-1 text-[6px]">
             {status.toUpperCase()}
-            {locked && (
-              <Tooltip
-                my="top-center"
-                at="bottom-center"
-                header="Staking locked"
-                content="No staker can join this node."
-              >
-                <Icon name="lock" size="xs" />
-              </Tooltip>
-            )}
+            {locked && <Icon name="lock" size="xs" />}
           </div>
         </div>
         <div tw="flex items-center gap-1">
