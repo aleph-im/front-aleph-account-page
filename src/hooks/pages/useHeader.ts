@@ -5,7 +5,12 @@ import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
 import { useConnect } from '../common/useConnect'
 import { useSessionStorage } from 'usehooks-ts'
-import { useClickOutside } from '@aleph-front/aleph-core'
+import {
+  useBounds,
+  useClickOutside,
+  useWindowScroll,
+  useWindowSize,
+} from '@aleph-front/aleph-core'
 
 export type UseHeaderReturn = {
   theme: DefaultTheme
@@ -13,7 +18,9 @@ export type UseHeaderReturn = {
   displayWalletPicker: boolean
   accountBalance?: number
   hasBreadcrumb: boolean
-  divRef: RefObject<HTMLDivElement>
+  walletPickerRef: RefObject<HTMLDivElement>
+  walletPickerTriggerRef: RefObject<HTMLButtonElement>
+  walletPosition: { x: number; y: number }
   handleConnect: () => void
   handleDisplayWalletPicker: () => void
   provider: () => void
@@ -69,11 +76,12 @@ export function useHeader(): UseHeaderReturn {
 
   // --------------------
 
-  const divRef = useRef<HTMLDivElement>(null)
+  const walletPickerRef = useRef<HTMLDivElement>(null)
+  const walletPickerTriggerRef = useRef<HTMLButtonElement>(null)
 
   useClickOutside(() => {
     if (displayWalletPicker) setDisplayWalletPicker(false)
-  }, [divRef])
+  }, [walletPickerRef])
 
   const handleDisplayWalletPicker = () => {
     setDisplayWalletPicker(!displayWalletPicker)
@@ -100,13 +108,38 @@ export function useHeader(): UseHeaderReturn {
 
   const hasBreadcrumb = router.pathname !== '/dashboard/manage'
 
+  const windowSize = useWindowSize(0)
+  const windowScroll = useWindowScroll(0)
+
+  const [triggerBounds] = useBounds(undefined, walletPickerTriggerRef, [
+    account,
+    windowSize,
+    windowScroll,
+  ])
+
+  const [walletBounds] = useBounds(undefined, walletPickerRef, [
+    account,
+    windowSize,
+    windowScroll,
+  ])
+
+  const walletPosition: { x: number; y: number } = {
+    x:
+      (triggerBounds?.left || 0) +
+      (triggerBounds?.width || 0) -
+      (walletBounds?.width || 0),
+    y: triggerBounds?.top || 0,
+  }
+
   return {
     theme,
     account,
     displayWalletPicker,
     accountBalance,
     hasBreadcrumb,
-    divRef,
+    walletPickerRef,
+    walletPickerTriggerRef,
+    walletPosition,
     handleConnect,
     handleDisplayWalletPicker,
     provider,

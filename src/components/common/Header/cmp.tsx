@@ -5,6 +5,7 @@ import { useHeader } from '@/hooks/pages/useHeader'
 import { breadcrumbNames } from '@/helpers/constants'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb/cmp'
 import { memo } from 'react'
+import { createPortal } from 'react-dom'
 
 export const Header = memo(() => {
   const {
@@ -13,8 +14,10 @@ export const Header = memo(() => {
     displayWalletPicker,
     accountBalance,
     hasBreadcrumb,
+    walletPickerRef,
+    walletPickerTriggerRef,
+    walletPosition,
     provider,
-    divRef,
     handleConnect,
     handleDisplayWalletPicker,
   } = useHeader()
@@ -29,6 +32,7 @@ export const Header = memo(() => {
         <>
           {account ? (
             <Button
+              ref={walletPickerTriggerRef}
               as="button"
               variant="secondary"
               color="main1"
@@ -46,6 +50,7 @@ export const Header = memo(() => {
             </Button>
           ) : (
             <Button
+              ref={walletPickerTriggerRef}
               as="button"
               variant="tertiary"
               color="main0"
@@ -62,9 +67,10 @@ export const Header = memo(() => {
               />
             </Button>
           )}
-          <div tw="absolute top-full leading-4 right-0 mt-10" ref={divRef}>
-            {displayWalletPicker && (
+          {displayWalletPicker &&
+            createPortal(
               <WalletPicker
+                ref={walletPickerRef}
                 networks={[
                   {
                     icon: 'ethereum',
@@ -84,10 +90,13 @@ export const Header = memo(() => {
                 address={account?.address}
                 addressHref={`https://etherscan.io/address/${account?.address}`}
                 balance={accountBalance}
-                size="regular"
-              />
+                tw="fixed z-20 mt-12 top-0 left-0"
+                css={{
+                  transform: `translate3d(${walletPosition.x}px, ${walletPosition.y}px, 0)`,
+                }}
+              />,
+              document.body,
             )}
-          </div>
         </>
       </div>
     </StyledHeader>
