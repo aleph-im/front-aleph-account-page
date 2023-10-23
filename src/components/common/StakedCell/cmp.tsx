@@ -27,7 +27,7 @@ export const StakedCell = memo(
           <div>
             {amount}k <span tw="opacity-20">of 500k</span>
           </div>
-          <div tw="flex items-center gap-1 text-[6px]">
+          <div tw="flex items-center gap-1 text-[0.375rem]">
             {status.toUpperCase()}
             {locked && <Icon name="lock" size="xs" />}
           </div>
