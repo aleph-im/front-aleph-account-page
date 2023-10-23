@@ -4,6 +4,7 @@ import { Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useComputeResourceNodesPage } from '@/hooks/pages/earn/useComputeResourceNodesPage'
 import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
+import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 
 export const ComputeResourceNodesPage = memo((props) => {
   const {
@@ -27,7 +28,7 @@ export const ComputeResourceNodesPage = memo((props) => {
       </Head>
       <section>
         <h1 className="tp-h5" tw="mb-8">
-          Core nodes
+          Compute nodes
         </h1>
       </section>
       <section>
@@ -35,14 +36,20 @@ export const ComputeResourceNodesPage = memo((props) => {
           <ActiveNodeChart nodes={nodes} title="COMPUTE RESOURCE NODES" />
           <div>
             <h1 className="tp-h7" tw="mb-0">
-              What is a core node?
+              What is a compute node?
             </h1>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Vestibulum aliquam lectus non eros malesuada egestas eu vitae
-              ipsum. Donec sed faucibus sapien. Interdum et malesuada fames ac
-              ante ipsum primis in faucibus. Aenean at scelerisque tortor.
+              Anyone can set up a Compute Resource Node (CRN) to contribute to
+              our decentralized network. These nodes play a crucial role in our
+              ecosystem, enabling various services. While no commitment is
+              needed to establish a CRN, to unlock a minimum wage for your CRN,
+              it needs the endorsement of a Core Channel Node (CCN). A CCN
+              operator can vouch for up to three CRNs, ensuring fair and
+              balanced participation.
             </p>
+            <ExternalLinkButton href="https://docs.aleph.im/nodes/compute/">
+              Node Setup Guide
+            </ExternalLinkButton>
           </div>
         </div>
       </section>
