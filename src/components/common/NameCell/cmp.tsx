@@ -15,7 +15,7 @@ export const NameCell = memo(
     picture?: string
   }) => {
     return (
-      <div tw="flex gap-3 items-center">
+      <div tw="inline-flex gap-3 items-center">
         {picture ? (
           <Image
             src={`${apiServer}/api/v0/storage/raw/${picture}`}

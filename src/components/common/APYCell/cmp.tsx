@@ -13,7 +13,7 @@ export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
   const performance = nodeAPY / currentAPY
 
   return (
-    <div tw="flex gap-3 items-center">
+    <div tw="inline-flex gap-3 items-center">
       <StyledAPYIcon $performance={performance} />
       {Number(nodeAPY * 100).toFixed(2)}%
     </div>

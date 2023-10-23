@@ -42,7 +42,7 @@ export const VersionCell = memo(
     }, [node, lastVersion, nodeManager])
 
     const data = (
-      <div tw="flex gap-3 items-center whitespace-nowrap">
+      <div tw="inline-flex gap-3 items-center whitespace-nowrap">
         <StyledVersionIcon $status={versionStatus} />
         {node.metricsData?.version || '-'}
       </div>
@@ -58,7 +58,7 @@ export const VersionCell = memo(
             offset={{ x: 0, y: 10 }}
             content={versionLabel}
           >
-            <div tw="flex items-center gap-2">
+            <div tw="inline-flex items-center gap-2">
               {data} <Icon name="info-circle" size="sm" />
             </div>
           </Tooltip>

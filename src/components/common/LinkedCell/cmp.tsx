@@ -6,7 +6,7 @@ import { CRN } from '@/domain/node'
 export const LinkedCell = memo(
   ({ nodes, max = 3 }: { nodes: CRN[]; max?: number }) => {
     return (
-      <div tw="flex items-center gap-3">
+      <div tw="inline-flex items-center gap-3">
         <div tw="flex items-stretch gap-0.5">
           {Array.from({ length: max }).map((_, i) => (
             <StyledDotIcon key={i} $score={nodes[i]?.score} />

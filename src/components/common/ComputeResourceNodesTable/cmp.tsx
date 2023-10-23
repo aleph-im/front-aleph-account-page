@@ -17,7 +17,7 @@ export type ComputeResourceNodesTableProps = {
 export const ComputeResourceNodesTable = memo(
   ({ nodes, filteredNodes, lastVersion }: ComputeResourceNodesTableProps) => {
     const columns = useMemo(() => {
-      const cols = [
+      return [
         {
           label: 'SCORE',
           sortable: true,
@@ -70,17 +70,14 @@ export const ComputeResourceNodesTable = memo(
         {
           label: 'VERSION',
           sortable: true,
+          align: 'right',
+          width: '100%',
           sortBy: (row) => row.metricsData?.version,
           render: (row) => (
             <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
           ),
         },
       ] as TableColumn<CRN>[]
-
-      return cols.map((col, i) => {
-        col.width = i === cols.length - 1 ? '100%' : `${80 / cols.length - 1}%`
-        return col
-      })
     }, [lastVersion, nodes])
 
     return <NodesTable columns={columns} data={filteredNodes} />

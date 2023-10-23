@@ -13,7 +13,7 @@ export const ScoreCell = memo(
     const num = Number(score * 100).toFixed(2)
 
     return (
-      <div tw="flex gap-3 items-center">
+      <div tw="inline-flex gap-3 items-center">
         <StyledScoreIcon $score={score} />
         {showPercentage && <>{num}%</>}
       </div>

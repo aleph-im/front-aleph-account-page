@@ -7,7 +7,7 @@ export const DecentralizedCell = memo(
     const step = (i: number) => (i + 1) * 0.3
 
     return (
-      <div tw="flex items-center gap-3">
+      <div tw="inline-flex items-center gap-3">
         <div tw="flex items-stretch gap-0.5">
           {Array.from({ length: 3 }).map((_, i) => (
             <StyledDotIcon key={i} $active={decentralization >= step(i)} />

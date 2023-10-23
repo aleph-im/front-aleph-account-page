@@ -16,7 +16,7 @@ export const CRNRewardsCell = memo(({ node }: { node: CRN }) => {
       {isNotFullyLinked ? (
         <>-</>
       ) : (
-        <div tw="flex gap-2 items-center">
+        <div tw="inline-flex gap-2 items-center">
           <div tw="whitespace-nowrap">~ {rewards.toFixed(2)}</div>
           <Logo text="" color="main0" />
         </div>

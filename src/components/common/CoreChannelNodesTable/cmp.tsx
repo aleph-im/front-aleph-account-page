@@ -18,7 +18,7 @@ export type CoreChannelNodesTableProps = {
 export const CoreChannelNodesTable = memo(
   ({ nodes, filteredNodes, lastVersion }: CoreChannelNodesTableProps) => {
     const columns = useMemo(() => {
-      const cols = [
+      return [
         {
           label: 'SCORE',
           sortable: true,
@@ -46,6 +46,7 @@ export const CoreChannelNodesTable = memo(
         {
           label: 'STAKED',
           sortable: true,
+          width: '100%',
           sortBy: (row) => row.total_staked,
           render: (row) => (
             <StakedCell
@@ -62,7 +63,6 @@ export const CoreChannelNodesTable = memo(
         {
           label: 'VERSION',
           sortable: true,
-          width: '20%',
           sortBy: (row) => row.metricsData?.version,
           render: (row) => (
             <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
@@ -72,7 +72,7 @@ export const CoreChannelNodesTable = memo(
           label: '',
           align: 'right',
           render: () => (
-            <div tw="flex gap-3 justify-end">
+            <div tw="inline-flex gap-3 justify-end">
               <Button
                 kind="neon"
                 size="regular"
@@ -85,11 +85,6 @@ export const CoreChannelNodesTable = memo(
           ),
         },
       ] as TableColumn<CCN>[]
-
-      return cols.map((col, i) => {
-        col.width = i === cols.length - 1 ? '100%' : `${80 / cols.length - 2}%`
-        return col
-      })
     }, [lastVersion, nodes])
 
     return <NodesTable columns={columns} data={filteredNodes} />
