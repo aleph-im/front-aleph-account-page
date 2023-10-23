@@ -19,7 +19,7 @@ export const CRNRewardsCell = memo(({ node }: { node: CRN }) => {
           at="bottom-center"
           header="CRN rewards"
           offset={{ x: 0, y: 10 }}
-          content={<div className="fs-sm">Unlinked CRN do not get rewards</div>}
+          content={<div className="fs-16">Unlinked CRN do not get rewards</div>}
         >
           -
         </Tooltip>

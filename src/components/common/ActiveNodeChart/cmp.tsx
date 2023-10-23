@@ -82,7 +82,7 @@ export const ActiveNodeChart = memo(
                   className="tp-body2"
                 >
                   <div>{entry.value}</div>
-                  <div className="fs-xs">{entry.label}</div>
+                  <div className="fs-10">{entry.label}</div>
                 </div>
               </div>
             ))}

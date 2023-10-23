@@ -32,7 +32,7 @@ export const LinkedCell = memo(
             ))}
           </div>
         </Tooltip>
-        <div tw="whitespace-nowrap leading-4" className="fs-xs">
+        <div tw="whitespace-nowrap leading-4" className="fs-10">
           {nodes.length} <span tw="opacity-20">of {max}</span>
         </div>
       </div>

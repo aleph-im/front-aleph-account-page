@@ -38,13 +38,13 @@ export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
           offset={{ x: 0, y: 10 }}
           header="Staking performance"
           content={
-            <div className="fs-sm" tw="flex flex-col gap-4 mt-4">
+            <div className="fs-16" tw="flex flex-col gap-4 mt-4">
               {isNotFullyLinked && (
                 <div>
                   <div tw="font-bold leading-4">
                     {3 - node.crnsData.length} missing CRNs
                   </div>
-                  <div className="fs-xs">
+                  <div className="fs-10">
                     Link 3 functioning CRN to that node to maximise its rewards
                   </div>
                 </div>
@@ -54,7 +54,7 @@ export const APYCell = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
                   <div tw="font-bold leading-4">
                     {badScoredLinkedNodes} bad scored CRNs
                   </div>
-                  <div className="fs-xs">
+                  <div className="fs-10">
                     Improve the score of your linked CRNs to maximise its
                     rewards
                   </div>
