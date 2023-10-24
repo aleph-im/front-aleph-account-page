@@ -121,6 +121,7 @@ export function useHeader(): UseHeaderReturn {
     account,
     windowSize,
     windowScroll,
+    displayWalletPicker,
   ])
 
   const walletPosition: { x: number; y: number } = {
