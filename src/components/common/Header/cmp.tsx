@@ -1,5 +1,5 @@
 import { Button, Icon, WalletPicker } from '@aleph-front/aleph-core'
-import { StyledHeader, StyledButton } from './styles'
+import { StyledHeader, StyledButton, StyledWalletPicker } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import { useHeader } from '@/hooks/pages/useHeader'
 import { breadcrumbNames } from '@/helpers/constants'
@@ -11,9 +11,10 @@ export const Header = memo(() => {
   const {
     theme,
     account,
-    displayWalletPicker,
     accountBalance,
     hasBreadcrumb,
+    displayWalletPicker,
+    walletPickerOpen,
     walletPickerRef,
     walletPickerTriggerRef,
     walletPosition,
@@ -69,7 +70,7 @@ export const Header = memo(() => {
           )}
           {displayWalletPicker &&
             createPortal(
-              <WalletPicker
+              <StyledWalletPicker
                 ref={walletPickerRef}
                 networks={[
                   {
@@ -90,10 +91,8 @@ export const Header = memo(() => {
                 address={account?.address}
                 addressHref={`https://etherscan.io/address/${account?.address}`}
                 balance={accountBalance}
-                tw="fixed z-20 mt-12 top-0 left-0"
-                css={{
-                  transform: `translate3d(${walletPosition.x}px, ${walletPosition.y}px, 0)`,
-                }}
+                $isOpen={walletPickerOpen}
+                $position={walletPosition}
               />,
               document.body,
             )}

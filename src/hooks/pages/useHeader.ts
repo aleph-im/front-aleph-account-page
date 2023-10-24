@@ -6,8 +6,9 @@ import { useAppState } from '@/contexts/appState'
 import { useConnect } from '../common/useConnect'
 import { useSessionStorage } from 'usehooks-ts'
 import {
-  useBounds,
   useClickOutside,
+  useFloatPosition,
+  useTransitionedEnterExit,
   useWindowScroll,
   useWindowSize,
 } from '@aleph-front/aleph-core'
@@ -15,9 +16,10 @@ import {
 export type UseHeaderReturn = {
   theme: DefaultTheme
   account: Account | undefined
-  displayWalletPicker: boolean
   accountBalance?: number
   hasBreadcrumb: boolean
+  displayWalletPicker: boolean
+  walletPickerOpen: boolean
   walletPickerRef: RefObject<HTMLDivElement>
   walletPickerTriggerRef: RefObject<HTMLButtonElement>
   walletPosition: { x: number; y: number }
@@ -81,7 +83,7 @@ export function useHeader(): UseHeaderReturn {
 
   useClickOutside(() => {
     if (displayWalletPicker) setDisplayWalletPicker(false)
-  }, [walletPickerRef])
+  }, [walletPickerRef, walletPickerTriggerRef])
 
   const handleDisplayWalletPicker = () => {
     setDisplayWalletPicker(!displayWalletPicker)
@@ -111,36 +113,31 @@ export function useHeader(): UseHeaderReturn {
   const windowSize = useWindowSize(0)
   const windowScroll = useWindowScroll(0)
 
-  const [triggerBounds] = useBounds(undefined, walletPickerTriggerRef, [
-    account,
-    windowSize,
-    windowScroll,
-  ])
+  const { shouldMount, state } = useTransitionedEnterExit({
+    onOff: displayWalletPicker,
+    ref: walletPickerRef,
+  })
 
-  const [walletBounds] = useBounds(undefined, walletPickerRef, [
-    account,
-    windowSize,
-    windowScroll,
-    displayWalletPicker,
-  ])
+  const { myRef, atRef, position } = useFloatPosition({
+    my: 'top-right',
+    at: 'bottom-right',
+    myRef: walletPickerRef,
+    atRef: walletPickerTriggerRef,
+    deps: [account, windowSize, windowScroll, state],
+  })
 
-  const walletPosition: { x: number; y: number } = {
-    x:
-      (triggerBounds?.left || 0) +
-      (triggerBounds?.width || 0) -
-      (walletBounds?.width || 0),
-    y: triggerBounds?.top || 0,
-  }
+  const walletPickerOpen = state === 'enter'
 
   return {
     theme,
     account,
-    displayWalletPicker,
     accountBalance,
     hasBreadcrumb,
-    walletPickerRef,
-    walletPickerTriggerRef,
-    walletPosition,
+    walletPickerOpen,
+    displayWalletPicker: shouldMount,
+    walletPickerRef: myRef,
+    walletPickerTriggerRef: atRef,
+    walletPosition: position,
     handleConnect,
     handleDisplayWalletPicker,
     provider,

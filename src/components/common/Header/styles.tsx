@@ -1,5 +1,10 @@
-import { Button, Navbar } from '@aleph-front/aleph-core'
-import styled from 'styled-components'
+import {
+  Button,
+  FloatPosition,
+  Navbar,
+  WalletPicker,
+} from '@aleph-front/aleph-core'
+import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
 export const StyledHeader = styled.header`
@@ -26,4 +31,19 @@ export const StyledButton = styled(Button).attrs((props) => {
   &:last-child {
     margin-bottom: 0;
   }
+`
+
+export const StyledWalletPicker = styled(WalletPicker)<{
+  $position: FloatPosition
+  $isOpen: boolean
+}>`
+  ${({ $position: { x, y }, $isOpen }) => {
+    return css`
+      ${tw`fixed z-20 mt-4 top-0 left-0`}
+      transform: ${`translate3d(${x}px, ${y}px, 0)`};
+      opacity: ${$isOpen ? 1 : 0};
+      will-change: opacity transform;
+      transition: opacity ease-in-out 0.25s 0s;
+    `
+  }}
 `
