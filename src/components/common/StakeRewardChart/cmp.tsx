@@ -8,16 +8,15 @@ import { Logo, TextGradient } from '@aleph-front/aleph-core'
 import ColorDot from '../ColorDot'
 import { SVGGradients } from '../charts'
 
+export type StakeRewardChartProps = {
+  nodes: CCN[]
+  stake: number
+  rewards?: number
+  disabled?: boolean
+}
+
 export const StakeRewardChart = memo(
-  ({
-    nodes,
-    stake,
-    rewards,
-  }: {
-    nodes: CCN[]
-    stake: number
-    rewards?: number
-  }) => {
+  ({ nodes, stake, rewards, disabled }: StakeRewardChartProps) => {
     const stakeManager = useMemo(() => new StakeManager(), [])
 
     const theme = useTheme()
@@ -50,14 +49,19 @@ export const StakeRewardChart = memo(
           label: 'Pending rewards',
           value: pendingRewards,
           percentage: pendingRewards / totalRewards,
-          color: `${theme.color.base0}20`,
+          color: 'transparent',
         },
       ]
-    }, [totalRewards, rewards, theme])
+    }, [totalRewards, rewards])
 
     return (
-      <Card1 tw="w-auto min-w-[154px]">
-        <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
+      <Card1 tw="w-auto min-w-[154px]" disabled={disabled}>
+        <TextGradient
+          forwardedAs="h3"
+          type="info"
+          color={disabled ? 'base0' : 'main0'}
+          tw="mb-6"
+        >
           STAKING REWARDS
         </TextGradient>
 
@@ -66,6 +70,15 @@ export const StakeRewardChart = memo(
             <defs>
               <SVGGradients data={data} />
             </defs>
+            <Pie
+              data={[{ v: 1 }]}
+              dataKey="v"
+              stroke="transparent"
+              innerRadius="72%"
+              outerRadius="100%"
+              isAnimationActive={true}
+              fill={`${theme.color.base0}20`}
+            />
             <Pie
               data={data}
               dataKey="percentage"
@@ -106,9 +119,13 @@ export const StakeRewardChart = memo(
                 </div>
               </div>
             </div>
-            <div className="tp-body1 fs-10" tw="opacity-60 text-center">
-              Next payout in {pendingDays} days.
-            </div>
+            {pendingDays ? (
+              <div className="tp-body1 fs-10" tw="opacity-60 text-center">
+                Next payout in {pendingDays} days.
+              </div>
+            ) : (
+              <div>&nbsp;</div>
+            )}
           </div>
         </div>
       </Card1>
