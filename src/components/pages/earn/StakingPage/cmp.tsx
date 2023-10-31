@@ -5,6 +5,7 @@ import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
 import StakeRewardChart from '@/components/common/StakeRewardChart'
+import ToggleDashboard from '@/components/common/ToggleDashboard'
 
 export const StakingPage = memo((props) => {
   const {
@@ -38,40 +39,44 @@ export const StakingPage = memo((props) => {
         <h1 className="tp-h5" tw="mb-8">
           Staking
         </h1>
-        <div tw="flex items-start gap-6 mt-8 mb-14">
-          <div tw="flex-auto">
-            <h2 className="tp-h7" tw="mb-0">
-              What is staking with Aleph.im?
-            </h2>
-            <p>
-              Staking is the heartbeat of our dynamic peer-to-peer network,
-              driving security, decentralization, and rewards. Stakers, the
-              lifeblood of our ecosystem, with a minimum stake of 10,000 Aleph
-              tokens, form the network&apos;s foundation. Rewards are
-              distributed every 10 days and are auto-compounded, allowing your
-              stake to grow organically. The Annual Percentage Yield (APY)
-              depends on factors like linked Compute Resource Nodes (CRNs) and
-              node scoring, ensuring a fair and dynamic staking experience.
-              Aleph.im staking empowers you to control the controllers, shaping
-              decentralized connectivity while earning rewards for your
-              participation. Plus, it&apos;s non-custodial.{' '}
-              <strong className="text-main1" tw="font-bold">
-                Join us today!
-              </strong>
-            </p>
-          </div>
-          {nodes && (
-            <div tw="flex-1">
-              <RewardCalculator nodes={nodes} />
+      </section>
+      <section>
+        <ToggleDashboard>
+          <div tw="flex items-stretch gap-6">
+            <div tw="flex-auto">
+              <h2 className="tp-h7" tw="mb-0">
+                What is staking with Aleph.im?
+              </h2>
+              <p>
+                Staking is the heartbeat of our dynamic peer-to-peer network,
+                driving security, decentralization, and rewards. Stakers, the
+                lifeblood of our ecosystem, with a minimum stake of 10,000 Aleph
+                tokens, form the network&apos;s foundation. Rewards are
+                distributed every 10 days and are auto-compounded, allowing your
+                stake to grow organically. The Annual Percentage Yield (APY)
+                depends on factors like linked Compute Resource Nodes (CRNs) and
+                node scoring, ensuring a fair and dynamic staking experience.
+                Aleph.im staking empowers you to control the controllers,
+                shaping decentralized connectivity while earning rewards for
+                your participation. Plus, it&apos;s non-custodial.{' '}
+                <strong className="text-main1" tw="font-bold">
+                  Join us today!
+                </strong>
+              </p>
             </div>
-          )}
-          <StakeRewardChart
-            rewards={userRewards}
-            stake={userStake}
-            nodes={nodes}
-            disabled={!account}
-          />
-        </div>
+            {nodes && (
+              <div tw="flex-1">
+                <RewardCalculator nodes={nodes} />
+              </div>
+            )}
+            <StakeRewardChart
+              rewards={userRewards}
+              stake={userStake}
+              nodes={nodes}
+              disabled={!account}
+            />
+          </div>
+        </ToggleDashboard>
       </section>
       <section tw="mt-14">
         <div tw="flex items-end justify-between mb-8">
