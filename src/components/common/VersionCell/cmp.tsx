@@ -54,7 +54,6 @@ export const VersionCell = memo(
           <Tooltip
             my="top-center"
             at="bottom-center"
-            header="Version"
             offset={{ x: 0, y: 10 }}
             content={versionLabel}
           >
