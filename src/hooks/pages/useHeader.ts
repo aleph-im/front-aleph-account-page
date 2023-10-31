@@ -123,7 +123,7 @@ export function useHeader(): UseHeaderReturn {
     at: 'bottom-right',
     myRef: walletPickerRef,
     atRef: walletPickerTriggerRef,
-    deps: [account, windowSize, windowScroll, state],
+    deps: [account, windowSize, windowScroll, shouldMount],
   })
 
   const walletPickerOpen = state === 'enter'
