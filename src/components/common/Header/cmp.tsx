@@ -1,4 +1,4 @@
-import { Button, Icon, WalletPicker } from '@aleph-front/aleph-core'
+import { Button, Icon } from '@aleph-front/aleph-core'
 import { StyledHeader, StyledButton, StyledWalletPicker } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import { useHeader } from '@/hooks/pages/useHeader'
@@ -79,7 +79,7 @@ export const Header = memo(() => {
                     wallets: [
                       {
                         color: 'orange',
-                        icon: 'circle',
+                        icon: 'metamask',
                         name: 'Metamask',
                         provider,
                       },
