@@ -4,6 +4,7 @@ import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
+import StakeRewardChart from '@/components/common/StakeRewardChart'
 
 export const StakingPage = memo((props) => {
   const {
@@ -17,6 +18,8 @@ export const StakingPage = memo((props) => {
     selectedTab,
     filter,
     stakeableOnly,
+    userStake,
+    userRewards,
     handleTabChange,
     handleFilterChange,
     handleStake,
@@ -62,6 +65,11 @@ export const StakingPage = memo((props) => {
               <RewardCalculator nodes={nodes} />
             </div>
           )}
+          <StakeRewardChart
+            rewards={userRewards}
+            stake={userStake}
+            nodes={nodes}
+          />
         </div>
       </section>
       <section tw="mt-14">

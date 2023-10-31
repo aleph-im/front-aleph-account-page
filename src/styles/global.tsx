@@ -31,6 +31,6 @@ export const GlobalStylesOverride = createGlobalStyle`
   }
 
   html {
-    font-size: 16px !important; 
+    // font-size: 16px !important; 
   }
 `

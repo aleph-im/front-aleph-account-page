@@ -79,10 +79,12 @@ export const ActiveNodeChart = memo(
                 />
                 <div
                   tw="flex flex-col justify-between leading-4! gap-1 not-italic whitespace-nowrap"
-                  className="tp-body2"
+                  className="tp-body3"
                 >
                   <div>{entry.value}</div>
-                  <div className="fs-10">{entry.label}</div>
+                  <div className="fs-10" tw="opacity-60">
+                    {entry.label}
+                  </div>
                 </div>
               </div>
             ))}

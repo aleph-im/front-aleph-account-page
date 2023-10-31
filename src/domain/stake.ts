@@ -29,7 +29,6 @@ export class StakeManager {
 
   async getLastUserStakingRewards(): Promise<number> {
     if (!this.account) return 0
-
     const rewards = await this.getLastStakingRewards()
 
     return rewards[this.account.address]
@@ -85,6 +84,13 @@ export class StakeManager {
 
   totalStaked(nodes: CCN[]): number {
     return nodes.reduce((ac, cu) => ac + cu.total_staked, 0)
+  }
+
+  totalStakedByUser(nodes: CCN[]): number {
+    const { account } = this
+    if (!account) return 0
+
+    return nodes.reduce((ac, cu) => ac + (cu.stakers[account.address] || 0), 0)
   }
 
   totalStakedByOperators(nodes: (CCN | CRN)[]): number {

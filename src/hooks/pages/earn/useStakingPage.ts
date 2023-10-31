@@ -19,6 +19,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   selectedTab: string
   tabs: TabsProps['tabs']
   stakeableOnly: boolean
+  userStake: number
   userRewards?: number
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
@@ -119,6 +120,11 @@ export function useStakingPage(
     [setLastUpdate, stakeManager],
   )
 
+  const userStake = useMemo(
+    () => stakeManager.totalStakedByUser(nodes),
+    [nodes, stakeManager],
+  )
+
   // -----------------------------
 
   return {
@@ -131,6 +137,7 @@ export function useStakingPage(
     selectedTab,
     tabs,
     stakeableOnly,
+    userStake,
     userRewards,
     ...rest,
     handleTabChange,

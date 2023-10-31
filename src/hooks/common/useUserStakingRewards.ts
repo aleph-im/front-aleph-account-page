@@ -22,8 +22,9 @@ export function useUserStakingRewards(): UseUserStakingRewardsReturn {
 
   const { data: rewards } = useRequest({
     doRequest,
-    triggerOnMount: true,
     onSuccess: () => null,
+    triggerOnMount: true,
+    triggerDeps: [nodeManager],
   })
 
   // -----------------------------

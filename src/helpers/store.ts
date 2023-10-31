@@ -31,6 +31,10 @@ export const reducer = (
 ) => {
   switch (type) {
     case ActionTypes.connect: {
+      // @note: avoid performance issues
+      // @todo: Fix it on the wallet picker component / header which is firing multiple connect events
+      if (state.account?.address === payload?.account?.address) return state
+
       const { account } = payload
       const messageManager = new MessageManager(account)
 
