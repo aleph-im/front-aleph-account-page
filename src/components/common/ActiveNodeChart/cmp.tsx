@@ -36,6 +36,8 @@ export const ActiveNodeChart = memo(
       ]
     }, [nodes, stakeManager])
 
+    const disabledColor = `${theme.color.base0}20`
+
     return (
       <Card1 tw="w-auto min-w-[148px]">
         <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
@@ -56,7 +58,7 @@ export const ActiveNodeChart = memo(
               startAngle={360 + 180}
               endAngle={180 + 180}
               isAnimationActive={false}
-              fill={`${theme.color.base0}20`}
+              fill={disabledColor}
             />
             <Pie
               data={data}
@@ -84,7 +86,9 @@ export const ActiveNodeChart = memo(
             {data.map((entry) => (
               <div key={entry.label} tw="flex items-center gap-3">
                 <ColorDot
-                  $color={entry.color}
+                  $color={
+                    entry.color === 'transparent' ? disabledColor : entry.color
+                  }
                   $gradient={entry.gradient}
                   $size="1.25rem"
                 />

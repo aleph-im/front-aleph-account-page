@@ -35,6 +35,8 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
     ]
   }, [nodes, stakeManager])
 
+  const disabledColor = `${theme.color.base0}20`
+
   return (
     <Card1 tw="w-auto min-w-[152px]">
       <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
@@ -55,7 +57,7 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
             startAngle={360 + 90}
             endAngle={0 + 90}
             isAnimationActive={false}
-            fill={`${theme.color.base0}20`}
+            fill={disabledColor}
           />
           <Pie
             data={data}
@@ -83,7 +85,9 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
           {data.map((entry) => (
             <div key={entry.label} tw="flex items-center gap-3">
               <ColorDot
-                $color={entry.color}
+                $color={
+                  entry.color === 'transparent' ? disabledColor : entry.color
+                }
                 $gradient={entry.gradient}
                 $size="1.25rem"
               />
