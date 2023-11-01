@@ -1,12 +1,13 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Button, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useCoreChannelNodesPage } from '@/hooks/pages/earn/useCoreChannelNodesPage'
 import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable'
 import StakeChart from '@/components/common/StakeChart'
 import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton/cmp'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
+import Link from 'next/link'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -21,6 +22,21 @@ export const CoreChannelNodesPage = memo((props) => {
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
 
+  const CreateNode = (
+    <Link href="/earn/ccn/new" passHref legacyBehavior>
+      <Button
+        color="main0"
+        kind="neon"
+        variant="secondary"
+        size="regular"
+        tw="gap-2.5"
+      >
+        <Icon name="key" />
+        Create core node
+      </Button>
+    </Link>
+  )
+
   return (
     <>
       <Head>
@@ -34,27 +50,31 @@ export const CoreChannelNodesPage = memo((props) => {
         </h1>
       </section>
       <section>
-        <ToggleDashboard>
+        <ToggleDashboard buttons={CreateNode}>
           <div tw="flex items-stretch gap-6">
             <StakeChart nodes={nodes} />
             <ActiveNodeChart nodes={nodes} title="CORE CHANNEL NODES" />
-            <div>
-              <h1 className="tp-h7" tw="mb-0">
-                What is a core node?
-              </h1>
-              <p>
-                CCNs are the cornerstone of Aleph.im, responsible for the
-                security and functionality of our peer-to-peer network. These
-                dedicated nodes, backed by a commitment of 200,000 Aleph tokens,
-                play a pivotal role in network control and governance. As
-                non-custodial operators, they are at the forefront of
-                Aleph.im&apos;s innovative ecosystem. For more information on
-                how to set up a node and detailed technical and token
-                requirements, please visit our
-              </p>
-              <ExternalLinkButton href="https://docs.aleph.im/nodes/core/">
-                Node Setup Guide
-              </ExternalLinkButton>
+            <div tw="flex flex-col justify-between">
+              <div>
+                <h1 className="tp-h7" tw="mb-0">
+                  What is a core node?
+                </h1>
+                <p>
+                  CCNs are the cornerstone of Aleph.im, responsible for the
+                  security and functionality of our peer-to-peer network. These
+                  dedicated nodes, backed by a commitment of 200,000 Aleph
+                  tokens, play a pivotal role in network control and governance.
+                  As non-custodial operators, they are at the forefront of
+                  Aleph.im&apos;s innovative ecosystem. For more information on
+                  how to set up a node and detailed technical and token
+                  requirements, please visit our
+                </p>
+                <ExternalLinkButton href="https://docs.aleph.im/nodes/core/">
+                  Node Setup Guide
+                </ExternalLinkButton>
+              </div>
+
+              <div>{CreateNode}</div>
             </div>
           </div>
         </ToggleDashboard>

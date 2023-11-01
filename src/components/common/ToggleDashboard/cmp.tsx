@@ -5,13 +5,16 @@ import {
   Icon,
   useTransitionedEnterExit,
   ToggleContainer,
+  useBounds,
 } from '@aleph-front/aleph-core'
 
 export type ToggleDashboardProps = {
+  buttons?: ReactNode
   children?: ReactNode
 }
 
 export const ToggleDashboard = ({
+  buttons,
   children,
   ...rest
 }: ToggleDashboardProps) => {
@@ -21,7 +24,7 @@ export const ToggleDashboard = ({
     shouldMount: mount1,
     ref: ref1,
     state: state1,
-  } = useTransitionedEnterExit<HTMLButtonElement>({
+  } = useTransitionedEnterExit<HTMLDivElement>({
     onOff: !open,
   })
 
@@ -33,28 +36,36 @@ export const ToggleDashboard = ({
     onOff: open,
   })
 
+  const { bounds } = useBounds({ ref: ref1, deps: [mount1] })
+
+  const minHeight = bounds?.height || 0
   const openButton = state1 === 'enter'
   const openPanel = state2 === 'enter'
 
   return (
-    <div tw="relative mt-8 mb-14 min-h-[2.3125rem]" {...rest}>
+    <div tw="relative mt-8 mb-14" style={{ minHeight }} {...rest}>
       <>
         {mount1 && (
-          <Button
+          <div
             ref={ref1}
-            color="main0"
-            kind="neon"
-            variant="secondary"
-            size="regular"
-            onClick={() => setOpen((prev) => !prev)}
             css={[
-              tw`gap-2.5 !absolute top-0 duration-200`,
+              tw`flex flex-col gap-5 !absolute top-0 transition duration-200`,
               openButton ? tw`opacity-100 !delay-300` : tw`opacity-0`,
             ]}
           >
-            <Icon name="gauge" />
-            open dashboard
-          </Button>
+            {buttons}
+            <Button
+              color="main0"
+              kind="neon"
+              variant="secondary"
+              size="regular"
+              onClick={() => setOpen((prev) => !prev)}
+              tw="gap-2.5"
+            >
+              <Icon name="gauge" />
+              open dashboard
+            </Button>
+          </div>
         )}
         {mount2 && (
           <ToggleContainer

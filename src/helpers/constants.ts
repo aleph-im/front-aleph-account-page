@@ -1,9 +1,12 @@
 export const defaultAccountChannel = 'ALEPH-ACCOUNT'
 
 export const breadcrumbNames = {
-  '/': 'SOLUTIONS',
-  '/dashboard/function': 'SETUP NEW FUNCTION',
-  '/dashboard/volume': 'SETUP NEW VOLUME',
+  '/': 'HOME',
+  // '/earn': '-',
+  '/earn/ccn': 'CORE NODES',
+  '/earn/crn': 'COMPUTE RESOURCE NODES',
+  '/earn/ccn/new': 'CREATE CORE NODE',
+  '/earn/crn/new': 'CREATE COMPUTE RESOURCE NODE',
 }
 
 export const apiServer = 'https://api2.aleph.im'
