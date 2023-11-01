@@ -24,6 +24,7 @@ export const ToggleDashboard = ({
   } = useTransitionedEnterExit<HTMLButtonElement>({
     onOff: !open,
   })
+
   return (
     <div tw="relative mt-8 mb-14 min-h-[2.3125rem]" {...rest}>
       {mount1 && (
@@ -46,7 +47,10 @@ export const ToggleDashboard = ({
       <ToggleContainer
         open={open}
         duration={500}
-        css={[tw`transition-all duration-500`, open && tw`p-80 -m-80`]}
+        css={[
+          tw`transition-all duration-500`,
+          open && tw`p-16 -m-16 rounded-[4rem]`,
+        ]}
       >
         {children}
         <Button
