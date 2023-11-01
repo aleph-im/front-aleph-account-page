@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import Image from 'next/image'
-import { Icon } from '@aleph-front/aleph-core'
 import { apiServer } from '@/helpers/constants'
+import { Avatar } from '../Avatar'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L117C113-L117C139
 export const NameCell = memo(
@@ -25,7 +25,7 @@ export const NameCell = memo(
             tw="rounded-full w-6 h-6"
           />
         ) : (
-          <Icon name="circle-nodes" size="xl" tw="rounded-full" />
+          <Avatar tw="rounded-full h-6 w-6" />
         )}
         <div className="fs-10" tw="leading-4">
           <div tw="whitespace-nowrap">ID: {hash.slice(-10)}</div>
