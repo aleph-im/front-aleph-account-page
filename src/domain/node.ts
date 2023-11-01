@@ -158,7 +158,7 @@ export class NodeManager {
     ccns = await this.parseScores(ccns, false)
     ccns = await this.parseMetrics(ccns, false)
 
-    console.log(ccns)
+    // console.log(ccns)
 
     return ccns
   }
@@ -176,7 +176,7 @@ export class NodeManager {
     crns = await this.parseScores(crns, true)
     crns = await this.parseMetrics(crns, true)
 
-    console.log(crns)
+    // console.log(crns)
 
     return crns
   }
