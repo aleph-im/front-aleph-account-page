@@ -43,7 +43,11 @@ export const ToggleDashboard = ({
           open dashboard
         </Button>
       )}
-      <ToggleContainer open={open} duration={500}>
+      <ToggleContainer
+        open={open}
+        duration={500}
+        css={[tw`transition-all duration-500`, open && tw`p-80 -m-80`]}
+      >
         {children}
         <Button
           color="main0"
