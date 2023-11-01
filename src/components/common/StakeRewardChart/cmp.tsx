@@ -110,7 +110,7 @@ export const StakeRewardChart = memo(
               >
                 <div>
                   <div tw="inline-flex gap-1 items-center">
-                    {totalRewards.toFixed(2)}
+                    {data[0].value.toFixed(2)}
                     <Logo text="" size="0.75rem" />
                   </div>
                 </div>
