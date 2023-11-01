@@ -76,7 +76,9 @@ export const StakeRewardChart = memo(
               stroke="transparent"
               innerRadius="72%"
               outerRadius="100%"
-              isAnimationActive={true}
+              startAngle={360 + 90}
+              endAngle={0 + 90}
+              isAnimationActive={false}
               fill={`${theme.color.base0}20`}
             />
             <Pie

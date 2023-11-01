@@ -31,10 +31,10 @@ export const ActiveNodeChart = memo(
           label: 'Non active',
           value: nonActiveNodes,
           percentage: nonActiveNodes / totalNodes,
-          color: `${theme.color.base0}20`,
+          color: 'transparent',
         },
       ]
-    }, [nodes, stakeManager, theme])
+    }, [nodes, stakeManager])
 
     return (
       <Card1 tw="w-auto min-w-[148px]">
@@ -47,6 +47,17 @@ export const ActiveNodeChart = memo(
             <defs>
               <SVGGradients data={data} />
             </defs>
+            <Pie
+              data={[{ v: 1 }]}
+              dataKey="v"
+              stroke="transparent"
+              innerRadius="72%"
+              outerRadius="100%"
+              startAngle={360 + 180}
+              endAngle={180 + 180}
+              isAnimationActive={false}
+              fill={`${theme.color.base0}20`}
+            />
             <Pie
               data={data}
               dataKey="percentage"

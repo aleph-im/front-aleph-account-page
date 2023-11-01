@@ -47,6 +47,17 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
             <SVGGradients data={data} />
           </defs>
           <Pie
+            data={[{ v: 1 }]}
+            dataKey="v"
+            stroke="transparent"
+            innerRadius="72%"
+            outerRadius="100%"
+            startAngle={360 + 90}
+            endAngle={0 + 90}
+            isAnimationActive={false}
+            fill={`${theme.color.base0}20`}
+          />
+          <Pie
             data={data}
             dataKey="percentage"
             stroke="transparent"
