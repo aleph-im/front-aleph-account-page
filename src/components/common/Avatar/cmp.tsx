@@ -35,7 +35,7 @@ export const Avatar = ({ color = 'color2', ...rest }: AvatarProps) => {
       fill="none"
       {...rest}
     >
-      <g clip-path="url(#clip0_4867_22348)">
+      <g clipPath="url(#clip0_4867_22348)">
         <path
           d="M4.70996 37.4696L4.77996 37.4296L4.48996 37.2596L4.45996 37.2396L3.98996 36.9696L3.95996 36.9496L3.70996 36.8096C3.89996 37.1096 4.09996 37.4096 4.29996 37.6996L4.58996 37.5296L4.69996 37.4696H4.70996Z"
           fill="black"
@@ -236,7 +236,7 @@ export const Avatar = ({ color = 'color2', ...rest }: AvatarProps) => {
           d="M12.9802 20.54L12.9502 20.56L12.9602 20.55L12.9802 20.54Z"
           fill={c1}
         />
-        <circle cx="24" cy="24" r="24" fill={c1} fill-opacity="0.5" />
+        <circle cx="24" cy="24" r="24" fill={c1} fillOpacity="0.5" />
       </g>
       <defs>
         <clipPath id="clip0_4867_22348">
