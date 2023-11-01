@@ -1,4 +1,4 @@
-import { Logo, addClasses } from '@aleph-front/aleph-core'
+import { Icon, Logo, addClasses } from '@aleph-front/aleph-core'
 import Link from 'next/link'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
@@ -139,3 +139,62 @@ export const StyledLinkContent = styled.div<{ $open?: boolean }>`
     }
   `}
 `
+
+// ----------------------------------------
+
+export const StyledToggleButtonContainer = styled.div`
+  ${tw`mb-16 px-6 text-left`}
+  perspective-origin: 0% 50%;
+  perspective: 2rem;
+`
+
+export type StyledToggleButtonProps = {
+  $open?: boolean
+}
+
+export const StyledToggleButton = styled(Icon).attrs(
+  (props: StyledToggleButtonProps) => {
+    return {
+      ...props,
+      name: 'angle-right', //props.$open ? 'angle-left' : 'angle-right',
+    }
+  },
+)<StyledToggleButtonProps>`
+  ${({ theme, $open }) => css`
+    ${tw`relative !w-4 !h-4 p-0.5 !box-border cursor-pointer`}
+    ${!$open && tw`!ml-1`}
+
+    color: ${theme.color.base1};
+    background-color: ${theme.color.base0};
+    transition: transform linear 0.25s 0s;
+    transform: ${$open ? 'rotateY(-180deg)' : 'rotateY(0deg)'};
+  `}
+`
+
+// https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/layouts/MainLayout.vue#L131C14-L131C14
+export const StyledProgressBar = styled.div<{ $percent: number }>(
+  ({ theme, $percent }) => {
+    // @note: add a min width on the bar if percent is gt 0
+    $percent = $percent > 0 ? Math.max($percent, 0.05) : $percent
+
+    const color = theme.gradient.main0.fn
+    const bgColor = `${theme.color.base0}20`
+
+    return [
+      tw`relative w-full`,
+      css`
+        height: 0.3125rem;
+        background-color: ${bgColor};
+        border-radius: 1rem;
+
+        &:after {
+          ${tw`absolute top-0 left-0 w-full h-full`}
+          content: '';
+          border-radius: 1rem;
+          background-image: ${color};
+          clip-path: ${`inset(0 ${100 - $percent * 100}% 0 0);`};
+        }
+      `,
+    ]
+  },
+)

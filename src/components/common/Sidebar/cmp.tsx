@@ -9,7 +9,10 @@ import {
   StyledNav2Link,
   StyledNav2LinkContainer,
   StyledNav2Title,
+  StyledProgressBar,
   StyledSidebar,
+  StyledToggleButton,
+  StyledToggleButtonContainer,
 } from './styles'
 import {
   AnchorHTMLAttributes,
@@ -20,6 +23,7 @@ import {
   useState,
 } from 'react'
 import { useRouter } from 'next/router'
+import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
 
 export type Route = {
   name?: string
@@ -112,6 +116,11 @@ export const Sidebar = memo(() => {
     [router],
   )
 
+  const allowanceInfo = useUserStoreAllowance()
+  const consumedSize = (allowanceInfo.consumedSize || 0) / 1024
+  const allowedSize = (allowanceInfo.allowedSize || 0) / 1024
+  const storePercent = allowedSize ? consumedSize / allowedSize : 0
+
   return (
     <StyledSidebar $open={open}>
       <StyledNav1 $open={open}>
@@ -160,7 +169,20 @@ export const Sidebar = memo(() => {
           )}
         </StyledNav2LinkContainer>
         <div tw="flex-1" onClick={handleToggle} />
-        <div></div>
+        <div tw="py-12">
+          <StyledToggleButtonContainer>
+            <StyledToggleButton $open={open} onClick={handleToggle} />
+          </StyledToggleButtonContainer>
+          <div tw="max-w-[168px] mx-auto px-1">
+            <div className="tp-body3 fs-12" tw="mb-4 flex gap-1 flex-wrap">
+              {consumedSize.toFixed(3)} GB
+              <span tw="opacity-60 font-normal">
+                of {allowedSize.toFixed(3)}
+              </span>
+            </div>
+            <StyledProgressBar $percent={storePercent} />
+          </div>
+        </div>
       </StyledNav2>
     </StyledSidebar>
   )
