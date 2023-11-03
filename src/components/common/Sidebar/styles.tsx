@@ -37,6 +37,13 @@ export const StyledNav2 = styled.nav`
   ${tw`flex flex-col h-full overflow-hidden z-10`}
   padding-top: 7rem;
   background-color: #00000020;
+
+  padding-left: 0;
+  box-shadow: 0px 0px 0px 0px #00000020;
+
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 export const StyledNav2Title = styled.div.attrs(addClasses('tp-nav'))`
@@ -69,10 +76,6 @@ export const StyledLogo = styled(Logo).attrs((props) => {
   }
 })(() => [tw`flex items-center justify-center h-8 mt-8 mb-12`])
 
-export const StyledToggleButtonContainer = styled.div`
-  ${tw`mb-16 px-6 text-left`}
-`
-
 export const StyledToggleButton = styled(Icon).attrs((props) => {
   return {
     ...props,
@@ -80,7 +83,7 @@ export const StyledToggleButton = styled(Icon).attrs((props) => {
   }
 })`
   ${({ theme }) => css`
-    ${tw`!w-4 !h-4 p-0.5 !box-border cursor-pointer`}
+    ${tw`!w-4 !h-4 p-0.5 !box-border cursor-pointer origin-center`}
     color: ${theme.color.base1};
     background-color: ${theme.color.base0};
   `}
@@ -89,7 +92,7 @@ export const StyledToggleButton = styled(Icon).attrs((props) => {
 export const StyledStorageContainer = styled.div.attrs(
   addClasses('tp-body3 fs-12'),
 )`
-  ${tw`max-w-[168px] mx-auto px-1 cursor-auto`}
+  ${tw`w-[10.5rem] max-w-full mx-auto px-1 cursor-auto`}
 `
 
 // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/layouts/MainLayout.vue#L131C14-L131C14
@@ -167,7 +170,7 @@ export const StyledSidebar = styled.aside<{
 }>`
   ${tw`flex items-stretch justify-start`}
 
-  ${({ $isOpen, $speed = 1 }) =>
+  ${({ $isOpen, $speed = 0.8 }) =>
     $isOpen || $isOpen === undefined
       ? css`
           & ${StyledNav1} {
@@ -192,11 +195,10 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav2} {
             width: 18.75rem;
-            transition: width ease-in-out ${0.5 / $speed}s ${0.1 / $speed}s;
 
-            &:hover {
-              cursor: w-resize;
-            }
+            transition: width ease-in-out ${0.5 / $speed}s ${0.1 / $speed}s,
+              padding-left ease-in-out ${0.4 / $speed}s 0s,
+              box-shadow ease-in-out ${0.4 / $speed}s 0s;
           }
 
           & ${StyledNav2LinkContainer} {
@@ -252,15 +254,11 @@ export const StyledSidebar = styled.aside<{
           & ${StyledNav2} {
             width: 4.5rem;
 
-            padding-left: 0;
-            box-shadow: 0px 0px 0px 0px #00000020;
-
             transition: width ease-in-out ${0.4 / $speed}s ${0.25 / $speed}s,
               padding-left ease-in-out ${0.4 / $speed}s 0s,
               box-shadow ease-in-out ${0.4 / $speed}s 0s;
 
             &:hover {
-              cursor: e-resize;
               padding-left: 0.375rem;
               box-shadow: 0.375rem 0px 0px 0px #00000020;
             }

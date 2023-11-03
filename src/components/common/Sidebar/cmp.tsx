@@ -160,10 +160,10 @@ export const Sidebar = memo(() => {
           )}
         </StyledNav2LinkContainer>
         <div tw="flex-1" />
-        <div tw="py-12">
-          <StyledToggleButtonContainer>
+        <div tw="py-12 flex flex-col justify-between h-[14.9375rem]">
+          <div tw="px-6">
             <StyledToggleButton />
-          </StyledToggleButtonContainer>
+          </div>
           <StyledStorageContainer onClick={handlePreventToggle}>
             <div tw="mb-4 flex gap-1 flex-wrap">
               {consumedSize.toFixed(3)} GB
