@@ -1,7 +1,6 @@
 import { IconName } from '@fortawesome/fontawesome-svg-core'
 import { Icon } from '@aleph-front/aleph-core'
 import {
-  StyledLinkContent,
   StyledLogo,
   StyledNav1,
   StyledNav1Link,
@@ -11,6 +10,7 @@ import {
   StyledNav2Title,
   StyledProgressBar,
   StyledSidebar,
+  StyledStorageContainer,
   StyledToggleButton,
   StyledToggleButtonContainer,
 } from './styles'
@@ -21,6 +21,7 @@ import {
   useCallback,
   useMemo,
   useState,
+  MouseEvent,
 } from 'react'
 import { useRouter } from 'next/router'
 import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
@@ -72,30 +73,27 @@ const routes: Route[] = [
 export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string
   icon?: IconName
+  isOpen?: boolean
   children?: ReactNode
-  open: boolean
 }
 
 export const SidebarLink = memo(
-  ({ href, icon, children, open }: SidebarLinkProps) => {
+  ({ href, icon, children, isOpen }: SidebarLinkProps) => {
     const router = useRouter()
     const isActive = router.pathname.indexOf(href) >= 0
 
-    const props = { href, $isActive: isActive, $open: open }
-    const iconProps = { name: icon as IconName, size: 'lg', tw: 'p-1' }
+    const props = { href, $isActive: isActive, $isOpen: isOpen }
+
+    const iconCmp = icon && (
+      <Icon tw="p-1" {...{ name: icon as IconName, size: 'lg' }} />
+    )
 
     return !children ? (
-      <StyledNav1Link {...props}>
-        <StyledLinkContent {...props}>
-          <span>{icon && <Icon {...iconProps} />}</span>
-        </StyledLinkContent>
-      </StyledNav1Link>
+      <StyledNav1Link {...props}>{iconCmp}</StyledNav1Link>
     ) : (
       <StyledNav2Link {...props}>
-        <StyledLinkContent {...props}>
-          {icon && <Icon {...iconProps} />}
-          <span>{children}</span>
-        </StyledLinkContent>
+        {iconCmp}
+        <span>{children}</span>
       </StyledNav2Link>
     )
   },
@@ -103,11 +101,15 @@ export const SidebarLink = memo(
 SidebarLink.displayName = 'SidebarLink'
 
 export const Sidebar = memo(() => {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState<boolean | undefined>(undefined)
 
   const handleToggle = useCallback(() => {
-    setOpen((open) => !open)
+    setOpen((open) => (open === undefined ? false : !open))
   }, [setOpen])
+
+  const handlePreventToggle = useCallback((e: MouseEvent) => {
+    e.stopPropagation()
+  }, [])
 
   const router = useRouter()
 
@@ -122,45 +124,34 @@ export const Sidebar = memo(() => {
   const storePercent = allowedSize ? consumedSize / allowedSize : 0
 
   return (
-    <StyledSidebar $open={open}>
-      <StyledNav1 $open={open}>
+    <StyledSidebar $isOpen={open}>
+      <StyledNav1>
         <StyledLogo />
-
         {routes.map((child) => (
           <SidebarLink
             key={child.path}
-            href={child.path}
-            icon={child.icon}
-            open={open}
+            {...{
+              href: child.path,
+              icon: child.icon,
+              isOpen: open,
+            }}
           />
         ))}
-
-        <SidebarLink
-          href="/earn/bookmark"
-          icon="bookmark"
-          open={open}
-        ></SidebarLink>
-        <SidebarLink
-          href="/earn/dropbox"
-          icon="dropbox"
-          open={open}
-        ></SidebarLink>
+        <SidebarLink href="/earn/bookmark" icon="bookmark"></SidebarLink>
+        <SidebarLink href="/earn/dropbox" icon="dropbox"></SidebarLink>
       </StyledNav1>
-      <StyledNav2 $open={open}>
-        <StyledNav2LinkContainer>
+      <StyledNav2 onClick={handleToggle}>
+        <StyledNav2LinkContainer onClick={handlePreventToggle}>
           {currentRoute?.children && (
             <>
               {currentRoute?.name && (
-                <StyledNav2Title>
-                  <span>{currentRoute?.name}</span>
-                </StyledNav2Title>
+                <StyledNav2Title>{currentRoute?.name}</StyledNav2Title>
               )}
               {currentRoute?.children.map((child) => (
                 <SidebarLink
                   key={child.path}
                   href={child.path}
                   icon={child?.icon || currentRoute?.icon}
-                  open={open}
                 >
                   {child.name}
                 </SidebarLink>
@@ -168,20 +159,20 @@ export const Sidebar = memo(() => {
             </>
           )}
         </StyledNav2LinkContainer>
-        <div tw="flex-1" onClick={handleToggle} />
+        <div tw="flex-1" />
         <div tw="py-12">
           <StyledToggleButtonContainer>
-            <StyledToggleButton $open={open} onClick={handleToggle} />
+            <StyledToggleButton />
           </StyledToggleButtonContainer>
-          <div tw="max-w-[168px] mx-auto px-1">
-            <div className="tp-body3 fs-12" tw="mb-4 flex gap-1 flex-wrap">
+          <StyledStorageContainer onClick={handlePreventToggle}>
+            <div tw="mb-4 flex gap-1 flex-wrap">
               {consumedSize.toFixed(3)} GB
               <span tw="opacity-60 font-normal">
                 of {allowedSize.toFixed(3)}
               </span>
             </div>
             <StyledProgressBar $percent={storePercent} />
-          </div>
+          </StyledStorageContainer>
         </div>
       </StyledNav2>
     </StyledSidebar>
