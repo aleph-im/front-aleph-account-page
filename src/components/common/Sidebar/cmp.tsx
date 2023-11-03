@@ -12,7 +12,6 @@ import {
   StyledSidebar,
   StyledStorageContainer,
   StyledToggleButton,
-  StyledToggleButtonContainer,
 } from './styles'
 import {
   AnchorHTMLAttributes,
