@@ -40,10 +40,6 @@ export const StyledNav2 = styled.nav`
 
   padding-left: 0;
   box-shadow: 0px 0px 0px 0px #00000020;
-
-  &:hover {
-    cursor: pointer;
-  }
 `
 
 export const StyledNav2Title = styled.div.attrs(addClasses('tp-nav'))`
@@ -199,6 +195,10 @@ export const StyledSidebar = styled.aside<{
             transition: width ease-in-out ${0.5 / $speed}s ${0.1 / $speed}s,
               padding-left ease-in-out ${0.4 / $speed}s 0s,
               box-shadow ease-in-out ${0.4 / $speed}s 0s;
+
+            &:hover {
+              cursor: auto;
+            }
           }
 
           & ${StyledNav2LinkContainer} {
@@ -259,6 +259,8 @@ export const StyledSidebar = styled.aside<{
               box-shadow ease-in-out ${0.4 / $speed}s 0s;
 
             &:hover {
+              cursor: pointer;
+
               padding-left: 0.375rem;
               box-shadow: 0.375rem 0px 0px 0px #00000020;
             }

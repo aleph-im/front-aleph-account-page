@@ -102,9 +102,19 @@ SidebarLink.displayName = 'SidebarLink'
 export const Sidebar = memo(() => {
   const [open, setOpen] = useState<boolean | undefined>(undefined)
 
-  const handleToggle = useCallback(() => {
-    setOpen((open) => (open === undefined ? false : !open))
-  }, [setOpen])
+  const handleToggle = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation()
+      const tagName = e.currentTarget.tagName
+
+      setOpen((prev) => {
+        const isOpen = prev === undefined || !!prev
+        if (isOpen && tagName.toLowerCase() !== 'svg') return prev
+        return !isOpen
+      })
+    },
+    [setOpen],
+  )
 
   const handlePreventToggle = useCallback((e: MouseEvent) => {
     e.stopPropagation()
@@ -161,7 +171,7 @@ export const Sidebar = memo(() => {
         <div tw="flex-1" />
         <div tw="py-12 flex flex-col justify-between h-[14.9375rem]">
           <div tw="px-6">
-            <StyledToggleButton />
+            <StyledToggleButton onClick={handleToggle} />
           </div>
           <StyledStorageContainer onClick={handlePreventToggle}>
             <div tw="mb-4 flex gap-1 flex-wrap">
