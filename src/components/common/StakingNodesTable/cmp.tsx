@@ -54,6 +54,7 @@ export const StakingNodesTable = memo(
         {
           label: 'STAKED',
           sortable: true,
+          width: '100%',
           sortBy: (row) => row.total_staked,
           render: (row) => (
             <StakedCell
@@ -114,10 +115,7 @@ export const StakingNodesTable = memo(
         })
       }
 
-      return cols.map((col, i) => {
-        col.width = i === cols.length - 1 ? '100%' : `${70 / cols.length - 1}%`
-        return col
-      })
+      return cols
     }, [
       account,
       accountBalance,
