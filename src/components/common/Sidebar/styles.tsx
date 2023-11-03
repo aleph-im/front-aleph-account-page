@@ -57,6 +57,7 @@ export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
   ${({ theme, $isActive }) => css`
     ${StyledLinkContentCss}
     color: ${$isActive ? theme.color.main0 : theme.color.base0};
+    transition: color ease-in-out 0.25s 0s !important;
 
     & > span {
       ${tw`overflow-hidden`}
@@ -209,7 +210,9 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav2Title}, & ${StyledNav2Link} > svg {
             ${tw`relative left-0 translate-x-0`}
-            transition: all linear 0s ${0.5 / $speed}s;
+            transition: left linear 0s ${0.5 / $speed}s, 
+              transform linear 0s ${0.5 / $speed}s,
+              font-size linear 0s ${0.5 / $speed}s;
           }
 
           & ${StyledNav2Title} {
@@ -274,7 +277,9 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav2Title}, & ${StyledNav2Link} > svg {
             ${tw`relative left-1/2 -translate-x-1/2`}
-            transition: all linear 0s ${0.45 / $speed}s;
+            transition: left linear 0s ${0.45 / $speed}s, 
+              transform linear 0s ${0.45 / $speed}s,
+              font-size linear 0s ${0.45 / $speed}s;
           }
 
           & ${StyledNav2Title} {
@@ -299,9 +304,9 @@ export const StyledSidebar = styled.aside<{
   ${({ $isOpen }) =>
     $isOpen === undefined &&
     css`
-      & * {
-        animation: none !important;
-        transition: none !important;
+      && * {
+        animation: none;
+        transition: none;
       }
     `}
 `
