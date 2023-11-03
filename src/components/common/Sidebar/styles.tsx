@@ -170,7 +170,7 @@ export const StyledSidebar = styled.aside<{
 }>`
   ${tw`flex items-stretch justify-start`}
 
-  ${({ $isOpen, $speed = 0.8 }) =>
+  ${({ $isOpen, $speed = 1 }) =>
     $isOpen || $isOpen === undefined
       ? css`
           & ${StyledNav1} {
