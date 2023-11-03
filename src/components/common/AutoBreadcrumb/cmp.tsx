@@ -18,11 +18,9 @@ export const AutoBreadcrumb = ({
     if (isHome) return []
 
     const parts = router.pathname.split('/')
-    console.log(parts)
     const links = parts
       .map((item, index) => {
         const href = parts.slice(0, index + 1).join('/')
-        console.log('href', href)
         const name = names[href] || names[item] || uppercase(item)
         return { href, name }
       })
