@@ -39,7 +39,7 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
 
   return (
     <Card1>
-      <div tw="w-[320px] overflow-auto">
+      <div tw="w-[20rem] overflow-auto">
         <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
           REWARD CALCULATOR
         </TextGradient>

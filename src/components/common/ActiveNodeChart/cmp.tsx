@@ -39,7 +39,7 @@ export const ActiveNodeChart = memo(
     const disabledColor = `${theme.color.base0}20`
 
     return (
-      <Card1 tw="w-auto min-w-[148px]">
+      <Card1 tw="w-auto min-w-[9.25rem]">
         <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
           {title}
         </TextGradient>

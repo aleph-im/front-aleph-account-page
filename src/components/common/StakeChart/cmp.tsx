@@ -38,7 +38,7 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
   const disabledColor = `${theme.color.base0}20`
 
   return (
-    <Card1 tw="w-auto min-w-[152px]">
+    <Card1 tw="w-auto min-w-[9.5rem]">
       <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
         STAKED
       </TextGradient>

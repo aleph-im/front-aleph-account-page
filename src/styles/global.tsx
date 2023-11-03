@@ -20,8 +20,8 @@ export const GlobalStylesOverride = createGlobalStyle`
   textarea {
     width: 100%;
     background: linear-gradient(to bottom, #FFFFFF33, transparent);
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 0.3125rem;
+    padding: 0.3125rem;
     border: 1px solid #FFFFFF33;
     color: inherit;
   }

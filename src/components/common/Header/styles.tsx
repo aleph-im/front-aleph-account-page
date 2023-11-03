@@ -9,7 +9,7 @@ import tw from 'twin.macro'
 
 export const StyledHeader = styled.header`
   ${tw`sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 flex items-center justify-between`}
-  height: 104px;
+  height: 6.5rem;
   backdrop-filter: blur(50px);
 `
 

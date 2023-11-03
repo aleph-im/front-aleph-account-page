@@ -55,7 +55,7 @@ export const StakeRewardChart = memo(
     }, [totalRewards, rewards])
 
     return (
-      <Card1 tw="w-auto min-w-[154px]" disabled={disabled}>
+      <Card1 tw="w-auto min-w-[9.625rem]" disabled={disabled}>
         <TextGradient
           forwardedAs="h3"
           type="info"
