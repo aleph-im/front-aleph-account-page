@@ -35,9 +35,9 @@ export const StyledNav1Link = styled(Link).attrs(addClasses('tp-nav'))<{
 
 export const StyledNav2 = styled.nav`
   ${tw`flex flex-col h-full overflow-hidden z-10`}
-  padding-top: 7rem;
   background-color: #00000020;
 
+  box-sizing: content-box;
   padding-left: 0;
   box-shadow: 0px 0px 0px 0px #00000020;
 `
@@ -48,6 +48,7 @@ export const StyledNav2Title = styled.div.attrs(addClasses('tp-nav'))`
 
 export const StyledNav2LinkContainer = styled.div`
   ${tw`flex flex-col items-start cursor-auto`}
+  margin-top: 7rem;
 `
 
 export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
@@ -86,9 +87,7 @@ export const StyledToggleButton = styled(Icon).attrs((props) => {
   `}
 `
 
-export const StyledStorageContainer = styled.div.attrs(
-  addClasses('tp-body3 fs-12'),
-)`
+export const StyledStorageContainer = styled.div.attrs(addClasses('tp-body3'))`
   ${tw`w-[10.5rem] max-w-full mx-auto px-1 cursor-auto`}
 `
 
@@ -230,7 +229,14 @@ export const StyledSidebar = styled.aside<{
           }
 
           & ${StyledStorageContainer} {
+            font-size: 0.625rem;
+            transition: font-size linear 0s ${0.3 / $speed}s;
             animation: ${1 / $speed}s ease-in-out 0s ${fadeOutIn2Reverse};
+
+            & > :first-child {
+              max-width: 100%;
+              transition: max-width linear 0s ${0.3 / $speed}s;
+            }
           }
         `
       : css`
@@ -297,7 +303,14 @@ export const StyledSidebar = styled.aside<{
           }
 
           & ${StyledStorageContainer} {
+            font-size: 0.5rem;
+            transition: font-size linear 0s ${0.46 / $speed}s;
             animation: ${1 / $speed}s ease-in-out 0s ${fadeOutIn2};
+
+            & > :first-child {
+              max-width: 0;
+              transition: max-width linear 0s ${0.46 / $speed}s;
+            }
           }
         `};
 

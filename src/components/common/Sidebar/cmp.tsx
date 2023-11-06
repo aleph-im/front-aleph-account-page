@@ -175,8 +175,8 @@ export const Sidebar = memo(() => {
           </div>
           <StyledStorageContainer onClick={handlePreventToggle}>
             <div tw="mb-4 flex gap-1 flex-wrap">
-              {consumedSize.toFixed(3)} GB
-              <span tw="opacity-60 font-normal">
+              <span tw="whitespace-nowrap">{consumedSize.toFixed(3)} GB</span>
+              <span tw="opacity-60 font-normal whitespace-nowrap">
                 of {allowedSize.toFixed(3)}
               </span>
             </div>
