@@ -12,8 +12,8 @@ export type UseCoreChannelNodesPageProps = {
 }
 
 export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
-  userNodes: CCN[]
-  filteredUserNodes: CCN[]
+  userNodes?: CCN[]
+  filteredUserNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
   handleTabChange: (tab: string) => void
@@ -32,7 +32,10 @@ export function useCoreChannelNodesPage(
   // -----------------------------
 
   const filterUserNodes = useCallback(
-    (nodes: CCN[]) => nodes.filter((node) => nodeManager.isUserNode(node)),
+    (nodes?: CCN[]) => {
+      if (!nodes) return
+      return nodes.filter((node) => nodeManager.isUserNode(node))
+    },
     [nodeManager],
   )
 
@@ -49,11 +52,11 @@ export function useCoreChannelNodesPage(
   // -----------------------------
 
   const [tab, handleTabChange] = useState('user')
-  const selectedTab = userNodes.length ? tab : 'nodes'
+  const selectedTab = userNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
     const tabs = [
-      { id: 'user', name: 'My core nodes', disabled: !userNodes.length },
+      { id: 'user', name: 'My core nodes', disabled: !userNodes?.length },
       { id: 'nodes', name: 'All core nodes' },
     ]
 

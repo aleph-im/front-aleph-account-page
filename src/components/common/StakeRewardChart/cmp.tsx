@@ -9,7 +9,7 @@ import ColorDot from '../ColorDot'
 import { SVGGradients } from '../charts'
 
 export type StakeRewardChartProps = {
-  nodes: CCN[]
+  nodes?: CCN[]
   stake: number
   rewards?: number
   disabled?: boolean
@@ -22,7 +22,7 @@ export const StakeRewardChart = memo(
     const theme = useTheme()
 
     const totalRewards = useMemo(
-      () => stakeManager.totalPerAlephPerDay(nodes) * (10 || 0) * stake,
+      () => stakeManager.totalPerAlephPerDay(nodes || []) * (10 || 0) * stake,
       [nodes, stake, stakeManager],
     )
 
@@ -55,7 +55,7 @@ export const StakeRewardChart = memo(
     }, [totalRewards, rewards])
 
     return (
-      <Card1 tw="w-auto min-w-[9.625rem]" disabled={disabled}>
+      <Card1 tw="w-auto min-w-[9.625rem]" disabled={disabled} loading={!nodes}>
         <TextGradient
           forwardedAs="h3"
           type="info"

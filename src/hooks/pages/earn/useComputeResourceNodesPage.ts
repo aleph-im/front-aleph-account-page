@@ -13,8 +13,8 @@ export type UseComputeResourceNodesPageProps = {
 
 export type UseComputeResourceNodesPageReturn =
   UseComputeResourceNodesReturn & {
-    userNodes: CRN[]
-    filteredUserNodes: CRN[]
+    userNodes?: CRN[]
+    filteredUserNodes?: CRN[]
     selectedTab: string
     tabs: TabsProps['tabs']
     handleTabChange: (tab: string) => void
@@ -33,7 +33,10 @@ export function useComputeResourceNodesPage(
   // -----------------------------
 
   const filterUserNodes = useCallback(
-    (nodes: CRN[]) => nodes.filter((node) => nodeManager.isUserNode(node)),
+    (nodes?: CRN[]) => {
+      if (!nodes) return
+      return nodes.filter((node) => nodeManager.isUserNode(node))
+    },
     [nodeManager],
   )
 
@@ -50,11 +53,11 @@ export function useComputeResourceNodesPage(
   // -----------------------------
 
   const [tab, handleTabChange] = useState('user')
-  const selectedTab = userNodes.length ? tab : 'nodes'
+  const selectedTab = userNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
     const tabs = [
-      { id: 'user', name: 'My compute nodes', disabled: !userNodes.length },
+      { id: 'user', name: 'My compute nodes', disabled: !userNodes?.length },
       { id: 'nodes', name: 'All compute nodes' },
     ]
 

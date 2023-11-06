@@ -10,14 +10,14 @@ import { SVGGradients } from '../charts'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L19C1-L19C12
 export const ActiveNodeChart = memo(
-  ({ title, nodes }: { title: string; nodes: AlephNode[] }) => {
+  ({ title, nodes }: { title: string; nodes?: AlephNode[] }) => {
     const stakeManager = useMemo(() => new StakeManager(), [])
 
     const theme = useTheme()
 
     const data = useMemo(() => {
-      const totalNodes = nodes.length
-      const activeNodes = stakeManager.activeNodes(nodes).length
+      const totalNodes = nodes?.length || 0
+      const activeNodes = stakeManager.activeNodes(nodes || []).length
       const nonActiveNodes = totalNodes - activeNodes
 
       return [
@@ -39,7 +39,7 @@ export const ActiveNodeChart = memo(
     const disabledColor = `${theme.color.base0}20`
 
     return (
-      <Card1 tw="w-auto min-w-[9.25rem]">
+      <Card1 loading={!nodes} tw="w-auto min-w-[9.25rem]">
         <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
           {title}
         </TextGradient>

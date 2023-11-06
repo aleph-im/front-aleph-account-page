@@ -14,8 +14,8 @@ export type UseStakingPageProps = {
 }
 
 export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
-  stakeNodes: CCN[]
-  filteredStakeNodes: CCN[]
+  stakeNodes?: CCN[]
+  filteredStakeNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
   stakeableOnly: boolean
@@ -61,7 +61,10 @@ export function useStakingPage(
   // -----------------------------
 
   const filterStakeNodes = useCallback(
-    (nodes: CCN[]) => nodes.filter((node) => nodeManager.isUserStake(node)),
+    (nodes?: CCN[]) => {
+      if (!nodes) return
+      return nodes.filter((node) => nodeManager.isUserStake(node))
+    },
     [nodeManager],
   )
 
@@ -76,6 +79,7 @@ export function useStakingPage(
   )
 
   const filteredNodes = useMemo(() => {
+    if (!baseFilteredNodes) return
     if (!stakeableOnly) return baseFilteredNodes
     if (!account) return baseFilteredNodes
 
@@ -89,11 +93,11 @@ export function useStakingPage(
   // -----------------------------
 
   const [tab, handleTabChange] = useState('stake')
-  const selectedTab = stakeNodes.length ? tab : 'nodes'
+  const selectedTab = stakeNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
     const tabs = [
-      { id: 'stake', name: 'My stakes', disabled: !stakeNodes.length },
+      { id: 'stake', name: 'My stakes', disabled: !stakeNodes?.length },
       { id: 'nodes', name: 'All core nodes' },
     ]
 
@@ -121,7 +125,7 @@ export function useStakingPage(
   )
 
   const userStake = useMemo(
-    () => stakeManager.totalStakedByUser(nodes),
+    () => stakeManager.totalStakedByUser(nodes || []),
     [nodes, stakeManager],
   )
 

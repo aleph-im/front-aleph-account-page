@@ -12,8 +12,8 @@ export type UseComputeResourceNodesProps = {
 export type UseComputeResourceNodesReturn = {
   account?: Account
   accountBalance?: number
-  nodes: CRN[]
-  filteredNodes: CRN[]
+  nodes?: CRN[]
+  filteredNodes?: CRN[]
   filter: string
   lastVersion?: NodeLastVersions
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -30,9 +30,7 @@ export function useComputeResourceNodes({
 
   // -----------------------------
 
-  const doRequest = useCallback(async () => {
-    return await nodeManager.getCRNNodes()
-  }, [nodeManager])
+  const doRequest = useCallback(() => nodeManager.getCRNNodes(), [nodeManager])
 
   // @note: Quick fix to refresh node list after staking/unstaking (@todo: Move nodes to app state && use ws feed)
   const [lastUpdate, setLastUpdate] = useState(Date.now())
@@ -72,24 +70,31 @@ export function useComputeResourceNodes({
 
   // -----------------------------
 
-  const filterNodes = useCallback((nodes: CRN[], query: string): CRN[] => {
-    if (!query) return nodes
-    return nodes.filter(
-      (node) =>
-        node.name.toLowerCase().includes(query.toLowerCase()) ||
-        (node.parentData?.name || '')
-          .toLowerCase()
-          .includes(query.toLowerCase()),
-    )
-  }, [])
+  const filterNodes = useCallback(
+    (query: string, nodes?: CRN[]): CRN[] | undefined => {
+      if (!nodes) return
+      if (!query) return nodes
 
-  const nodes = useMemo(
-    () => (prefetchNodes || data || []).sort((a, b) => b.score - a.score),
-    [prefetchNodes, data],
+      return nodes.filter(
+        (node) =>
+          node.name.toLowerCase().includes(query.toLowerCase()) ||
+          (node.parentData?.name || '')
+            .toLowerCase()
+            .includes(query.toLowerCase()),
+      )
+    },
+    [],
   )
 
+  const nodes = useMemo(() => {
+    const nodes = prefetchNodes || data
+    if (!nodes) return
+
+    return nodes.sort((a, b) => b.score - a.score)
+  }, [prefetchNodes, data])
+
   const filteredNodes = useMemo(
-    () => filterNodes(nodes, debouncedFilter),
+    () => filterNodes(debouncedFilter, nodes),
     [filterNodes, debouncedFilter, nodes],
   )
 

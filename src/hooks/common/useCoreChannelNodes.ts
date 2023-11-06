@@ -12,8 +12,8 @@ export type UseCoreChannelNodesProps = {
 export type UseCoreChannelNodesReturn = {
   account?: Account
   accountBalance?: number
-  nodes: CCN[]
-  filteredNodes: CCN[]
+  nodes?: CCN[]
+  filteredNodes?: CCN[]
   filter: string
   lastVersion?: NodeLastVersions
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -30,9 +30,7 @@ export function useCoreChannelNodes({
 
   // -----------------------------
 
-  const doRequest = useCallback(async () => {
-    return await nodeManager.getCCNNodes()
-  }, [nodeManager])
+  const doRequest = useCallback(() => nodeManager.getCCNNodes(), [nodeManager])
 
   // @note: Quick fix to refresh node list after staking/unstaking (@todo: Move nodes to app state && use ws feed)
   const [lastUpdate, setLastUpdate] = useState(Date.now())
@@ -72,20 +70,27 @@ export function useCoreChannelNodes({
 
   // -----------------------------
 
-  const filterNodes = useCallback((nodes: CCN[], query: string): CCN[] => {
-    if (!query) return nodes
-    return nodes.filter((node) =>
-      node.name.toLowerCase().includes(query.toLowerCase()),
-    )
-  }, [])
+  const filterNodes = useCallback(
+    (query: string, nodes?: CCN[]): CCN[] | undefined => {
+      if (!nodes) return
+      if (!query) return nodes
 
-  const nodes = useMemo(
-    () => (prefetchNodes || data || []).sort((a, b) => b.score - a.score),
-    [prefetchNodes, data],
+      return nodes.filter((node) =>
+        node.name.toLowerCase().includes(query.toLowerCase()),
+      )
+    },
+    [],
   )
 
+  const nodes = useMemo(() => {
+    const nodes = prefetchNodes || data
+    if (!nodes) return
+
+    return nodes.sort((a, b) => b.score - a.score)
+  }, [prefetchNodes, data])
+
   const filteredNodes = useMemo(
-    () => filterNodes(nodes, debouncedFilter),
+    () => filterNodes(debouncedFilter, nodes),
     [filterNodes, debouncedFilter, nodes],
   )
 

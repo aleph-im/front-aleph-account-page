@@ -6,6 +6,7 @@ import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
 import StakeRewardChart from '@/components/common/StakeRewardChart'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 
 export const StakingPage = memo((props) => {
   const {
@@ -64,11 +65,7 @@ export const StakingPage = memo((props) => {
                 </strong>
               </p>
             </div>
-            {nodes && (
-              <div tw="flex-1">
-                <RewardCalculator nodes={nodes} />
-              </div>
-            )}
+            <RewardCalculator nodes={nodes} />
             <StakeRewardChart
               rewards={userRewards}
               stake={userStake}
@@ -103,40 +100,39 @@ export const StakingPage = memo((props) => {
             icon={<Icon name="search" />}
           />
         </div>
-        {selectedTab === 'stake' ? (
-          <>
-            <StakingNodesTable
-              {...{
-                nodes,
-                filteredNodes: filteredStakeNodes,
-                stakeNodes,
-                accountBalance,
-                account,
-                handleStake,
-                handleUnStake,
-                showStakedAmount: true,
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {!nodes ? (
-              <>Loading...</>
-            ) : (
-              <StakingNodesTable
-                {...{
-                  nodes,
-                  filteredNodes,
-                  stakeNodes,
-                  accountBalance,
-                  account,
-                  handleStake,
-                  handleUnStake,
-                }}
-              />
-            )}
-          </>
-        )}
+        <div tw="relative">
+          <SpinnerOverlay show={!nodes} />
+          {nodes && filteredNodes && filteredStakeNodes && stakeNodes && (
+            <>
+              {selectedTab === 'stake' ? (
+                <StakingNodesTable
+                  {...{
+                    nodes,
+                    filteredNodes: filteredStakeNodes,
+                    stakeNodes,
+                    accountBalance,
+                    account,
+                    handleStake,
+                    handleUnStake,
+                    showStakedAmount: true,
+                  }}
+                />
+              ) : (
+                <StakingNodesTable
+                  {...{
+                    nodes,
+                    filteredNodes,
+                    stakeNodes,
+                    accountBalance,
+                    account,
+                    handleStake,
+                    handleUnStake,
+                  }}
+                />
+              )}
+            </>
+          )}
+        </div>
       </section>
     </>
   )

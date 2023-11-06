@@ -9,14 +9,14 @@ import ColorDot from '../ColorDot'
 import { SVGGradients } from '../charts'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L45
-export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
+export const StakeChart = memo(({ nodes }: { nodes?: CCN[] }) => {
   const stakeManager = useMemo(() => new StakeManager(), [])
 
   const theme = useTheme()
 
   const data = useMemo(() => {
-    const operatorsStake = stakeManager.totalStakedByOperators(nodes)
-    const totalStake = stakeManager.totalStaked(nodes)
+    const operatorsStake = stakeManager.totalStakedByOperators(nodes || [])
+    const totalStake = stakeManager.totalStaked(nodes || [])
     const usersStake = totalStake - operatorsStake
 
     return [
@@ -38,7 +38,7 @@ export const StakeChart = memo(({ nodes }: { nodes: CCN[] }) => {
   const disabledColor = `${theme.color.base0}20`
 
   return (
-    <Card1 tw="w-auto min-w-[9.5rem]">
+    <Card1 loading={!nodes} tw="w-auto min-w-[9.5rem]">
       <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
         STAKED
       </TextGradient>

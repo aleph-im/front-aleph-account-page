@@ -7,6 +7,7 @@ import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesT
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 
 export const ComputeResourceNodesPage = memo((props) => {
   const {
@@ -91,31 +92,32 @@ export const ComputeResourceNodesPage = memo((props) => {
             icon={<Icon name="search" />}
           />
         </div>
-        {selectedTab === 'user' ? (
-          <>
-            <ComputeResourceNodesTable
-              {...{
-                nodes,
-                filteredNodes: filteredUserNodes,
-                lastVersion,
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {!nodes ? (
-              <>Loading...</>
-            ) : (
-              <ComputeResourceNodesTable
-                {...{
-                  nodes,
-                  filteredNodes,
-                  lastVersion,
-                }}
-              />
-            )}
-          </>
-        )}
+        <div tw="relative">
+          <SpinnerOverlay show={!nodes} />
+          {nodes && filteredNodes && filteredUserNodes && (
+            <>
+              {selectedTab === 'user' ? (
+                <ComputeResourceNodesTable
+                  {...{
+                    nodes,
+                    filteredNodes: filteredUserNodes,
+                    lastVersion,
+                  }}
+                />
+              ) : (
+                <>
+                  <ComputeResourceNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes,
+                      lastVersion,
+                    }}
+                  />
+                </>
+              )}
+            </>
+          )}
+        </div>
       </section>
     </>
   )

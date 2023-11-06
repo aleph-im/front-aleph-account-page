@@ -6,7 +6,7 @@ import { StakeManager } from '@/domain/stake'
 import { CCN } from '@/domain/node'
 
 export type RewardCalculatorProps = {
-  nodes: CCN[]
+  nodes?: CCN[]
 }
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L63C13-L63C13
@@ -22,8 +22,9 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
     // @todo: Refactor this (use singleton)
     const rewardManager = new StakeManager()
 
-    const rewards = rewardManager.totalPerAlephPerDay(nodes) * (value || 0)
-    const apy = rewardManager.currentAPY(nodes) * 100
+    const rewards =
+      rewardManager.totalPerAlephPerDay(nodes || []) * (value || 0)
+    const apy = rewardManager.currentAPY(nodes || []) * 100
 
     return [
       {
@@ -38,7 +39,7 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
   }, [nodes, value])
 
   return (
-    <Card1>
+    <Card1 loading={!nodes}>
       <div tw="w-[20rem] overflow-auto">
         <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
           REWARD CALCULATOR

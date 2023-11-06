@@ -8,6 +8,7 @@ import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton/cmp'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -95,31 +96,30 @@ export const CoreChannelNodesPage = memo((props) => {
             icon={<Icon name="search" />}
           />
         </div>
-        {selectedTab === 'user' ? (
-          <>
-            <CoreChannelNodesTable
-              {...{
-                nodes,
-                filteredNodes: filteredUserNodes,
-                lastVersion,
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {!nodes ? (
-              <>Loading...</>
-            ) : (
-              <CoreChannelNodesTable
-                {...{
-                  nodes,
-                  filteredNodes,
-                  lastVersion,
-                }}
-              />
-            )}
-          </>
-        )}
+        <div tw="relative">
+          <SpinnerOverlay show={!nodes} />
+          {nodes && filteredNodes && filteredUserNodes && (
+            <>
+              {selectedTab === 'user' ? (
+                <CoreChannelNodesTable
+                  {...{
+                    nodes,
+                    filteredNodes: filteredUserNodes,
+                    lastVersion,
+                  }}
+                />
+              ) : (
+                <CoreChannelNodesTable
+                  {...{
+                    nodes,
+                    filteredNodes,
+                    lastVersion,
+                  }}
+                />
+              )}
+            </>
+          )}
+        </div>
       </section>
     </>
   )
