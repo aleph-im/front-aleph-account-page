@@ -51,14 +51,16 @@ export const ComputeResourceNodesPage = memo((props) => {
       </section>
       <section>
         <ToggleDashboard buttons={CreateNode}>
-          <div tw="flex items-stretch gap-6">
-            <ActiveNodeChart nodes={nodes} title="COMPUTE RESOURCE NODES" />
-            <div tw="flex flex-col justify-between">
+          <div tw="flex items-start gap-6">
+            <div tw="flex items-stretch gap-6">
+              <ActiveNodeChart nodes={nodes} title="COMPUTE RESOURCE NODES" />
+            </div>
+            <div tw="flex-auto self-stretch flex flex-col justify-between">
               <div>
                 <h1 className="tp-h7" tw="mb-0">
                   What is a compute node?
                 </h1>
-                <p>
+                <p className="fs-12">
                   Anyone can set up a Compute Resource Node (CRN) to contribute
                   to our decentralized network. These nodes play a crucial role
                   in our ecosystem, enabling various services. While no
@@ -67,11 +69,14 @@ export const ComputeResourceNodesPage = memo((props) => {
                   Node (CCN). A CCN operator can vouch for up to three CRNs,
                   ensuring fair and balanced participation.
                 </p>
-                <ExternalLinkButton href="https://docs.aleph.im/nodes/compute/">
+                <ExternalLinkButton
+                  href="https://docs.aleph.im/nodes/compute/"
+                  size="regular"
+                >
                   Node Setup Guide
                 </ExternalLinkButton>
               </div>
-              <div>{CreateNode}</div>
+              <div tw="mt-6">{CreateNode}</div>
             </div>
           </div>
         </ToggleDashboard>

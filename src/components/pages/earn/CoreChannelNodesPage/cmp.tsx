@@ -52,15 +52,17 @@ export const CoreChannelNodesPage = memo((props) => {
       </section>
       <section>
         <ToggleDashboard buttons={CreateNode}>
-          <div tw="flex items-stretch gap-6">
-            <StakeChart nodes={nodes} />
-            <ActiveNodeChart nodes={nodes} title="CORE CHANNEL NODES" />
-            <div tw="flex flex-col justify-between">
+          <div tw="flex items-start gap-6">
+            <div tw="flex items-stretch gap-6">
+              <StakeChart nodes={nodes} />
+              <ActiveNodeChart nodes={nodes} title="CORE CHANNEL NODES" />
+            </div>
+            <div tw="flex-auto self-stretch flex flex-col justify-between">
               <div>
                 <h1 className="tp-h7" tw="mb-0">
                   What is a core node?
                 </h1>
-                <p>
+                <p className="fs-12">
                   CCNs are the cornerstone of Aleph.im, responsible for the
                   security and functionality of our peer-to-peer network. These
                   dedicated nodes, backed by a commitment of 200,000 Aleph
@@ -70,12 +72,14 @@ export const CoreChannelNodesPage = memo((props) => {
                   how to set up a node and detailed technical and token
                   requirements, please visit our
                 </p>
-                <ExternalLinkButton href="https://docs.aleph.im/nodes/core/">
+                <ExternalLinkButton
+                  href="https://docs.aleph.im/nodes/core/"
+                  size="regular"
+                >
                   Node Setup Guide
                 </ExternalLinkButton>
               </div>
-
-              <div>{CreateNode}</div>
+              <div tw="mt-6">{CreateNode}</div>
             </div>
           </div>
         </ToggleDashboard>

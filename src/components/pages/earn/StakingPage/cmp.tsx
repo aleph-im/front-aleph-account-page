@@ -43,12 +43,12 @@ export const StakingPage = memo((props) => {
       </section>
       <section>
         <ToggleDashboard>
-          <div tw="flex items-stretch gap-6">
-            <div tw="flex-auto">
+          <div tw="flex items-start gap-6">
+            <div tw="flex-auto self-stretch">
               <h2 className="tp-h7" tw="mb-0">
                 What is staking with Aleph.im?
               </h2>
-              <p>
+              <p className="fs-16">
                 Staking is the heartbeat of our dynamic peer-to-peer network,
                 driving security, decentralization, and rewards. Stakers, the
                 lifeblood of our ecosystem, with a minimum stake of 10,000 Aleph
@@ -65,13 +65,15 @@ export const StakingPage = memo((props) => {
                 </strong>
               </p>
             </div>
-            <RewardCalculator nodes={nodes} />
-            <StakeRewardChart
-              rewards={userRewards}
-              stake={userStake}
-              nodes={nodes}
-              disabled={!account}
-            />
+            <div tw="flex items-stretch gap-6">
+              <RewardCalculator nodes={nodes} />
+              <StakeRewardChart
+                rewards={userRewards}
+                stake={userStake}
+                nodes={nodes}
+                disabled={!account}
+              />
+            </div>
           </div>
         </ToggleDashboard>
       </section>
