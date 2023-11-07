@@ -40,12 +40,23 @@ export const ActiveNodeChart = memo(
 
     return (
       <Card1 loading={!nodes} tw="w-auto min-w-[9.25rem]">
-        <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
+        <TextGradient
+          forwardedAs="h3"
+          type="info"
+          color="main0"
+          tw="m-0 min-h-[2rem]"
+        >
           {title}
         </TextGradient>
 
         <div tw="flex flex-col items-center">
-          <PieChart data={data} width={100} height={100} tw="-mb-10">
+          <PieChart
+            data={data}
+            width={100}
+            height={100}
+            margin={{}}
+            tw="my-3 min-h-[6.25rem]"
+          >
             <defs>
               <SVGGradients data={data} />
             </defs>
@@ -82,7 +93,7 @@ export const ActiveNodeChart = memo(
             </Pie>
           </PieChart>
 
-          <div tw="mt-4 flex flex-col gap-4 z-1">
+          <div tw="mt-1 flex flex-col gap-4 z-1">
             {data.map((entry) => (
               <div key={entry.label} tw="flex items-center gap-3">
                 <ColorDot

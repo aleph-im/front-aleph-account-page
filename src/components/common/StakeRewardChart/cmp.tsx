@@ -60,13 +60,19 @@ export const StakeRewardChart = memo(
           forwardedAs="h3"
           type="info"
           color={disabled ? 'base0' : 'main0'}
-          tw="mb-6"
+          tw="m-0 min-h-[2rem]"
         >
           STAKING REWARDS
         </TextGradient>
 
         <div tw="flex flex-col items-center">
-          <PieChart data={data} width={100} height={100}>
+          <PieChart
+            data={data}
+            width={100}
+            height={100}
+            margin={{}}
+            tw="my-3 min-h-[6.25rem]"
+          >
             <defs>
               <SVGGradients data={data} />
             </defs>
@@ -103,7 +109,7 @@ export const StakeRewardChart = memo(
             </Pie>
           </PieChart>
 
-          <div tw="mt-4 flex flex-col gap-4">
+          <div tw="mt-1 flex flex-col gap-4">
             <div tw="flex items-center gap-3">
               <ColorDot $color="main1" $size="1.25rem" />
               <div

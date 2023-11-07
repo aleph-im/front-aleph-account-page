@@ -39,12 +39,23 @@ export const StakeChart = memo(({ nodes }: { nodes?: CCN[] }) => {
 
   return (
     <Card1 loading={!nodes} tw="w-auto min-w-[9.5rem]">
-      <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
+      <TextGradient
+        forwardedAs="h3"
+        type="info"
+        color="main0"
+        tw="m-0 min-h-[2rem]"
+      >
         STAKED
       </TextGradient>
 
       <div tw="flex flex-col items-center">
-        <PieChart data={data} width={100} height={100}>
+        <PieChart
+          data={data}
+          width={100}
+          height={100}
+          margin={{}}
+          tw="my-3 min-h-[6.25rem]"
+        >
           <defs>
             <SVGGradients data={data} />
           </defs>
@@ -81,7 +92,7 @@ export const StakeChart = memo(({ nodes }: { nodes?: CCN[] }) => {
           </Pie>
         </PieChart>
 
-        <div tw="mt-4 flex flex-col gap-4">
+        <div tw="mt-1 flex flex-col gap-4">
           {data.map((entry) => (
             <div key={entry.label} tw="flex items-center gap-3">
               <ColorDot

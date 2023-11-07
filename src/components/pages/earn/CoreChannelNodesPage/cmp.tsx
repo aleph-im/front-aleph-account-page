@@ -9,6 +9,7 @@ import ExternalLinkButton from '@/components/common/ExternalLinkButton/cmp'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
+import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -56,6 +57,7 @@ export const CoreChannelNodesPage = memo((props) => {
             <div tw="flex items-stretch gap-6">
               <StakeChart nodes={nodes} />
               <ActiveNodeChart nodes={nodes} title="CORE CHANNEL NODES" />
+              <NetworkHealthChart nodes={nodes} title="CCN NETWORK HEALTH" />
             </div>
             <div tw="flex-auto self-stretch flex flex-col justify-between">
               <div>
