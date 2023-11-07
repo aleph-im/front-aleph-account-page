@@ -80,15 +80,19 @@ export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   children?: ReactNode
 }
 
-export const SidebarLink = memo(
-  ({ href, icon, children, isOpen }: SidebarLinkProps) => {
+const SidebarLink = memo(
+  ({ href, icon, children, isOpen, ...rest }: SidebarLinkProps) => {
     const router = useRouter()
     const isActive = router.pathname.indexOf(href) >= 0
 
-    const props = { href, $isActive: isActive, $isOpen: isOpen }
+    const props = { href, $isActive: isActive, $isOpen: isOpen, ...rest }
 
-    const iconCmp = icon && (
-      <Icon tw="p-1" {...{ name: icon, size: 'lg', prefix: 'custom' }} />
+    const iconCmp = useMemo(
+      () =>
+        icon && (
+          <Icon tw="p-1" {...{ name: icon, size: 'lg', prefix: 'custom' }} />
+        ),
+      [icon],
     )
 
     return !children ? (
@@ -103,7 +107,7 @@ export const SidebarLink = memo(
 )
 SidebarLink.displayName = 'SidebarLink'
 
-export const Sidebar = memo(() => {
+const Sidebar = memo(() => {
   const [open, setOpen] = useState<boolean | undefined>(undefined)
 
   const handleToggle = useCallback(
@@ -157,7 +161,7 @@ export const Sidebar = memo(() => {
         />
         <SidebarLink
           icon="explore"
-          href="/https://explorer.aleph.im/"
+          href="https://explorer.aleph.im/"
           target="_blank"
         />
         <SidebarLink
