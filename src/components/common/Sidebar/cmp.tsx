@@ -1,5 +1,14 @@
-import { IconName } from '@fortawesome/fontawesome-svg-core'
-import { Icon } from '@aleph-front/aleph-core'
+import {
+  AnchorHTMLAttributes,
+  ReactNode,
+  memo,
+  useCallback,
+  useMemo,
+  useState,
+  MouseEvent,
+} from 'react'
+import { useRouter } from 'next/router'
+import { Icon, IconName } from '@aleph-front/aleph-core'
 import {
   StyledLogo,
   StyledNav1,
@@ -13,16 +22,6 @@ import {
   StyledStorageContainer,
   StyledToggleButton,
 } from './styles'
-import {
-  AnchorHTMLAttributes,
-  ReactNode,
-  memo,
-  useCallback,
-  useMemo,
-  useState,
-  MouseEvent,
-} from 'react'
-import { useRouter } from 'next/router'
 import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
 
 export type Route = {
@@ -36,34 +35,39 @@ const routes: Route[] = [
   {
     name: 'EARN',
     path: '/earn',
-    icon: 'circle-nodes',
+    icon: 'earn',
     children: [
       {
         name: 'Staking',
         path: '/earn/staking',
+        icon: 'earn',
       },
       {
         name: 'Core nodes',
         path: '/earn/ccn',
+        icon: 'ccn',
       },
       {
         name: 'Compute nodes',
         path: '/earn/crn',
+        icon: 'crn',
       },
     ],
   },
   {
     name: 'PROFILE',
     path: '/profile',
-    icon: 'user',
+    icon: 'profile',
     children: [
       {
         name: 'My profile',
         path: '/profile',
+        icon: 'profile',
       },
       {
         name: 'Notification center',
         path: '/notification',
+        icon: 'notification',
       },
     ],
   },
@@ -84,7 +88,7 @@ export const SidebarLink = memo(
     const props = { href, $isActive: isActive, $isOpen: isOpen }
 
     const iconCmp = icon && (
-      <Icon tw="p-1" {...{ name: icon as IconName, size: 'lg' }} />
+      <Icon tw="p-1" {...{ name: icon, size: 'lg', prefix: 'custom' }} />
     )
 
     return !children ? (
@@ -146,8 +150,21 @@ export const Sidebar = memo(() => {
             }}
           />
         ))}
-        <SidebarLink href="/earn/bookmark" icon="bookmark"></SidebarLink>
-        <SidebarLink href="/earn/dropbox" icon="dropbox"></SidebarLink>
+        <SidebarLink
+          icon="console"
+          href="https://console.aleph.im/"
+          target="_blank"
+        />
+        <SidebarLink
+          icon="explore"
+          href="/https://explorer.aleph.im/"
+          target="_blank"
+        />
+        <SidebarLink
+          icon="swap"
+          href="https://swap.aleph.im/"
+          target="_blank"
+        />
       </StyledNav1>
       <StyledNav2 onClick={handleToggle}>
         <StyledNav2LinkContainer onClick={handlePreventToggle}>
