@@ -3,12 +3,12 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { Button, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useComputeResourceNodesPage } from '@/hooks/pages/earn/useComputeResourceNodesPage'
-import ActiveNodeChart from '@/components/common/ActiveNodeChart'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
+import HostingProviderChart from '@/components/common/HostingProviderChart'
 
 export const ComputeResourceNodesPage = memo((props) => {
   const {
@@ -54,8 +54,11 @@ export const ComputeResourceNodesPage = memo((props) => {
         <ToggleDashboard buttons={CreateNode}>
           <div tw="flex items-start gap-6">
             <div tw="flex items-stretch gap-6">
-              <ActiveNodeChart nodes={nodes} title="COMPUTE RESOURCE NODES" />
               <NetworkHealthChart nodes={nodes} title="CRN NETWORK HEALTH" />
+              <HostingProviderChart
+                nodes={nodes}
+                title="TOP HOSTING PROVIDER"
+              />
             </div>
             <div tw="flex-auto self-stretch flex flex-col justify-between">
               <div>

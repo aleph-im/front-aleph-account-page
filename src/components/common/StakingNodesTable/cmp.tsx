@@ -7,9 +7,9 @@ import LinkedCell from '@/components/common/LinkedCell'
 import ScoreCell from '@/components/common/ScoreCell'
 import APYCell from '@/components/common/APYCell'
 import StakedCell from '@/components/common/StakedCell'
-import StakeButton from '@/components/common/StakeButton/cmp'
+import StakeButton from '@/components/common/StakeButton'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import AmountCell from '@/components/common/AmountCell/cmp'
+import AmountCell from '@/components/common/AmountCell'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]

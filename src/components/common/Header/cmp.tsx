@@ -3,7 +3,7 @@ import { StyledHeader, StyledButton, StyledWalletPicker } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import { useHeader } from '@/hooks/pages/useHeader'
 import { breadcrumbNames } from '@/helpers/constants'
-import AutoBreadcrumb from '@/components/common/AutoBreadcrumb/cmp'
+import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
 import { memo } from 'react'
 import { createPortal } from 'react-dom'
 

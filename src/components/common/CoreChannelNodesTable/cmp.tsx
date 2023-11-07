@@ -7,7 +7,7 @@ import LinkedCell from '@/components/common/LinkedCell'
 import ScoreCell from '@/components/common/ScoreCell'
 import APYCell from '@/components/common/APYCell'
 import StakedCell from '@/components/common/StakedCell'
-import VersionCell from '../VersionCell/cmp'
+import VersionCell from '../VersionCell'
 
 export type CoreChannelNodesTableProps = {
   nodes: CCN[]

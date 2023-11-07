@@ -1,7 +1,7 @@
 import { ChangeEvent, memo, useCallback, useMemo, useState } from 'react'
 import { TextGradient, TextInput } from '@aleph-front/aleph-core'
 import SummaryTable from '../SummaryTable'
-import Card1 from '../Card1/cmp'
+import Card1 from '../Card1'
 import { StakeManager } from '@/domain/stake'
 import { CCN } from '@/domain/node'
 

@@ -4,7 +4,7 @@ import { CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import ScoreCell from '@/components/common/ScoreCell'
-import VersionCell from '../VersionCell/cmp'
+import VersionCell from '../VersionCell'
 import DecentralizedCell from '../DecentralizedCell'
 import CRNRewardsCell from '../CRNRewardsCell'
 

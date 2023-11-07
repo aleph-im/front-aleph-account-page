@@ -8,8 +8,8 @@ import Header from '@/components/common/Header'
 import NotificationProvider from '@/components/common/NotificationProvider'
 import Main from '@/components/common/Main'
 import Sidebar from '@/components/common/Sidebar'
-import Viewport from '@/components/common/Viewport/cmp'
-import Content from '@/components/common/Content/cmp'
+import Viewport from '@/components/common/Viewport'
+import Content from '@/components/common/Content'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

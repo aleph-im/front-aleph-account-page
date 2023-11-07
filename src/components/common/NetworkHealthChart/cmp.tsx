@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react'
 import { AlephNode } from '@/domain/node'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
-import Card1 from '../Card1/cmp'
+import Card1 from '../Card1'
 import { TextGradient } from '@aleph-front/aleph-core'
 import ColorDot from '../ColorDot'
 
