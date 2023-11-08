@@ -31,25 +31,25 @@ export const NetworkHealthChart = memo(
       return [
         {
           label: 'active nodes',
-          value: activeNodes > 9 ? activeNodes : `${activeNodes} nodes`,
+          value: `${activeNodes} nodes`,
           percentage: activeNodes / totalNodes,
           color: 'main1',
         },
         {
           label: '50% < 80%',
-          value: warningNodes > 9 ? warningNodes : `${warningNodes} nodes`,
+          value: `${warningNodes} nodes`,
           percentage: warningNodes / totalNodes,
           color: 'main2',
         },
         {
           label: '< 50%',
-          value: errorNodes > 9 ? errorNodes : `${errorNodes} nodes`,
+          value: `${errorNodes} nodes`,
           percentage: errorNodes / totalNodes,
           color: 'error',
         },
         {
           label: 'other',
-          value: otherNodes > 9 ? otherNodes : `${otherNodes} nodes`,
+          value: `${otherNodes} nodes`,
           percentage: otherNodes / totalNodes,
           color: 'transparent',
         },
