@@ -9,7 +9,7 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
-import CRNRewardChart from '@/components/common/CRNRewardChart'
+import RewardChart from '@/components/common/RewardChart'
 
 export const ComputeResourceNodesPage = memo((props) => {
   const {
@@ -23,6 +23,7 @@ export const ComputeResourceNodesPage = memo((props) => {
     filter,
     lastVersion,
     userRewards,
+    lastDistribution,
     handleTabChange,
     handleFilterChange,
   } = useComputeResourceNodesPage(props)
@@ -63,9 +64,10 @@ export const ComputeResourceNodesPage = memo((props) => {
                 nodes={nodes}
                 title="TOP HOSTING PROVIDER"
               />
-              <CRNRewardChart
-                rewards={userRewards}
-                nodes={userNodes}
+              <RewardChart
+                title="CRN REWARDS"
+                calculatedRewards={userRewards}
+                distributionTimestamp={lastDistribution}
                 disabled={!account || !userNodes?.length}
               />
             </div>

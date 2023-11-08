@@ -6,7 +6,7 @@ import {
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
-import { useAccountStakingRewards } from '@/hooks/common/useUserStakingRewards'
+import { useAccountRewards } from '@/hooks/common/useRewards'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
@@ -22,6 +22,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   stakeableOnly: boolean
   userStake: number
   userRewards?: number
+  lastDistribution?: number
   nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
@@ -34,7 +35,10 @@ export function useStakingPage(
 ): UseStakingPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
 
-  const { rewards: userRewards } = useAccountStakingRewards({
+  const {
+    calculatedRewards: userRewards,
+    distributionTimestamp: lastDistribution,
+  } = useAccountRewards({
     address: account?.address || '',
   })
 
@@ -164,6 +168,7 @@ export function useStakingPage(
     stakeableOnly,
     userStake,
     userRewards,
+    lastDistribution,
     nodesIssues,
     ...rest,
     handleTabChange,

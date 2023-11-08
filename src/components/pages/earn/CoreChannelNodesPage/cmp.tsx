@@ -9,7 +9,7 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
-import CCNRewardChart from '@/components/common/CCNRewardChart'
+import RewardChart from '@/components/common/RewardChart'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -23,6 +23,7 @@ export const CoreChannelNodesPage = memo((props) => {
     filter,
     lastVersion,
     userRewards,
+    lastDistribution,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -60,10 +61,10 @@ export const CoreChannelNodesPage = memo((props) => {
             <div tw="flex items-stretch gap-6">
               <NetworkHealthChart nodes={nodes} title="CCN NETWORK HEALTH" />
               <StakeChart nodes={nodes} />
-              <CCNRewardChart
-                rewards={userRewards}
-                nodes={userNodes}
-                allNodes={nodes}
+              <RewardChart
+                title="CCN REWARDS"
+                calculatedRewards={userRewards}
+                distributionTimestamp={lastDistribution}
                 disabled={!account || !userNodes?.length}
               />
             </div>

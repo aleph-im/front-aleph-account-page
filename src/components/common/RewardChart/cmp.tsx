@@ -8,59 +8,66 @@ import { SVGGradients } from '../charts'
 
 export type RewardChartProps = {
   title: string
-  estimatedTotalRewards?: number
-  distributionRewards?: number
-  distributionFrequency: number
+  calculatedRewards?: number
+  distributionTimestamp?: number
+  distributionInterval?: number
   disabled?: boolean
-  loading?: boolean
 }
 
 export const RewardChart = memo(
   ({
     title,
-    estimatedTotalRewards,
-    distributionRewards,
-    distributionFrequency,
+    calculatedRewards,
+    distributionTimestamp,
+    distributionInterval = 10 * 24 * 60 * 60 * 1000, // 10 days
     disabled,
-    loading,
     ...rest
   }: RewardChartProps) => {
     const theme = useTheme()
 
-    const pendingDays = useMemo(() => {
-      if (distributionRewards === undefined) return distributionFrequency
-      if (estimatedTotalRewards === undefined) return distributionFrequency
+    const loading =
+      calculatedRewards === undefined || distributionTimestamp === undefined
 
-      const userRewards = distributionRewards
-      const percent = Math.max(1 - userRewards / estimatedTotalRewards, 0)
+    const pendingTime = useMemo(() => {
+      if (distributionTimestamp === undefined) return distributionInterval
 
-      if (Number.isNaN(percent)) return distributionFrequency
+      const elapsedFromLast = Date.now() - distributionTimestamp
+      const timeTillNext = distributionInterval - elapsedFromLast
 
-      return Math.ceil(distributionFrequency * percent)
-    }, [distributionFrequency, distributionRewards, estimatedTotalRewards])
+      return Math.max(Math.ceil(timeTillNext), 0)
+    }, [distributionTimestamp, distributionInterval])
+
+    const pendingDays = useMemo(
+      () => Math.ceil(pendingTime / (1000 * 60 * 60 * 24)),
+      [pendingTime],
+    )
 
     const data = useMemo(() => {
-      if (distributionRewards === undefined) return []
-      if (estimatedTotalRewards === undefined) return []
+      if (calculatedRewards === undefined) return []
 
-      const userRewards = distributionRewards
-      const pendingRewards = estimatedTotalRewards - userRewards
+      const elapsedTime = distributionInterval - pendingTime
+      const elapsedTimeRatio = elapsedTime / distributionInterval
+      const pendingRewards = calculatedRewards * elapsedTimeRatio
 
       return [
         {
           label: 'Estimated Rewards',
-          value: userRewards,
-          percentage: userRewards / estimatedTotalRewards,
+          value: calculatedRewards,
+          percentage: disabled ? 0 : elapsedTime / distributionInterval,
           gradient: 'main1',
         },
         {
           label: 'Pending rewards',
           value: pendingRewards,
-          percentage: pendingRewards / estimatedTotalRewards,
+          percentage: disabled
+            ? 0
+            : calculatedRewards && pendingTime / distributionInterval,
           color: 'transparent',
         },
       ]
-    }, [estimatedTotalRewards, distributionRewards])
+    }, [disabled, calculatedRewards, distributionInterval, pendingTime])
+
+    const disabledColor = `${theme.color.base0}20`
 
     return (
       <Card1
@@ -98,7 +105,7 @@ export const RewardChart = memo(
               startAngle={360 + 90}
               endAngle={0 + 90}
               isAnimationActive={false}
-              fill={`${theme.color.base0}20`}
+              fill={disabledColor}
             />
             <Pie
               data={data}
@@ -110,8 +117,11 @@ export const RewardChart = memo(
               endAngle={0 + 90}
             >
               {data.map((entry) => {
-                const color = `gr-${entry.gradient}`
-                const fill = entry.gradient
+                const color = disabled ? disabledColor : `gr-${entry.gradient}`
+
+                const fill = disabled
+                  ? disabledColor
+                  : entry.gradient
                   ? `url(#${color})`
                   : entry.color
                   ? theme.color[entry.color] || entry.color
@@ -124,14 +134,17 @@ export const RewardChart = memo(
 
           <div tw="mt-1 flex flex-col gap-4">
             <div tw="flex items-center gap-3">
-              <ColorDot $color="main1" $size="1.25rem" />
+              <ColorDot
+                $color={disabled ? disabledColor : 'main1'}
+                $size="1.25rem"
+              />
               <div
                 tw="flex flex-col justify-between leading-4! gap-1 not-italic whitespace-nowrap"
                 className="tp-body3"
               >
                 <div>
                   <div tw="inline-flex gap-1 items-center">
-                    {(distributionRewards || 0).toFixed(2)}
+                    {(calculatedRewards || 0).toFixed(2)}
                     <Logo text="" size="0.75rem" />
                   </div>
                 </div>

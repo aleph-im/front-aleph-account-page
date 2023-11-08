@@ -7,7 +7,7 @@ import {
   useComputeResourceNodes,
 } from '@/hooks/common/useComputeResourceNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
-import { useStakingRewards } from '@/hooks/common/useUserStakingRewards'
+import { useLastRewards } from '@/hooks/common/useRewards'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -20,6 +20,7 @@ export type UseComputeResourceNodesPageReturn =
     selectedTab: string
     tabs: TabsProps['tabs']
     userRewards?: number
+    lastDistribution?: number
     nodesIssues: Record<string, string>
     handleTabChange: (tab: string) => void
   }
@@ -86,16 +87,19 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
-  const { rewards } = useStakingRewards()
+  const { lastRewardsCalculation, lastRewardsDistribution } = useLastRewards()
+
   const userRewards = useMemo(
     () =>
-      rewards
+      lastRewardsCalculation
         ? userNodes?.reduce((ac, cv) => {
-            return ac + (rewards[cv.reward] || 0)
+            return ac + (lastRewardsCalculation.rewards[cv.reward] || 0)
           }, 0)
         : undefined,
-    [rewards, userNodes],
+    [lastRewardsCalculation, userNodes],
   )
+
+  const lastDistribution = lastRewardsDistribution?.timestamp
 
   // -----------------------------
 
@@ -109,6 +113,7 @@ export function useComputeResourceNodesPage(
     selectedTab,
     tabs,
     userRewards,
+    lastDistribution,
     nodesIssues,
     ...rest,
     handleTabChange,

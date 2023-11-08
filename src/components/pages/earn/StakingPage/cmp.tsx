@@ -4,9 +4,9 @@ import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
-import StakeRewardChart from '@/components/common/StakeRewardChart'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
+import RewardChart from '@/components/common/RewardChart'
 
 export const StakingPage = memo((props) => {
   const {
@@ -22,6 +22,7 @@ export const StakingPage = memo((props) => {
     stakeableOnly,
     userStake,
     userRewards,
+    lastDistribution,
     handleTabChange,
     handleFilterChange,
     handleStake,
@@ -67,10 +68,10 @@ export const StakingPage = memo((props) => {
             </div>
             <div tw="flex items-stretch gap-6">
               <RewardCalculator nodes={nodes} />
-              <StakeRewardChart
-                rewards={userRewards}
-                stake={userStake}
-                nodes={nodes}
+              <RewardChart
+                title="STAKING REWARDS"
+                calculatedRewards={userRewards}
+                distributionTimestamp={lastDistribution}
                 disabled={!account || !userStake}
               />
             </div>
