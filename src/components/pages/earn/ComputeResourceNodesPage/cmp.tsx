@@ -9,16 +9,20 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
+import CRNRewardChart from '@/components/common/CRNRewardChart'
 
 export const ComputeResourceNodesPage = memo((props) => {
   const {
+    account,
     nodes,
+    userNodes,
     filteredNodes,
     filteredUserNodes,
     tabs,
     selectedTab,
     filter,
     lastVersion,
+    userRewards,
     handleTabChange,
     handleFilterChange,
   } = useComputeResourceNodesPage(props)
@@ -58,6 +62,11 @@ export const ComputeResourceNodesPage = memo((props) => {
               <HostingProviderChart
                 nodes={nodes}
                 title="TOP HOSTING PROVIDER"
+              />
+              <CRNRewardChart
+                rewards={userRewards}
+                nodes={userNodes}
+                disabled={!account || !userNodes?.length}
               />
             </div>
             <div tw="flex-auto self-stretch flex flex-col justify-between">

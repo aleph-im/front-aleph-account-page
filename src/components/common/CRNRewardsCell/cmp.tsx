@@ -8,7 +8,7 @@ export const CRNRewardsCell = memo(({ node }: { node: CRN }) => {
   // @todo: Refactor this (use singleton)
   const rewardManager = new StakeManager()
 
-  const rewards = rewardManager.computeCRNRewards(node)
+  const rewards = rewardManager.CRNRewardsPerDay(node)
   const isNotFullyLinked = useMemo(() => !node.parent, [node])
 
   return (

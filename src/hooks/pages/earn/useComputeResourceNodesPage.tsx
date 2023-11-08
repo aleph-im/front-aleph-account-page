@@ -1,11 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
-import { TabsProps } from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
 import { CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
   useComputeResourceNodes,
 } from '@/hooks/common/useComputeResourceNodes'
+import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useStakingRewards } from '@/hooks/common/useUserStakingRewards'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -17,6 +19,8 @@ export type UseComputeResourceNodesPageReturn =
     filteredUserNodes?: CRN[]
     selectedTab: string
     tabs: TabsProps['tabs']
+    userRewards?: number
+    nodesIssues: Record<string, string>
     handleTabChange: (tab: string) => void
   }
 
@@ -24,6 +28,8 @@ export function useComputeResourceNodesPage(
   props: UseComputeResourceNodesPageProps,
 ): UseComputeResourceNodesPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
+
+  // -----------------------------
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
@@ -52,17 +58,44 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
+  const { nodesIssues, warningFlag } = useNodeIssues({ nodes: userNodes })
+
+  // -----------------------------
+
   const [tab, handleTabChange] = useState('user')
   const selectedTab = userNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
-    const tabs = [
-      { id: 'user', name: 'My compute nodes', disabled: !userNodes?.length },
+    const tabs: TabsProps['tabs'] = [
+      {
+        id: 'user',
+        name: 'My compute nodes',
+        disabled: !userNodes?.length,
+        label: warningFlag
+          ? {
+              label: <NotificationBadge>{warningFlag}</NotificationBadge>,
+              position: 'top',
+            }
+          : undefined,
+      },
       { id: 'nodes', name: 'All compute nodes' },
     ]
 
     return tabs
-  }, [userNodes])
+  }, [userNodes, warningFlag])
+
+  // -----------------------------
+
+  const { rewards } = useStakingRewards()
+  const userRewards = useMemo(
+    () =>
+      rewards
+        ? userNodes?.reduce((ac, cv) => {
+            return ac + (rewards[cv.reward] || 0)
+          }, 0)
+        : undefined,
+    [rewards, userNodes],
+  )
 
   // -----------------------------
 
@@ -75,6 +108,8 @@ export function useComputeResourceNodesPage(
     filteredUserNodes,
     selectedTab,
     tabs,
+    userRewards,
+    nodesIssues,
     ...rest,
     handleTabChange,
   }

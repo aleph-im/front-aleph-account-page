@@ -1,11 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
-import { TabsProps } from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
 import { CCN, NodeManager } from '@/domain/node'
 import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
+import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useStakingRewards } from '@/hooks/common/useUserStakingRewards'
 
 export type UseCoreChannelNodesPageProps = {
   nodes?: CCN[]
@@ -16,6 +18,8 @@ export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
   filteredUserNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
+  userRewards?: number
+  nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
 }
 
@@ -51,17 +55,44 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
+  const { nodesIssues, warningFlag } = useNodeIssues({ nodes: userNodes })
+
+  // -----------------------------
+
   const [tab, handleTabChange] = useState('user')
   const selectedTab = userNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
-    const tabs = [
-      { id: 'user', name: 'My core nodes', disabled: !userNodes?.length },
+    const tabs: TabsProps['tabs'] = [
+      {
+        id: 'user',
+        name: 'My core nodes',
+        disabled: !userNodes?.length,
+        label: warningFlag
+          ? {
+              label: <NotificationBadge>{warningFlag}</NotificationBadge>,
+              position: 'top',
+            }
+          : undefined,
+      },
       { id: 'nodes', name: 'All core nodes' },
     ]
 
     return tabs
-  }, [userNodes])
+  }, [userNodes, warningFlag])
+
+  // -----------------------------
+
+  const { rewards } = useStakingRewards()
+  const userRewards = useMemo(
+    () =>
+      rewards
+        ? userNodes?.reduce((ac, cv) => {
+            return ac + (rewards[cv.reward] || 0)
+          }, 0)
+        : undefined,
+    [rewards, userNodes],
+  )
 
   // -----------------------------
 
@@ -74,6 +105,8 @@ export function useCoreChannelNodesPage(
     filteredUserNodes,
     selectedTab,
     tabs,
+    userRewards,
+    nodesIssues,
     ...rest,
     handleTabChange,
   }

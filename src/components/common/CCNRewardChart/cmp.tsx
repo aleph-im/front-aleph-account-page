@@ -3,37 +3,41 @@ import { CCN } from '@/domain/node'
 import { StakeManager } from '@/domain/stake'
 import RewardChart from '../RewardChart'
 
-export type StakeRewardChartProps = {
+export type CCNRewardChartProps = {
   nodes?: CCN[]
+  allNodes?: CCN[]
   rewards?: number
-  stake: number
   disabled?: boolean
 }
 
-export const StakeRewardChart = memo(
+export const CCNRewardChart = memo(
   ({
     nodes,
+    allNodes,
     rewards: distributionRewards,
-    stake,
     ...rest
-  }: StakeRewardChartProps) => {
+  }: CCNRewardChartProps) => {
     const stakeManager = useMemo(() => new StakeManager(), [])
 
-    const loading = !nodes || distributionRewards === undefined
+    const loading = !nodes || !allNodes || distributionRewards === undefined
     const distributionFrequency = 10
 
     const estimatedTotalRewards = useMemo(() => {
       if (!nodes) return
+      if (!allNodes) return
 
-      return (
-        stakeManager.stakingRewardsPerDay(stake, nodes) * distributionFrequency
+      return nodes.reduce(
+        (ac, node) =>
+          ac +
+          stakeManager.CCNRewardsPerDay(node, allNodes) * distributionFrequency,
+        0,
       )
-    }, [nodes, stake, stakeManager])
+    }, [nodes, allNodes, stakeManager])
 
     return (
       <RewardChart
         {...{
-          title: 'STAKING REWARDS',
+          title: 'CCN REWARDS',
           estimatedTotalRewards,
           distributionRewards,
           distributionFrequency,
@@ -44,6 +48,6 @@ export const StakeRewardChart = memo(
     )
   },
 )
-StakeRewardChart.displayName = 'StakeRewardChart'
+CCNRewardChart.displayName = 'CCNRewardChart'
 
-export default StakeRewardChart
+export default CCNRewardChart

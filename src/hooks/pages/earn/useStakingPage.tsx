@@ -5,8 +5,9 @@ import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
-import { useUserStakingRewards } from '@/hooks/common/useUserStakingRewards'
-import { TabsProps } from '@aleph-front/aleph-core'
+import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useAccountStakingRewards } from '@/hooks/common/useUserStakingRewards'
+import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
 export type UseStakingPageProps = {
@@ -21,6 +22,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   stakeableOnly: boolean
   userStake: number
   userRewards?: number
+  nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
   handleUnStake: (nodeHash: string) => void
@@ -32,7 +34,9 @@ export function useStakingPage(
 ): UseStakingPageReturn {
   const [{ account, accountBalance = 0 }] = useAppState()
 
-  const { rewards: userRewards } = useUserStakingRewards()
+  const { rewards: userRewards } = useAccountStakingRewards({
+    address: account?.address || '',
+  })
 
   // -----------------------------
 
@@ -92,17 +96,34 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const { nodesIssues, warningFlag } = useNodeIssues({
+    nodes: stakeNodes,
+    isStaking: true,
+  })
+
+  // -----------------------------
+
   const [tab, handleTabChange] = useState('stake')
   const selectedTab = stakeNodes?.length ? tab : 'nodes'
 
   const tabs = useMemo(() => {
-    const tabs = [
-      { id: 'stake', name: 'My stakes', disabled: !stakeNodes?.length },
+    const tabs: TabsProps['tabs'] = [
+      {
+        id: 'stake',
+        name: 'My stakes',
+        disabled: !stakeNodes?.length,
+        label: warningFlag
+          ? {
+              label: <NotificationBadge>{warningFlag}</NotificationBadge>,
+              position: 'top',
+            }
+          : undefined,
+      },
       { id: 'nodes', name: 'All core nodes' },
     ]
 
     return tabs
-  }, [stakeNodes])
+  }, [stakeNodes, warningFlag])
 
   // -----------------------------
 
@@ -143,6 +164,7 @@ export function useStakingPage(
     stakeableOnly,
     userStake,
     userRewards,
+    nodesIssues,
     ...rest,
     handleTabChange,
     handleStake,

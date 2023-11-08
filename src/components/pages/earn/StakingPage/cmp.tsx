@@ -71,7 +71,7 @@ export const StakingPage = memo((props) => {
                 rewards={userRewards}
                 stake={userStake}
                 nodes={nodes}
-                disabled={!account}
+                disabled={!account || !userStake}
               />
             </div>
           </div>

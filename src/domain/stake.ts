@@ -27,13 +27,6 @@ export class StakeManager {
     return (res.posts[0]?.content as any)?.rewards
   }
 
-  async getLastUserStakingRewards(): Promise<number> {
-    if (!this.account) return 0
-    const rewards = await this.getLastStakingRewards()
-
-    return rewards[this.account.address]
-  }
-
   // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L204
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L289
   async stake(nodeHash: string): Promise<void> {
@@ -137,7 +130,11 @@ export class StakeManager {
     return estAPY
   }
 
-  computeCCNRewards(node: CCN, nodes: CCN[]): number {
+  stakingRewardsPerDay(stake: number, nodes: CCN[]): number {
+    return stake * this.totalPerAlephPerDay(nodes)
+  }
+
+  CCNRewardsPerDay(node: CCN, nodes: CCN[]): number {
     let estRewards = 0
 
     if (node.score) {
@@ -153,7 +150,7 @@ export class StakeManager {
     return estRewards
   }
 
-  computeCRNRewards(node: CRN): number {
+  CRNRewardsPerDay(node: CRN): number {
     if (!node.parent) return 0
     if (!node.score || !node.decentralization) return 0
 

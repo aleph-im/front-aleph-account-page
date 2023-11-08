@@ -4,10 +4,10 @@ import { useRequest } from '@/hooks/common/useRequest'
 import { useCallback, useMemo } from 'react'
 
 export type UseUserStakingRewardsReturn = {
-  rewards?: number
+  rewards?: Record<string, number>
 }
 
-export function useUserStakingRewards(): UseUserStakingRewardsReturn {
+export function useStakingRewards(): UseUserStakingRewardsReturn {
   const [{ account }] = useAppState()
 
   // @todo: Refactor this (use singleton)
@@ -16,7 +16,7 @@ export function useUserStakingRewards(): UseUserStakingRewardsReturn {
   // -----------------------------
 
   const doRequest = useCallback(
-    () => nodeManager.getLastUserStakingRewards(),
+    () => nodeManager.getLastStakingRewards(),
     [nodeManager],
   )
 
@@ -32,4 +32,23 @@ export function useUserStakingRewards(): UseUserStakingRewardsReturn {
   return {
     rewards,
   }
+}
+
+// -----------------------------
+
+export type UseAccountStakingRewardsProps = {
+  address: string
+}
+
+export type UseAccountStakingRewardsReturn = {
+  rewards?: number
+}
+
+export function useAccountStakingRewards({
+  address,
+}: UseAccountStakingRewardsProps): UseAccountStakingRewardsReturn {
+  const { rewards } = useStakingRewards()
+  if (!rewards) return {}
+
+  return { rewards: rewards[address] || 0 }
 }

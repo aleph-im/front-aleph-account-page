@@ -260,6 +260,21 @@ export class NodeManager {
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
   }
 
+  hasIssues(node: CCN | CRN, staking = false): string | undefined {
+    if (this.isCRN(node)) {
+      if (node.score < 0.8) return 'The CRN is underperforming'
+      if (!node.parentData) return 'The CRN is not being linked to a CCN'
+      if ((node?.parentData?.score || 0) <= 0)
+        return 'The linked CCN is underperforming'
+    } else {
+      if (node.score < 0.8) return 'The CCN is underperforming'
+      if ((node?.crnsData.length || 0) < 3)
+        return 'The CCN has less than three linked CRNs'
+      if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
+        return 'One of the linked CRN is underperforming'
+    }
+  }
+
   isNodeExperimental(node: AlephNode, lastVersion: NodeLastVersions): boolean {
     const closestTag = stripExtraTagDescription(node.metricsData?.version || '')
 

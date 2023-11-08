@@ -9,17 +9,20 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
-import HostingProviderChart from '@/components/common/HostingProviderChart'
+import CCNRewardChart from '@/components/common/CCNRewardChart'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
+    account,
     nodes,
+    userNodes,
     filteredNodes,
     filteredUserNodes,
     tabs,
     selectedTab,
     filter,
     lastVersion,
+    userRewards,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -57,9 +60,11 @@ export const CoreChannelNodesPage = memo((props) => {
             <div tw="flex items-stretch gap-6">
               <NetworkHealthChart nodes={nodes} title="CCN NETWORK HEALTH" />
               <StakeChart nodes={nodes} />
-              <HostingProviderChart
-                nodes={nodes}
-                title="TOP HOSTING PROVIDER"
+              <CCNRewardChart
+                rewards={userRewards}
+                nodes={userNodes}
+                allNodes={nodes}
+                disabled={!account || !userNodes?.length}
               />
             </div>
             <div tw="flex-auto self-stretch flex flex-col justify-between">
