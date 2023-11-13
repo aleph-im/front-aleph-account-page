@@ -1,13 +1,14 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeManager } from '@/domain/node'
+import { CCN } from '@/domain/node'
 import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
 import { useLastRewards } from '@/hooks/common/useRewards'
+import { useUserNodes } from '@/hooks/common/useUserNodes'
 
 export type UseCoreChannelNodesPageProps = {
   nodes?: CCN[]
@@ -30,30 +31,14 @@ export function useCoreChannelNodesPage(
   const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.account
 
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new NodeManager(account), [account])
-
   const { nodes, filteredNodes, ...rest } = useCoreChannelNodes(props)
 
   // -----------------------------
 
-  const filterUserNodes = useCallback(
-    (nodes?: CCN[]) => {
-      if (!nodes) return
-      return nodes.filter((node) => nodeManager.isUserNode(node))
-    },
-    [nodeManager],
-  )
-
-  const userNodes = useMemo(
-    () => filterUserNodes(nodes),
-    [filterUserNodes, nodes],
-  )
-
-  const filteredUserNodes = useMemo(
-    () => filterUserNodes(filteredNodes),
-    [filterUserNodes, filteredNodes],
-  )
+  const { userNodes } = useUserNodes({ nodes })
+  const { userNodes: filteredUserNodes } = useUserNodes({
+    nodes: filteredNodes,
+  })
 
   // -----------------------------
 

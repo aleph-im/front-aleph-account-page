@@ -8,7 +8,7 @@ import {
   MouseEvent,
 } from 'react'
 import { useRouter } from 'next/router'
-import { Icon, IconName } from '@aleph-front/aleph-core'
+import { Icon, IconName, NotificationBadge } from '@aleph-front/aleph-core'
 import {
   StyledLogo,
   StyledNav1,
@@ -23,65 +23,29 @@ import {
   StyledToggleButton,
 } from './styles'
 import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
+import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useUserStakeNodes } from '@/hooks/common/useUserStakeNodes'
+import { useAppState } from '@/contexts/appState'
+import { useUserNodes } from '@/hooks/common/useUserNodes'
 
 export type Route = {
   name?: string
   path: string
   icon?: IconName
+  flag?: number
   children?: Route[]
 }
-
-const routes: Route[] = [
-  {
-    name: 'EARN',
-    path: '/earn',
-    icon: 'earn',
-    children: [
-      {
-        name: 'Staking',
-        path: '/earn/staking',
-        icon: 'earn',
-      },
-      {
-        name: 'Core nodes',
-        path: '/earn/ccn',
-        icon: 'ccn',
-      },
-      {
-        name: 'Compute nodes',
-        path: '/earn/crn',
-        icon: 'crn',
-      },
-    ],
-  },
-  {
-    name: 'PROFILE',
-    path: '/profile',
-    icon: 'profile',
-    children: [
-      {
-        name: 'My profile',
-        path: '/profile',
-        icon: 'profile',
-      },
-      {
-        name: 'Notification center',
-        path: '/notification',
-        icon: 'notification',
-      },
-    ],
-  },
-]
 
 export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string
   icon?: IconName
+  flag?: number
   isOpen?: boolean
   children?: ReactNode
 }
 
 const SidebarLink = memo(
-  ({ href, icon, children, isOpen, ...rest }: SidebarLinkProps) => {
+  ({ href, icon, children, isOpen, flag, ...rest }: SidebarLinkProps) => {
     const router = useRouter()
     const isActive = router.pathname.indexOf(href) >= 0
 
@@ -101,6 +65,7 @@ const SidebarLink = memo(
       <StyledNav2Link {...props}>
         {iconCmp}
         <span>{children}</span>
+        {flag && <NotificationBadge>{flag}</NotificationBadge>}
       </StyledNav2Link>
     )
   },
@@ -108,6 +73,28 @@ const SidebarLink = memo(
 SidebarLink.displayName = 'SidebarLink'
 
 const Sidebar = memo(() => {
+  const [state] = useAppState()
+  const { entities: nodes } = state.ccns
+  const { entities: crns } = state.crns
+
+  const { stakeNodes } = useUserStakeNodes({ nodes })
+  const { userNodes: userCCNs } = useUserNodes({ nodes })
+  const { userNodes: userCRNs } = useUserNodes({ nodes: crns })
+
+  const { warningFlag: stakeNodesWarningFlag } = useNodeIssues({
+    nodes: stakeNodes,
+  })
+
+  const { warningFlag: userCCNsWarningFlag } = useNodeIssues({
+    nodes: userCCNs,
+  })
+
+  const { warningFlag: userCRNsWarningFlag } = useNodeIssues({
+    nodes: userCRNs,
+  })
+
+  // -------------------------------------------
+
   const [open, setOpen] = useState<boolean | undefined>(undefined)
 
   const handleToggle = useCallback(
@@ -128,12 +115,63 @@ const Sidebar = memo(() => {
     e.stopPropagation()
   }, [])
 
+  // -----------------------------------
+
+  const routes: Route[] = useMemo(() => {
+    return [
+      {
+        name: 'EARN',
+        path: '/earn',
+        icon: 'earn',
+        children: [
+          {
+            name: 'Staking',
+            path: '/earn/staking',
+            icon: 'earn',
+            flag: stakeNodesWarningFlag,
+          },
+          {
+            name: 'Core nodes',
+            path: '/earn/ccn',
+            icon: 'ccn',
+            flag: userCCNsWarningFlag,
+          },
+          {
+            name: 'Compute nodes',
+            path: '/earn/crn',
+            icon: 'crn',
+            flag: userCRNsWarningFlag,
+          },
+        ],
+      },
+      {
+        name: 'PROFILE',
+        path: '/profile',
+        icon: 'profile',
+        children: [
+          {
+            name: 'My profile',
+            path: '/profile',
+            icon: 'profile',
+          },
+          {
+            name: 'Notification center',
+            path: '/notification',
+            icon: 'notification',
+          },
+        ],
+      },
+    ]
+  }, [stakeNodesWarningFlag, userCCNsWarningFlag, userCRNsWarningFlag])
+
   const router = useRouter()
 
   const currentRoute = useMemo(
     () => routes.find((route) => router.pathname.indexOf(route.path) === 0),
-    [router],
+    [router, routes],
   )
+
+  // --------------------------------------------
 
   const allowanceInfo = useUserStoreAllowance()
   const consumedSize = (allowanceInfo.consumedSize || 0) / 1024
@@ -182,6 +220,7 @@ const Sidebar = memo(() => {
                   key={child.path}
                   href={child.path}
                   icon={child?.icon || currentRoute?.icon}
+                  flag={child?.flag || currentRoute?.flag}
                 >
                   {child.name}
                 </SidebarLink>

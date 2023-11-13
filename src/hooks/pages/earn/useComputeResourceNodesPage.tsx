@@ -1,13 +1,14 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
-import { CRN, NodeManager } from '@/domain/node'
+import { CRN } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
   useComputeResourceNodes,
 } from '@/hooks/common/useComputeResourceNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
 import { useLastRewards } from '@/hooks/common/useRewards'
+import { useUserNodes } from '@/hooks/common/useUserNodes'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -33,30 +34,14 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new NodeManager(account), [account])
-
   const { nodes, filteredNodes, ...rest } = useComputeResourceNodes(props)
 
   // -----------------------------
 
-  const filterUserNodes = useCallback(
-    (nodes?: CRN[]) => {
-      if (!nodes) return
-      return nodes.filter((node) => nodeManager.isUserNode(node))
-    },
-    [nodeManager],
-  )
-
-  const userNodes = useMemo(
-    () => filterUserNodes(nodes),
-    [filterUserNodes, nodes],
-  )
-
-  const filteredUserNodes = useMemo(
-    () => filterUserNodes(filteredNodes),
-    [filterUserNodes, filteredNodes],
-  )
+  const { userNodes } = useUserNodes({ nodes })
+  const { userNodes: filteredUserNodes } = useUserNodes({
+    nodes: filteredNodes,
+  })
 
   // -----------------------------
 

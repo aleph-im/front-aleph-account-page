@@ -29,7 +29,7 @@ export const AppStateContext = createContext<AppContextValue>([
 export function AppStateProvider({ children }: AppStateProviderProps) {
   const value = useReducer(storeReducer, storeInitialState)
 
-  console.log('STORE', value[0])
+  // console.log('STORE', value[0])
 
   return (
     <AppStateContext.Provider value={value}>

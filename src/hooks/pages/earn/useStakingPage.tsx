@@ -7,6 +7,7 @@ import {
 } from '@/hooks/common/useCoreChannelNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
+import { useUserStakeNodes } from '@/hooks/common/useUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
@@ -68,23 +69,10 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const filterStakeNodes = useCallback(
-    (nodes?: CCN[]) => {
-      if (!nodes) return
-      return nodes.filter((node) => nodeManager.isUserStake(node))
-    },
-    [nodeManager],
-  )
-
-  const stakeNodes = useMemo(
-    () => filterStakeNodes(nodes),
-    [filterStakeNodes, nodes],
-  )
-
-  const filteredStakeNodes = useMemo(
-    () => filterStakeNodes(baseFilteredNodes),
-    [filterStakeNodes, baseFilteredNodes],
-  )
+  const { stakeNodes } = useUserStakeNodes({ nodes })
+  const { stakeNodes: filteredStakeNodes } = useUserStakeNodes({
+    nodes: baseFilteredNodes,
+  })
 
   const filteredNodes = useMemo(() => {
     if (!baseFilteredNodes) return
