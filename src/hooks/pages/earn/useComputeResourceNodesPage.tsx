@@ -28,7 +28,8 @@ export type UseComputeResourceNodesPageReturn =
 export function useComputeResourceNodesPage(
   props: UseComputeResourceNodesPageProps,
 ): UseComputeResourceNodesPageReturn {
-  const [{ account, accountBalance = 0 }] = useAppState()
+  const [state] = useAppState()
+  const { account, balance: accountBalance = 0 } = state.account
 
   // -----------------------------
 

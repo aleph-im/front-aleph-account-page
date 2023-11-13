@@ -27,7 +27,8 @@ export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
 export function useCoreChannelNodesPage(
   props: UseCoreChannelNodesPageProps,
 ): UseCoreChannelNodesPageReturn {
-  const [{ account, accountBalance = 0 }] = useAppState()
+  const [state] = useAppState()
+  const { account, balance: accountBalance = 0 } = state.account
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

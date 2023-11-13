@@ -33,7 +33,8 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
 export function useStakingPage(
   props: UseStakingPageProps,
 ): UseStakingPageReturn {
-  const [{ account, accountBalance = 0 }] = useAppState()
+  const [state] = useAppState()
+  const { account, balance: accountBalance = 0 } = state.account
 
   const {
     calculatedRewards: userRewards,
@@ -50,7 +51,6 @@ export function useStakingPage(
   const {
     nodes,
     filteredNodes: baseFilteredNodes,
-    setLastUpdate,
     ...rest
   } = useCoreChannelNodes(props)
 
@@ -136,17 +136,15 @@ export function useStakingPage(
   const handleStake = useCallback(
     async (nodeHash: string) => {
       await stakeManager.stake(nodeHash)
-      setLastUpdate(Date.now())
     },
-    [setLastUpdate, stakeManager],
+    [stakeManager],
   )
 
   const handleUnStake = useCallback(
     async (nodeHash: string) => {
       await stakeManager.unStake(nodeHash)
-      setLastUpdate(Date.now())
     },
-    [setLastUpdate, stakeManager],
+    [stakeManager],
   )
 
   const userStake = useMemo(
@@ -175,6 +173,5 @@ export function useStakingPage(
     handleStake,
     handleUnStake,
     handleChangeStakeableOnly,
-    setLastUpdate,
   }
 }

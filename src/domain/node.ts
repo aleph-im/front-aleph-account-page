@@ -146,39 +146,41 @@ export class NodeManager {
   ) {}
 
   async getCCNNodes(): Promise<CCN[]> {
-    const res = await fetch(
-      `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
-    )
-
-    const content = await res.json()
-    const crns: CRN[] = content?.data?.corechannel?.resource_nodes
-    let ccns: CCN[] = content?.data?.corechannel?.nodes
+    const res = await this.fetchAllNodes()
+    const { crns } = res
+    let { ccns } = res
 
     ccns = this.parseResourceNodes(ccns, crns)
     ccns = await this.parseScores(ccns, false)
     ccns = await this.parseMetrics(ccns, false)
 
-    // console.log(ccns)
-
     return ccns
   }
 
   async getCRNNodes(): Promise<CRN[]> {
-    const res = await fetch(
-      `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
-    )
-
-    const content = await res.json()
-    const ccns: CCN[] = content?.data?.corechannel?.nodes
-    let crns: CRN[] = content?.data?.corechannel?.resource_nodes
+    const res = await this.fetchAllNodes()
+    const { ccns } = res
+    let { crns } = res
 
     crns = this.parseParentNodes(crns, ccns)
     crns = await this.parseScores(crns, true)
     crns = await this.parseMetrics(crns, true)
 
-    // console.log(crns)
-
     return crns
+  }
+
+  async getAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {
+    let { ccns, crns } = await this.fetchAllNodes()
+
+    ccns = this.parseResourceNodes(ccns, crns)
+    ccns = await this.parseScores(ccns, false)
+    ccns = await this.parseMetrics(ccns, false)
+
+    crns = this.parseParentNodes(crns, ccns)
+    crns = await this.parseScores(crns, true)
+    crns = await this.parseMetrics(crns, true)
+
+    return { ccns, crns }
   }
 
   async getLatestVersion(node: AlephNode): Promise<NodeLastVersions> {
@@ -202,6 +204,21 @@ export class NodeManager {
       'crn_versions',
       300_000,
       getLatestReleases,
+    )
+  }
+
+  protected async fetchAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {
+    return fetchAndCache(
+      `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
+      'nodes',
+      1000 * 5,
+      async (content: any) => {
+        // const content = await res.json()
+        const crns: CRN[] = content?.data?.corechannel?.resource_nodes
+        const ccns: CCN[] = content?.data?.corechannel?.nodes
+
+        return { ccns, crns }
+      },
     )
   }
 

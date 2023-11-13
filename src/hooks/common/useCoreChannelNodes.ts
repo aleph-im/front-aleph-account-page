@@ -1,6 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeLastVersions, NodeManager } from '@/domain/node'
-import { useRequest } from '@/hooks/common/useRequest'
+import { CCN, NodeLastVersions } from '@/domain/node'
 import { useDebounceState } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
@@ -17,45 +16,15 @@ export type UseCoreChannelNodesReturn = {
   filter: string
   lastVersion?: NodeLastVersions
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
-  setLastUpdate: (now: number) => void
 }
 
 export function useCoreChannelNodes({
   nodes: prefetchNodes,
 }: UseCoreChannelNodesProps): UseCoreChannelNodesReturn {
-  const [{ account, accountBalance = 0 }] = useAppState()
-
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new NodeManager(account), [account])
-
-  // -----------------------------
-
-  const doRequest = useCallback(() => nodeManager.getCCNNodes(), [nodeManager])
-
-  // @note: Quick fix to refresh node list after staking/unstaking (@todo: Move nodes to app state && use ws feed)
-  const [lastUpdate, setLastUpdate] = useState(Date.now())
-  const debouncedLastUpdate = useDebounceState(lastUpdate, 1000 * 10)
-
-  const { data } = useRequest({
-    doRequest,
-    triggerOnMount: true,
-    triggerDeps: [debouncedLastUpdate],
-    onSuccess: () => null,
-  })
-
-  // -----------------------------
-
-  const doVersionRequest = useCallback(
-    () => nodeManager.getLatestCCNVersion(),
-    [nodeManager],
-  )
-
-  const { data: lastVersion } = useRequest({
-    doRequest: doVersionRequest,
-    triggerOnMount: true,
-    onSuccess: () => null,
-    onError: () => null,
-  })
+  const [state] = useAppState()
+  const { account, balance: accountBalance = 0 } = state.account
+  const { data: lastVersion } = state.lastCCNVersion
+  const { entities: data } = state.ccns
 
   // -----------------------------
 
@@ -104,6 +73,5 @@ export function useCoreChannelNodes({
     filter,
     lastVersion,
     handleFilterChange,
-    setLastUpdate,
   }
 }

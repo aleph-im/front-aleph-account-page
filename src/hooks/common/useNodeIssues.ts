@@ -16,7 +16,8 @@ export function useNodeIssues<T extends CCN | CRN>({
   nodes,
   isStaking,
 }: UseNodeIssuesProps<T>): UseNodeIssuesReturn {
-  const [{ account }] = useAppState()
+  const [state] = useAppState()
+  const { account } = state.account
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

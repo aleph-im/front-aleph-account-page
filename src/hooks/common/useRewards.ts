@@ -1,7 +1,6 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useAppState } from '@/contexts/appState'
 import { RewardsResponse, StakeManager } from '@/domain/stake'
-import { useRequest } from '@/hooks/common/useRequest'
-import { useEffect, useMemo, useState } from 'react'
 
 export type UseLastRewards = {
   lastRewardsDistribution?: RewardsResponse
@@ -9,28 +8,9 @@ export type UseLastRewards = {
 }
 
 export function useLastRewards(): UseLastRewards {
-  const [{ account }] = useAppState()
-
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new StakeManager(account), [account])
-
-  // -----------------------------
-
-  const { data: lastRewardsDistribution } = useRequest({
-    doRequest: () => nodeManager.getLastRewardsDistribution(),
-    onSuccess: () => null,
-    triggerOnMount: true,
-  })
-
-  // -----------------------------
-
-  const { data: lastRewardsCalculation } = useRequest({
-    doRequest: () => nodeManager.getLastRewardsCalculation(),
-    onSuccess: () => null,
-    triggerOnMount: true,
-  })
-
-  // -----------------------------
+  const [state] = useAppState()
+  const { data: lastRewardsCalculation } = state.lastRewardsCalculation
+  const { data: lastRewardsDistribution } = state.lastRewardsDistribution
 
   return {
     lastRewardsDistribution,
@@ -46,7 +26,8 @@ export type UseLastRewardsFeedReturn = {
 }
 
 export function useLastRewardsFeed(): UseLastRewardsFeedReturn {
-  const [{ account }] = useAppState()
+  const [state] = useAppState()
+  const { account } = state.account
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new StakeManager(account), [account])

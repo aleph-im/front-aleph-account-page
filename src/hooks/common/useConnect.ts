@@ -1,6 +1,6 @@
 import { useAppState } from '@/contexts/appState'
 import { getAccountBalance, web3Connect } from '@/helpers/aleph'
-import { ActionTypes } from '@/helpers/store'
+import { AccountActionType } from '@/store/account'
 import { useNotification } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
@@ -38,7 +38,11 @@ export function useConnect(): UseConnectReturn {
   const getBalance = useCallback(
     async (account: Account) => {
       const balance = await getAccountBalance(account)
-      dispatch({ type: ActionTypes.setAccountBalance, payload: { balance } })
+
+      dispatch({
+        type: AccountActionType.ACCOUNT_SET_BALANCE,
+        payload: { balance },
+      })
     },
     [dispatch],
   )
@@ -58,17 +62,24 @@ export function useConnect(): UseConnectReturn {
       onError(err.message)
     })
 
-    dispatch({ type: ActionTypes.connect, payload: { account } })
+    dispatch({
+      type: AccountActionType.ACCOUNT_CONNECT,
+      payload: { account },
+    })
 
     return account
   }, [setKeepAccountAlive, getBalance, dispatch, onError])
 
   const disconnect = useCallback(async () => {
     setKeepAccountAlive(false)
-    dispatch({ type: ActionTypes.disconnect, payload: null })
+
+    dispatch({
+      type: AccountActionType.ACCOUNT_DISCONNECT,
+      payload: null,
+    })
   }, [dispatch, setKeepAccountAlive])
 
-  const { account } = state
+  const { account } = state.account
   const isConnected = !!account?.address
 
   const tryReconnect = useCallback(async () => {

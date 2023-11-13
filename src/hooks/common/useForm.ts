@@ -1,5 +1,5 @@
-import { FormEvent, useCallback, useMemo } from 'react'
-import { RequestState, useRequestState } from './useRequestState'
+import { RequestState, useRequestState } from '@aleph-front/aleph-core'
+import { FormEvent, useCallback, useMemo, useState } from 'react'
 import {
   useForm as useFormLib,
   UseFormReturn as UseFormReturnLib,
@@ -45,9 +45,14 @@ export function useForm<FormState extends Record<string, any>, Response>({
   ...props
 }: UseFormProps<FormState, Response>): UseFormReturn<FormState, Response> {
   const form = useFormLib<FormState>(props)
+  const [state, setState] = useState<RequestState<Response>>({
+    data: undefined,
+    error: undefined,
+    loading: false,
+  })
 
   const [requestState, { onLoad, onSuccess, onError }] =
-    useRequestState<Response>()
+    useRequestState<Response>({ flushData: true, state, setState })
 
   const handleSubmitRequest = useCallback(
     async (state: FormState) => {
