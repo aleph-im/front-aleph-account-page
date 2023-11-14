@@ -1,9 +1,12 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import {
   apiServer,
+  channel,
   defaultAccountChannel,
   monitorAddress,
+  postType,
   senderAddress,
+  tags,
   wsServer,
 } from '@/helpers/constants'
 import { AlephNode, CCN, CRN } from './node'
@@ -179,15 +182,15 @@ export class StakeManager {
 
     await post.Publish({
       account: this.account,
-      postType: 'corechan-operation',
-      storageEngine: ItemType.inline,
+      postType,
+      channel,
       ref: nodeHash,
-      APIServer: apiServer,
-      channel: 'FOUNDATION',
       content: {
-        tags: ['stake-split', 'mainnet'],
+        tags: ['stake-split', ...tags],
         action: 'stake-split',
       },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
     })
   }
 
@@ -197,15 +200,15 @@ export class StakeManager {
 
     await post.Publish({
       account: this.account,
-      postType: 'corechan-operation',
-      storageEngine: ItemType.inline,
+      postType,
+      channel,
       ref: nodeHash,
-      APIServer: apiServer,
-      channel: 'FOUNDATION',
       content: {
-        tags: ['unstake', 'mainnet'],
+        tags: ['unstake', ...tags],
         action: 'unstake',
       },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
     })
   }
 

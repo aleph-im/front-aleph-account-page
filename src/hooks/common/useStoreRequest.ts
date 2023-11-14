@@ -36,9 +36,7 @@ export function useStoreRequest<T, S>({
 
   return useRequest({
     state,
-    setState: (payload) => {
-      const newState = payload(state)
-
+    setState: (newState) => {
       return dispatch({
         type: RequestActionType.REQUEST_SET,
         payload: { name, state: newState },

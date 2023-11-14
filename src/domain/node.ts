@@ -1,7 +1,10 @@
 import {
   apiServer,
+  channel,
   defaultAccountChannel,
+  postType,
   scoringAddress,
+  tags,
 } from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
@@ -10,6 +13,8 @@ import {
   getLatestReleases,
   stripExtraTagDescription,
 } from '@/helpers/utils'
+import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
+import { newCCNSchema } from '@/helpers/schemas'
 
 const { post } = messages
 
@@ -139,7 +144,14 @@ export type CRNMetrics = BaseNodeMetrics & {
   diagnostic_vm_latency: number
 }
 
+export type NewCCN = {
+  name: string
+  multiaddress?: string
+}
+
 export class NodeManager {
+  static newCCNSchema = newCCNSchema
+
   constructor(
     protected account?: Account,
     protected channel = defaultAccountChannel,
@@ -205,6 +217,25 @@ export class NodeManager {
       300_000,
       getLatestReleases,
     )
+  }
+
+  async newCoreChannelNode(newCCN: NewCCN): Promise<void> {
+    if (!this.account) throw new Error('Invalid account')
+
+    newCCN = await NodeManager.newCCNSchema.parseAsync(newCCN)
+
+    await post.Publish({
+      account: this.account,
+      postType,
+      channel,
+      content: {
+        tags: ['create-node', ...tags],
+        action: 'create-node',
+        details: newCCN,
+      },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
   }
 
   protected async fetchAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {

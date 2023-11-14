@@ -9,6 +9,11 @@ export const breadcrumbNames = {
   '/earn/crn/new': 'CREATE COMPUTE RESOURCE NODE',
 }
 
+// Default node ops message config
+export const channel = 'FOUNDATION'
+export const tags = ['mainnet']
+export const postType = 'corechan-operation'
+
 export const apiServer = 'https://api2.aleph.im'
 export const wsServer = 'wss://api1.aleph.im'
 export const mbPerAleph = 3

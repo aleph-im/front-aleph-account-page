@@ -41,9 +41,7 @@ export function useStoreEntityRequest<T, S>({
 
   return useRequest({
     state,
-    setState: (payload) => {
-      const newState = payload(state)
-
+    setState: (newState) => {
       return dispatch({
         type: EntityActionType.ENTITY_SET,
         payload: { name, state: newState },

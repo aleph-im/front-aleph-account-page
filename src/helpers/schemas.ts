@@ -10,3 +10,8 @@ export function optionalString(schema: z.ZodString) {
 }
 
 export const optionalStringSchema = z.string().trim().optional()
+
+export const newCCNSchema = z.object({
+  name: requiredStringSchema,
+  multiaddress: optionalString(requiredStringSchema),
+})

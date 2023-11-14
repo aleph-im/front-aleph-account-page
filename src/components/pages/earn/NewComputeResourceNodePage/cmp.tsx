@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 
-export const NewCoreChannelNodesPage = memo(() => {
+export const NewComputeResourceNodePage = () => {
   return (
     <>
       <Head>
@@ -11,12 +11,12 @@ export const NewCoreChannelNodesPage = memo(() => {
       </Head>
       <section>
         <h1 className="tp-h5" tw="mb-8">
-          New core node
+          New compute node
         </h1>
       </section>
     </>
   )
-})
-NewCoreChannelNodesPage.displayName = 'NewCoreChannelNodesPage'
+}
+NewComputeResourceNodePage.displayName = 'NewComputeResourceNodePage'
 
-export default NewCoreChannelNodesPage
+export default memo(NewComputeResourceNodePage)
