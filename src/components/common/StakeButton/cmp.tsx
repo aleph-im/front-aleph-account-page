@@ -5,7 +5,6 @@ import { CCN, NodeManager } from '@/domain/node'
 
 export type StakeButtonProps = {
   node: CCN
-  stakeNodes: CCN[]
   account?: Account
   accountBalance?: number
   onStake: (nodeHash: string) => void
@@ -16,7 +15,6 @@ export type StakeButtonProps = {
 export const StakeButton = memo(
   ({
     node,
-    stakeNodes,
     account,
     accountBalance = 0,
     onStake,
@@ -31,13 +29,9 @@ export const StakeButton = memo(
     }, [account, node])
 
     const isDisabled = useMemo(() => {
-      const [canStake] = nodeManager.isStakeable(
-        node,
-        accountBalance,
-        stakeNodes,
-      )
+      const [canStake] = nodeManager.isStakeable(node, accountBalance)
       return !canStake
-    }, [nodeManager, node, accountBalance, stakeNodes])
+    }, [nodeManager, node, accountBalance])
 
     const handleOnClick = useCallback(() => {
       if (isStakeNode) {

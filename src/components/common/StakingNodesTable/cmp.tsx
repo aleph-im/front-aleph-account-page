@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Button, TableColumn } from '@aleph-front/aleph-core'
+import { Button, NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
@@ -10,14 +10,15 @@ import StakedCell from '@/components/common/StakedCell'
 import StakeButton from '@/components/common/StakeButton'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import AmountCell from '@/components/common/AmountCell'
+import tw from 'twin.macro'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]
   filteredNodes: CCN[]
-  stakeNodes: CCN[]
   account?: Account
   accountBalance?: number
   showStakedAmount?: boolean
+  nodesIssues?: Record<string, string>
   handleStake: (nodeHash: string) => void
   handleUnStake: (nodeHash: string) => void
 }
@@ -25,16 +26,27 @@ export type StakingNodesTableProps = {
 export const StakingNodesTable = memo(
   ({
     nodes,
-    stakeNodes,
     filteredNodes,
     account,
     accountBalance,
     showStakedAmount,
+    nodesIssues,
     handleStake: onStake,
     handleUnStake: onUnStake,
   }: StakingNodesTableProps) => {
     const columns = useMemo(() => {
       const cols = [
+        {
+          label: '',
+          align: 'center',
+          width: 0,
+          cellProps: () => ({ css: tw`p-0!` }),
+          hcellProps: () => ({ css: tw`p-0!` }),
+          render: (row) =>
+            nodesIssues?.[row.hash] ? (
+              <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
+            ) : null,
+        },
         {
           label: 'EST. APY',
           render: (row) => <APYCell node={row} nodes={nodes} />,
@@ -86,7 +98,6 @@ export const StakingNodesTable = memo(
                   node,
                   account,
                   accountBalance,
-                  stakeNodes,
                   onStake,
                   onUnStake,
                 }}
@@ -120,10 +131,10 @@ export const StakingNodesTable = memo(
       account,
       accountBalance,
       nodes,
+      nodesIssues,
       onStake,
       onUnStake,
       showStakedAmount,
-      stakeNodes,
     ])
 
     return (

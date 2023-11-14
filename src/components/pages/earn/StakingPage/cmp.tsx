@@ -13,7 +13,6 @@ export const StakingPage = memo((props) => {
     account,
     accountBalance,
     nodes,
-    stakeNodes,
     filteredNodes,
     filteredStakeNodes,
     tabs,
@@ -23,6 +22,7 @@ export const StakingPage = memo((props) => {
     userStake,
     userRewards,
     lastDistribution,
+    nodesIssues,
     handleTabChange,
     handleFilterChange,
     handleStake,
@@ -105,19 +105,19 @@ export const StakingPage = memo((props) => {
         </div>
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
-          {nodes && filteredNodes && filteredStakeNodes && stakeNodes && (
+          {nodes && filteredNodes && filteredStakeNodes && (
             <>
               {selectedTab === 'stake' ? (
                 <StakingNodesTable
                   {...{
                     nodes,
                     filteredNodes: filteredStakeNodes,
-                    stakeNodes,
                     accountBalance,
                     account,
                     handleStake,
                     handleUnStake,
                     showStakedAmount: true,
+                    nodesIssues,
                   }}
                 />
               ) : (
@@ -125,11 +125,11 @@ export const StakingPage = memo((props) => {
                   {...{
                     nodes,
                     filteredNodes,
-                    stakeNodes,
                     accountBalance,
                     account,
                     handleStake,
                     handleUnStake,
+                    nodesIssues,
                   }}
                 />
               )}

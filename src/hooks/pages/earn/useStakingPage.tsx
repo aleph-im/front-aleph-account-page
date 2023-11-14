@@ -7,6 +7,7 @@ import {
 } from '@/hooks/common/useCoreChannelNodes'
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
+import { useSortedByIssuesNodes } from '@/hooks/common/useSortedByIssuesNodes'
 import { useUserStakeNodes } from '@/hooks/common/useUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
@@ -16,7 +17,6 @@ export type UseStakingPageProps = {
 }
 
 export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
-  stakeNodes?: CCN[]
   filteredStakeNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
@@ -70,9 +70,18 @@ export function useStakingPage(
   // -----------------------------
 
   const { stakeNodes } = useUserStakeNodes({ nodes })
-  const { stakeNodes: filteredStakeNodes } = useUserStakeNodes({
+  const { stakeNodes: baseFilteredStakeNodes } = useUserStakeNodes({
     nodes: baseFilteredNodes,
   })
+
+  // -----------------------------
+
+  const { nodesIssues, warningFlag } = useNodeIssues({
+    nodes: baseFilteredStakeNodes,
+    isStaking: true,
+  })
+
+  // -----------------------------
 
   const filteredNodes = useMemo(() => {
     if (!baseFilteredNodes) return
@@ -81,16 +90,14 @@ export function useStakingPage(
 
     return baseFilteredNodes.filter(
       (node) =>
-        nodeManager.isStakeable(node, accountBalance, [])[0] &&
+        nodeManager.isStakeable(node, accountBalance)[0] &&
         !nodeManager.isUserStake(node),
     )
-  }, [stakeableOnly, baseFilteredNodes, account, nodeManager, accountBalance])
+  }, [baseFilteredNodes, stakeableOnly, account, nodeManager, accountBalance])
 
-  // -----------------------------
-
-  const { nodesIssues, warningFlag } = useNodeIssues({
-    nodes: stakeNodes,
-    isStaking: true,
+  const { sortedNodes: filteredStakeNodes } = useSortedByIssuesNodes({
+    nodesIssues,
+    nodes: baseFilteredStakeNodes,
   })
 
   // -----------------------------
@@ -146,7 +153,6 @@ export function useStakingPage(
     account,
     accountBalance,
     nodes,
-    stakeNodes,
     filteredNodes,
     filteredStakeNodes,
     selectedTab,

@@ -231,7 +231,7 @@ export class StakeManager {
     return nodes.reduce((ac, cu) => ac + (cu.stakers[account.address] || 0), 0)
   }
 
-  totalStakedByOperators(nodes: (CCN | CRN)[]): number {
+  totalStakedByOperators(nodes: AlephNode[]): number {
     return nodes.length * 200_000
   }
 

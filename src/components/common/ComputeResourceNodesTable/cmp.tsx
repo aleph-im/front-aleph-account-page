@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react'
-import { TableColumn } from '@aleph-front/aleph-core'
+import tw from 'twin.macro'
+import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
@@ -12,12 +13,29 @@ export type ComputeResourceNodesTableProps = {
   nodes: CRN[]
   filteredNodes: CRN[]
   lastVersion?: NodeLastVersions
+  nodesIssues?: Record<string, string>
 }
 
 export const ComputeResourceNodesTable = memo(
-  ({ nodes, filteredNodes, lastVersion }: ComputeResourceNodesTableProps) => {
+  ({
+    nodes,
+    filteredNodes,
+    lastVersion,
+    nodesIssues,
+  }: ComputeResourceNodesTableProps) => {
     const columns = useMemo(() => {
       return [
+        {
+          label: '',
+          align: 'center',
+          width: 0,
+          cellProps: () => ({ css: tw`p-0!` }),
+          hcellProps: () => ({ css: tw`p-0!` }),
+          render: (row) =>
+            nodesIssues?.[row.hash] ? (
+              <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
+            ) : null,
+        },
         {
           label: 'SCORE',
           sortable: true,
@@ -78,7 +96,7 @@ export const ComputeResourceNodesTable = memo(
           ),
         },
       ] as TableColumn<CRN>[]
-    }, [lastVersion, nodes])
+    }, [lastVersion, nodes, nodesIssues])
 
     return <NodesTable columns={columns} data={filteredNodes} />
   },

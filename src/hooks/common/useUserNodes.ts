@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { CCN, CRN, NodeManager } from '@/domain/node'
+import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 
 export type UseUserNodesProps<Node> = {
@@ -10,7 +10,7 @@ export type UseUserNodesReturn<Node> = {
   userNodes?: Node[]
 }
 
-export function useUserNodes<Node extends CCN | CRN>({
+export function useUserNodes<Node extends AlephNode>({
   nodes,
 }: UseUserNodesProps<Node>): UseUserNodesReturn<Node> {
   const [state] = useAppState()

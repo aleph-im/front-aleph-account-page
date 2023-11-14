@@ -9,6 +9,7 @@ import {
 import { useNodeIssues } from '@/hooks/common/useNodeIssues'
 import { useLastRewards } from '@/hooks/common/useRewards'
 import { useUserNodes } from '@/hooks/common/useUserNodes'
+import { useSortedByIssuesNodes } from '@/hooks/common/useSortedByIssuesNodes'
 
 export type UseCoreChannelNodesPageProps = {
   nodes?: CCN[]
@@ -36,13 +37,22 @@ export function useCoreChannelNodesPage(
   // -----------------------------
 
   const { userNodes } = useUserNodes({ nodes })
-  const { userNodes: filteredUserNodes } = useUserNodes({
+  const { userNodes: baseFilteredUserNodes } = useUserNodes({
     nodes: filteredNodes,
   })
 
   // -----------------------------
 
-  const { nodesIssues, warningFlag } = useNodeIssues({ nodes: userNodes })
+  const { nodesIssues, warningFlag } = useNodeIssues({
+    nodes: baseFilteredUserNodes,
+  })
+
+  // -----------------------------
+
+  const { sortedNodes: filteredUserNodes } = useSortedByIssuesNodes({
+    nodesIssues,
+    nodes: baseFilteredUserNodes,
+  })
 
   // -----------------------------
 

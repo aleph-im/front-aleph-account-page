@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react'
-import { Button, TableColumn } from '@aleph-front/aleph-core'
+import tw from 'twin.macro'
+import { Button, NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
@@ -13,12 +14,29 @@ export type CoreChannelNodesTableProps = {
   nodes: CCN[]
   filteredNodes: CCN[]
   lastVersion?: NodeLastVersions
+  nodesIssues?: Record<string, string>
 }
 
 export const CoreChannelNodesTable = memo(
-  ({ nodes, filteredNodes, lastVersion }: CoreChannelNodesTableProps) => {
+  ({
+    nodes,
+    filteredNodes,
+    lastVersion,
+    nodesIssues,
+  }: CoreChannelNodesTableProps) => {
     const columns = useMemo(() => {
       return [
+        {
+          label: '',
+          align: 'center',
+          width: 0,
+          cellProps: () => ({ css: tw`p-0!` }),
+          hcellProps: () => ({ css: tw`p-0!` }),
+          render: (row) =>
+            nodesIssues?.[row.hash] ? (
+              <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
+            ) : null,
+        },
         {
           label: 'SCORE',
           sortable: true,
@@ -85,7 +103,7 @@ export const CoreChannelNodesTable = memo(
           ),
         },
       ] as TableColumn<CCN>[]
-    }, [lastVersion, nodes])
+    }, [lastVersion, nodes, nodesIssues])
 
     return <NodesTable columns={columns} data={filteredNodes} />
   },

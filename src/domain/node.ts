@@ -250,11 +250,7 @@ export class NodeManager {
     return node.stakers[this.account.address] !== undefined
   }
 
-  isStakeable(
-    node: CCN,
-    balance: number,
-    stakeNodes: CCN[],
-  ): [boolean, string] {
+  isStakeable(node: CCN, balance: number): [boolean, string] {
     if (!this.account) return [false, 'Please login']
 
     if (balance < 10_000)
@@ -268,16 +264,10 @@ export class NodeManager {
     if (this.isUserNode(node))
       return [false, "You can't stake while you operate a node"]
 
-    if (stakeNodes.length)
-      return [
-        true,
-        'Add this node to your staking (each node will have an equal part of your total balance staked)',
-      ]
-
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
   }
 
-  hasIssues(node: CCN | CRN, staking = false): string | undefined {
+  hasIssues(node: AlephNode, staking = false): string | undefined {
     if (this.isCRN(node)) {
       if (node.score < 0.8) return 'The CRN is underperforming'
       if (!node.parentData) return 'The CRN is not being linked to a CCN'

@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { CCN, CRN, NodeManager } from '@/domain/node'
+import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 
-export type UseNodeIssuesProps<T extends CCN | CRN> = {
+export type UseNodeIssuesProps<T extends AlephNode> = {
   nodes?: T[]
   isStaking?: boolean
 }
@@ -12,7 +12,7 @@ export type UseNodeIssuesReturn = {
   warningFlag: number
 }
 
-export function useNodeIssues<T extends CCN | CRN>({
+export function useNodeIssues<T extends AlephNode>({
   nodes,
   isStaking,
 }: UseNodeIssuesProps<T>): UseNodeIssuesReturn {
