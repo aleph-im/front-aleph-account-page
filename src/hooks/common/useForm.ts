@@ -11,9 +11,11 @@ import { ZodError } from 'zod'
 
 export type UseFormProps<
   FormState extends Record<string, any>,
-  Response = void,
+  Response,
 > = UseFormPropsLib<FormState> & {
   onSubmit: (state: FormState) => Promise<Response>
+  onSuccess?: (data: Response) => Promise<void>
+  onError?: (error: Error) => Promise<void>
 }
 
 export type UseFormReturn<
@@ -42,6 +44,8 @@ function getFirstError<T extends FieldValues>(
 
 export function useForm<FormState extends Record<string, any>, Response>({
   onSubmit,
+  onSuccess: onFormSuccess,
+  onError: onFormError,
   ...props
 }: UseFormProps<FormState, Response>): UseFormReturn<FormState, Response> {
   const form = useFormLib<FormState>(props)
@@ -52,7 +56,13 @@ export function useForm<FormState extends Record<string, any>, Response>({
   })
 
   const [requestState, { onLoad, onSuccess, onError }] =
-    useRequestState<Response>({ flushData: true, state, setState })
+    useRequestState<Response>({
+      flushData: true,
+      state,
+      setState,
+      onSuccess: onFormSuccess,
+      onError: onFormError,
+    })
 
   const handleSubmitRequest = useCallback(
     async (state: FormState) => {

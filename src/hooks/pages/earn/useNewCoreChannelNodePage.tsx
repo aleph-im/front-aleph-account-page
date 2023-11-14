@@ -12,6 +12,8 @@ import {
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NewCCN, NodeManager } from '@/domain/node'
+import { useNotification } from '@aleph-front/aleph-core'
+import ButtonLink from '@/components/common/ButtonLink'
 
 export type NewCoreChannelNodeFormState = NewCCN
 
@@ -23,8 +25,6 @@ const defaultValues: Partial<NewCoreChannelNodeFormState> = {
 // @todo: Split this into reusable hooks by composition
 
 export type UseNewCoreChannelNodePage = {
-  address: string
-  accountBalance: number
   values: any
   control: Control<any>
   nameCtrl: UseControllerReturn<NewCoreChannelNodeFormState, 'name'>
@@ -41,7 +41,9 @@ export function useNewCoreChannelNodePage(): UseNewCoreChannelNodePage {
 
   const router = useRouter()
   const [appState] = useAppState()
-  const { account, balance: accountBalance } = appState.account
+  const { account } = appState.account
+
+  const noti = useNotification()
 
   // @todo: Refactor into singleton
   const manager = useMemo(() => new NodeManager(account), [account])
@@ -50,11 +52,25 @@ export function useNewCoreChannelNodePage(): UseNewCoreChannelNodePage {
     async (state: NewCoreChannelNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
 
-      await manager.newCoreChannelNode(state)
-
-      router.replace('/earn/ccn')
+      const hash = await manager.newCoreChannelNode(state)
+      return hash
     },
-    [manager, router],
+    [manager],
+  )
+
+  const onSuccess = useCallback(
+    async (hash: string) => {
+      if (!noti) throw new Error('Notification not ready')
+
+      noti.add({
+        variant: 'success',
+        title: 'Success',
+        text: `Your node "${hash}" was created successfully.`,
+      })
+
+      router.replace(`/earn/ccn/${hash}`)
+    },
+    [noti, router],
   )
 
   const {
@@ -64,6 +80,7 @@ export function useNewCoreChannelNodePage(): UseNewCoreChannelNodePage {
   } = useForm({
     defaultValues,
     onSubmit,
+    onSuccess,
     resolver: zodResolver(NodeManager.newCCNSchema),
   })
   // @note: dont use watch, use useWatch instead: https://github.com/react-hook-form/react-hook-form/issues/10753
@@ -80,8 +97,6 @@ export function useNewCoreChannelNodePage(): UseNewCoreChannelNodePage {
   })
 
   return {
-    address: account?.address || '',
-    accountBalance: accountBalance || 0,
     values,
     control,
     nameCtrl,

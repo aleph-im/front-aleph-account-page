@@ -11,7 +11,17 @@ export function optionalString(schema: z.ZodString) {
 
 export const optionalStringSchema = z.string().trim().optional()
 
+export const urlSchema = requiredStringSchema.regex(
+  /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+  { message: 'Invalid url format' },
+)
+
 export const newCCNSchema = z.object({
   name: requiredStringSchema,
   multiaddress: optionalString(requiredStringSchema),
+})
+
+export const newCRNSchema = z.object({
+  name: requiredStringSchema,
+  address: urlSchema,
 })

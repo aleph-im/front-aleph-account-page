@@ -14,7 +14,7 @@ import {
   stripExtraTagDescription,
 } from '@/helpers/utils'
 import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
-import { newCCNSchema } from '@/helpers/schemas'
+import { newCCNSchema, newCRNSchema } from '@/helpers/schemas'
 
 const { post } = messages
 
@@ -149,8 +149,14 @@ export type NewCCN = {
   multiaddress?: string
 }
 
+export type NewCRN = {
+  name: string
+  address: string
+}
+
 export class NodeManager {
   static newCCNSchema = newCCNSchema
+  static newCRNSchema = newCRNSchema
 
   constructor(
     protected account?: Account,
@@ -219,12 +225,12 @@ export class NodeManager {
     )
   }
 
-  async newCoreChannelNode(newCCN: NewCCN): Promise<void> {
+  async newCoreChannelNode(newCCN: NewCCN): Promise<string> {
     if (!this.account) throw new Error('Invalid account')
 
     newCCN = await NodeManager.newCCNSchema.parseAsync(newCCN)
 
-    await post.Publish({
+    const res = await post.Publish({
       account: this.account,
       postType,
       channel,
@@ -236,6 +242,29 @@ export class NodeManager {
       storageEngine: ItemType.inline,
       APIServer: apiServer,
     })
+
+    return res.item_hash
+  }
+
+  async newComputeResourceNode(newCRN: NewCRN): Promise<string> {
+    if (!this.account) throw new Error('Invalid account')
+
+    newCRN = await NodeManager.newCRNSchema.parseAsync(newCRN)
+
+    const res = await post.Publish({
+      account: this.account,
+      postType,
+      channel,
+      content: {
+        tags: ['create-resource-node', ...tags],
+        action: 'create-resource-node',
+        details: { ...newCRN, type: 'compute' },
+      },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
+
+    return res.item_hash
   }
 
   protected async fetchAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {

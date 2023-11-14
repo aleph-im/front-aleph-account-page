@@ -8,7 +8,7 @@ import {
   NoisyContainer,
   TextInput,
 } from '@aleph-front/aleph-core'
-import { useNewCoreChannelNodePage } from '@/hooks/form/useNewCoreChannelNodePage'
+import { useNewCoreChannelNodePage } from '@/hooks/pages/earn/useNewCoreChannelNodePage'
 import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ButtonLink from '@/components/common/ButtonLink'
@@ -70,7 +70,7 @@ export const NewCoreChannelNodePage = () => {
         </section>
         <section tw="px-0 py-6 md:py-10">
           <CompositeTitle as="h2" number="2">
-            Set Multiaddress
+            Set multiaddress
           </CompositeTitle>
           <p tw="mt-1 mb-6">
             The physical node as unique identifier called multiaddress. It links
@@ -95,7 +95,7 @@ export const NewCoreChannelNodePage = () => {
               }
             >
               <FormLabel
-                label="Set Multiaddress"
+                label="Set multiaddress"
                 error={multiaddressCtrl.fieldState.error}
               />
             </InfoTooltipButton>
