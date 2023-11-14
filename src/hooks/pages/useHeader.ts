@@ -47,7 +47,7 @@ export function useHeader(): UseHeaderReturn {
     })()
   }, [account, keepAccountAlive])
 
-  const { accountBalance } = appState
+  const { balance: accountBalance } = appState.account
 
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(async () => {

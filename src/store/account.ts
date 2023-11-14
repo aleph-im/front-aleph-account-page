@@ -24,6 +24,7 @@ export type AccountConnectAction = {
 
 export type AccountDisconnectAction = {
   readonly type: AccountActionType.ACCOUNT_DISCONNECT
+  payload: undefined
 }
 
 export type AccountSetBalanceAction = {
