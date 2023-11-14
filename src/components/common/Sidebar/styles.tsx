@@ -34,7 +34,7 @@ export const StyledNav1Link = styled(Link).attrs(addClasses('tp-nav'))<{
 `
 
 export const StyledNav2 = styled.nav`
-  ${tw`flex flex-col h-full overflow-hidden z-10`}
+  ${tw`flex flex-col h-full overflow-hidden`}
   background-color: #00000020;
 
   box-sizing: content-box;

@@ -93,7 +93,7 @@ export const ActiveNodeChart = memo(
             </Pie>
           </PieChart>
 
-          <div tw="mt-1 flex flex-col gap-4 z-1">
+          <div tw="mt-1 flex flex-col gap-4">
             {data.map((entry) => (
               <div key={entry.label} tw="flex items-center gap-3">
                 <ColorDot

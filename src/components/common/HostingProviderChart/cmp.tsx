@@ -68,7 +68,7 @@ export const HostingProviderChart = memo(
           {title}
         </TextGradient>
 
-        <div tw="mt-1 flex flex-col gap-4 z-1">
+        <div tw="mt-1 flex flex-col gap-4">
           {data.map((entry) => (
             <div key={entry.value} tw="flex items-center gap-3">
               <ColorDot $color={entry.color} $size="1.25rem" />

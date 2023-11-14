@@ -1,6 +1,7 @@
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import { useRedirect } from '@/hooks/common/useRedirect'
 
 export default function HomePage() {
   useRedirect('/earn/staking')
-  return <>Loading...</>
+  return <SpinnerOverlay show fullScreen center />
 }
