@@ -347,11 +347,11 @@ export class NodeManager {
   }
 
   isUserLinked(node: CRN, userNode?: CCN): boolean {
-    if (!this.account) return false
     if (!userNode) return false
 
     return (
-      userNode.hash === node.parent || (this.isUserNode(node) && !!node.parent)
+      (this.isUserNode(userNode) && userNode.hash === node.parent) ||
+      (this.isUserNode(node) && !!node.parent)
     )
   }
 

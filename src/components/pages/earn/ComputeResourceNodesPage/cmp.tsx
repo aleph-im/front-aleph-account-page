@@ -15,10 +15,12 @@ export const ComputeResourceNodesPage = memo((props) => {
   const {
     account,
     nodes,
-    userNodes,
-    userNode,
     filteredNodes,
+    userNodes,
     filteredUserNodes,
+    userLinkedNodes,
+    filteredUserLinkedNodes,
+    userNode,
     tabs,
     selectedTab,
     filter,
@@ -118,22 +120,43 @@ export const ComputeResourceNodesPage = memo((props) => {
         </div>
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
-          {nodes && filteredNodes && filteredUserNodes && (
-            <>
-              {selectedTab === 'user' ? (
-                <ComputeResourceNodesTable
-                  {...{
-                    nodes,
-                    filteredNodes: filteredUserNodes,
-                    userNode,
-                    account,
-                    lastVersion,
-                    handleLink,
-                    handleUnlink,
-                  }}
-                />
-              ) : (
-                <>
+
+          <>
+            {selectedTab === 'user' ? (
+              <>
+                {nodes && filteredUserNodes && (
+                  <ComputeResourceNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes: filteredUserNodes,
+                      userNode,
+                      account,
+                      lastVersion,
+                      handleLink,
+                      handleUnlink,
+                    }}
+                  />
+                )}
+              </>
+            ) : selectedTab === 'linked' ? (
+              <>
+                {nodes && filteredUserLinkedNodes && (
+                  <ComputeResourceNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes: filteredUserLinkedNodes,
+                      userNode,
+                      account,
+                      lastVersion,
+                      handleLink,
+                      handleUnlink,
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {nodes && filteredNodes && (
                   <ComputeResourceNodesTable
                     {...{
                       nodes,
@@ -145,10 +168,10 @@ export const ComputeResourceNodesPage = memo((props) => {
                       handleUnlink,
                     }}
                   />
-                </>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
+          </>
         </div>
       </section>
     </>
