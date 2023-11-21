@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'styled-components'
-import { themes, GlobalStyles } from '@aleph-front/aleph-core'
+import { themes, GlobalStyles, Footer } from '@aleph-front/aleph-core'
 import { GlobalStylesOverride } from '@/styles/global'
 import { AppStateProvider } from '@/contexts/appState'
 
@@ -25,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <Content>
                 <Component {...pageProps} />
               </Content>
+              <Footer small />
             </Main>
           </Viewport>
         </NotificationProvider>
