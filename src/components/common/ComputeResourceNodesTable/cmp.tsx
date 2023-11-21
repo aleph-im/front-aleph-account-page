@@ -1,27 +1,37 @@
 import { memo, useMemo } from 'react'
 import tw from 'twin.macro'
-import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
-import { CRN, NodeLastVersions } from '@/domain/node'
+import { Button, NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NameCell from '@/components/common/NameCell'
 import ScoreCell from '@/components/common/ScoreCell'
 import VersionCell from '../VersionCell'
 import DecentralizedCell from '../DecentralizedCell'
 import CRNRewardsCell from '../CRNRewardsCell'
+import LinkCRNButton from '../LinkCRNButton'
+import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 
 export type ComputeResourceNodesTableProps = {
   nodes: CRN[]
   filteredNodes: CRN[]
+  userNode?: CCN
+  account?: Account
   lastVersion?: NodeLastVersions
   nodesIssues?: Record<string, string>
+  handleLink: (nodeHash: string) => void
+  handleUnlink: (nodeHash: string) => void
 }
 
 export const ComputeResourceNodesTable = memo(
   ({
     nodes,
     filteredNodes,
+    userNode,
+    account,
     lastVersion,
     nodesIssues,
+    handleLink: onLink,
+    handleUnlink: onUnlink,
   }: ComputeResourceNodesTableProps) => {
     const columns = useMemo(() => {
       return [
@@ -95,8 +105,33 @@ export const ComputeResourceNodesTable = memo(
             <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
           ),
         },
+        {
+          label: '',
+          align: 'right',
+          render: (node) => (
+            <div tw="flex gap-3 justify-end">
+              <LinkCRNButton
+                {...{
+                  node,
+                  userNode,
+                  account,
+                  onLink,
+                  onUnlink,
+                }}
+              />
+              <Button
+                kind="neon"
+                size="regular"
+                variant="secondary"
+                color="main0"
+              >
+                Info
+              </Button>
+            </div>
+          ),
+        },
       ] as TableColumn<CRN>[]
-    }, [lastVersion, nodes, nodesIssues])
+    }, [account, lastVersion, nodes, nodesIssues, onLink, onUnlink, userNode])
 
     return <NodesTable columns={columns} data={filteredNodes} />
   },

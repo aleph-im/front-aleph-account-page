@@ -2,17 +2,17 @@ import { useCallback, useMemo } from 'react'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 
-export type UseUserNodesProps<Node> = {
+export type UseFilterUserNodesProps<Node> = {
   nodes?: Node[]
 }
 
-export type UseUserNodesReturn<Node> = {
+export type UseFilterUserNodesReturn<Node> = {
   userNodes?: Node[]
 }
 
-export function useUserNodes<Node extends AlephNode>({
+export function useFilterUserNodes<Node extends AlephNode>({
   nodes,
-}: UseUserNodesProps<Node>): UseUserNodesReturn<Node> {
+}: UseFilterUserNodesProps<Node>): UseFilterUserNodesReturn<Node> {
   const [state] = useAppState()
   const { account } = state.account
 

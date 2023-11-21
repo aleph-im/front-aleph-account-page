@@ -195,7 +195,7 @@ export class StakeManager {
   }
 
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L268
-  async unStake(nodeHash: string): Promise<void> {
+  async unstake(nodeHash: string): Promise<void> {
     if (!this.account) throw new Error('Invalid account')
 
     await post.Publish({

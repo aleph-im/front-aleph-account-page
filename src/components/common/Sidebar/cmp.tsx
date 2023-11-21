@@ -23,10 +23,10 @@ import {
   StyledToggleButton,
 } from './styles'
 import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
-import { useNodeIssues } from '@/hooks/common/useNodeIssues'
-import { useUserStakeNodes } from '@/hooks/common/useUserStakeNodes'
+import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
+import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
 import { useAppState } from '@/contexts/appState'
-import { useUserNodes } from '@/hooks/common/useUserNodes'
+import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
 
 export type Route = {
   name?: string
@@ -77,19 +77,19 @@ const Sidebar = memo(() => {
   const { entities: nodes } = state.ccns
   const { entities: crns } = state.crns
 
-  const { stakeNodes } = useUserStakeNodes({ nodes })
-  const { userNodes: userCCNs } = useUserNodes({ nodes })
-  const { userNodes: userCRNs } = useUserNodes({ nodes: crns })
+  const { stakeNodes } = useFilterUserStakeNodes({ nodes })
+  const { userNodes: userCCNs } = useFilterUserNodes({ nodes })
+  const { userNodes: userCRNs } = useFilterUserNodes({ nodes: crns })
 
-  const { warningFlag: stakeNodesWarningFlag } = useNodeIssues({
+  const { warningFlag: stakeNodesWarningFlag } = useFilterNodeIssues({
     nodes: stakeNodes,
   })
 
-  const { warningFlag: userCCNsWarningFlag } = useNodeIssues({
+  const { warningFlag: userCCNsWarningFlag } = useFilterNodeIssues({
     nodes: userCCNs,
   })
 
-  const { warningFlag: userCRNsWarningFlag } = useNodeIssues({
+  const { warningFlag: userCRNsWarningFlag } = useFilterNodeIssues({
     nodes: userCRNs,
   })
 

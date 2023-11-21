@@ -6,10 +6,10 @@ import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
-import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useLastRewards } from '@/hooks/common/useRewards'
-import { useUserNodes } from '@/hooks/common/useUserNodes'
-import { useSortedByIssuesNodes } from '@/hooks/common/useSortedByIssuesNodes'
+import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
+import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 
 export type UseCoreChannelNodesPageProps = {
   nodes?: CCN[]
@@ -36,20 +36,20 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
-  const { userNodes } = useUserNodes({ nodes })
-  const { userNodes: baseFilteredUserNodes } = useUserNodes({
+  const { userNodes } = useFilterUserNodes({ nodes })
+  const { userNodes: baseFilteredUserNodes } = useFilterUserNodes({
     nodes: filteredNodes,
   })
 
   // -----------------------------
 
-  const { nodesIssues, warningFlag } = useNodeIssues({
+  const { nodesIssues, warningFlag } = useFilterNodeIssues({
     nodes: baseFilteredUserNodes,
   })
 
   // -----------------------------
 
-  const { sortedNodes: filteredUserNodes } = useSortedByIssuesNodes({
+  const { sortedNodes: filteredUserNodes } = useSortByIssuesNodes({
     nodesIssues,
     nodes: baseFilteredUserNodes,
   })
@@ -95,6 +95,8 @@ export function useCoreChannelNodesPage(
   const lastDistribution = lastRewardsDistribution?.timestamp
 
   // -----------------------------
+
+  // console.log(filteredNodes)
 
   return {
     account,

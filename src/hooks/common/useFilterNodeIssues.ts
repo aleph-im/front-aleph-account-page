@@ -2,20 +2,20 @@ import { useMemo } from 'react'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 
-export type UseNodeIssuesProps<T extends AlephNode> = {
+export type UseFilterNodeIssuesProps<T extends AlephNode> = {
   nodes?: T[]
   isStaking?: boolean
 }
 
-export type UseNodeIssuesReturn = {
+export type UseFilterNodeIssuesReturn = {
   nodesIssues: Record<string, string>
   warningFlag: number
 }
 
-export function useNodeIssues<T extends AlephNode>({
+export function useFilterNodeIssues<T extends AlephNode>({
   nodes,
   isStaking,
-}: UseNodeIssuesProps<T>): UseNodeIssuesReturn {
+}: UseFilterNodeIssuesProps<T>): UseFilterNodeIssuesReturn {
   const [state] = useAppState()
   const { account } = state.account
 

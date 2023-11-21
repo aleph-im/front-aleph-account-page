@@ -5,10 +5,10 @@ import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
-import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
-import { useSortedByIssuesNodes } from '@/hooks/common/useSortedByIssuesNodes'
-import { useUserStakeNodes } from '@/hooks/common/useUserStakeNodes'
+import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
+import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
@@ -27,7 +27,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
-  handleUnStake: (nodeHash: string) => void
+  handleUnstake: (nodeHash: string) => void
   handleChangeStakeableOnly: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -69,14 +69,14 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const { stakeNodes } = useUserStakeNodes({ nodes })
-  const { stakeNodes: baseFilteredStakeNodes } = useUserStakeNodes({
+  const { stakeNodes } = useFilterUserStakeNodes({ nodes })
+  const { stakeNodes: baseFilteredStakeNodes } = useFilterUserStakeNodes({
     nodes: baseFilteredNodes,
   })
 
   // -----------------------------
 
-  const { nodesIssues, warningFlag } = useNodeIssues({
+  const { nodesIssues, warningFlag } = useFilterNodeIssues({
     nodes: baseFilteredStakeNodes,
     isStaking: true,
   })
@@ -95,7 +95,7 @@ export function useStakingPage(
     )
   }, [baseFilteredNodes, stakeableOnly, account, nodeManager, accountBalance])
 
-  const { sortedNodes: filteredStakeNodes } = useSortedByIssuesNodes({
+  const { sortedNodes: filteredStakeNodes } = useSortByIssuesNodes({
     nodesIssues,
     nodes: baseFilteredStakeNodes,
   })
@@ -135,9 +135,9 @@ export function useStakingPage(
     [stakeManager],
   )
 
-  const handleUnStake = useCallback(
+  const handleUnstake = useCallback(
     async (nodeHash: string) => {
-      await stakeManager.unStake(nodeHash)
+      await stakeManager.unstake(nodeHash)
     },
     [stakeManager],
   )
@@ -165,7 +165,7 @@ export function useStakingPage(
     ...rest,
     handleTabChange,
     handleStake,
-    handleUnStake,
+    handleUnstake,
     handleChangeStakeableOnly,
   }
 }

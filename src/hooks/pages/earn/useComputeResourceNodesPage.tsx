@@ -1,15 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { useAppState } from '@/contexts/appState'
-import { CRN } from '@/domain/node'
+import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
   useComputeResourceNodes,
 } from '@/hooks/common/useComputeResourceNodes'
-import { useNodeIssues } from '@/hooks/common/useNodeIssues'
+import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useLastRewards } from '@/hooks/common/useRewards'
-import { useUserNodes } from '@/hooks/common/useUserNodes'
-import { useSortedByIssuesNodes } from '@/hooks/common/useSortedByIssuesNodes'
+import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
+import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
+import { useUserCoreChannelNode } from '@/hooks/common/useUserCoreChannelNode'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -18,12 +19,15 @@ export type UseComputeResourceNodesPageProps = {
 export type UseComputeResourceNodesPageReturn =
   UseComputeResourceNodesReturn & {
     userNodes?: CRN[]
+    userNode?: CCN
     filteredUserNodes?: CRN[]
     selectedTab: string
     tabs: TabsProps['tabs']
     userRewards?: number
     lastDistribution?: number
     nodesIssues: Record<string, string>
+    handleLink: (nodeHash: string) => void
+    handleUnlink: (nodeHash: string) => void
     handleTabChange: (tab: string) => void
   }
 
@@ -35,24 +39,29 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
+  // @todo: Refactor this (use singleton)
+  const nodeManager = useMemo(() => new NodeManager(account), [account])
+
+  // -----------------------------
+
   const { nodes, filteredNodes, ...rest } = useComputeResourceNodes(props)
 
   // -----------------------------
 
-  const { userNodes } = useUserNodes({ nodes })
-  const { userNodes: baseFilteredUserNodes } = useUserNodes({
+  const { userNodes } = useFilterUserNodes({ nodes })
+  const { userNodes: baseFilteredUserNodes } = useFilterUserNodes({
     nodes: filteredNodes,
   })
 
   // -----------------------------
 
-  const { nodesIssues, warningFlag } = useNodeIssues({
+  const { nodesIssues, warningFlag } = useFilterNodeIssues({
     nodes: baseFilteredUserNodes,
   })
 
   // -----------------------------
 
-  const { sortedNodes: filteredUserNodes } = useSortedByIssuesNodes({
+  const { sortedNodes: filteredUserNodes } = useSortByIssuesNodes({
     nodesIssues,
     nodes: baseFilteredUserNodes,
   })
@@ -99,12 +108,33 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
+  const { userNode } = useUserCoreChannelNode({})
+
+  const handleLink = useCallback(
+    async (nodeHash: string) => {
+      await nodeManager.linkComputeResourceNode(nodeHash)
+    },
+    [nodeManager],
+  )
+
+  const handleUnlink = useCallback(
+    async (nodeHash: string) => {
+      await nodeManager.unlinkComputeResourceNode(nodeHash)
+    },
+    [nodeManager],
+  )
+
+  // -----------------------------
+
+  // console.log(filteredNodes)
+
   return {
     account,
     accountBalance,
     nodes,
     filteredNodes,
     userNodes,
+    userNode,
     filteredUserNodes,
     selectedTab,
     tabs,
@@ -112,6 +142,8 @@ export function useComputeResourceNodesPage(
     lastDistribution,
     nodesIssues,
     ...rest,
+    handleLink,
+    handleUnlink,
     handleTabChange,
   }
 }

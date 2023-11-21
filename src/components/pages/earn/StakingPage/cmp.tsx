@@ -26,7 +26,7 @@ export const StakingPage = memo((props) => {
     handleTabChange,
     handleFilterChange,
     handleStake,
-    handleUnStake,
+    handleUnstake,
     handleChangeStakeableOnly,
   } = useStakingPage(props)
 
@@ -115,7 +115,7 @@ export const StakingPage = memo((props) => {
                     accountBalance,
                     account,
                     handleStake,
-                    handleUnStake,
+                    handleUnstake,
                     showStakedAmount: true,
                     nodesIssues,
                   }}
@@ -128,7 +128,7 @@ export const StakingPage = memo((props) => {
                     accountBalance,
                     account,
                     handleStake,
-                    handleUnStake,
+                    handleUnstake,
                     nodesIssues,
                   }}
                 />

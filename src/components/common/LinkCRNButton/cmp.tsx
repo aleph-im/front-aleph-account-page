@@ -1,48 +1,43 @@
 import { memo, useCallback, useMemo } from 'react'
 import { Button } from '@aleph-front/aleph-core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { CCN, NodeManager } from '@/domain/node'
+import { CCN, CRN, NodeManager } from '@/domain/node'
 
-export type StakeButtonProps = {
-  node: CCN
+export type LinkCRNButtonProps = {
+  node: CRN
+  userNode?: CCN
   account?: Account
   accountBalance?: number
-  onStake: (nodeHash: string) => void
-  onUnstake: (nodeHash: string) => void
+  onLink: (nodeHash: string) => void
+  onUnlink: (nodeHash: string) => void
 }
 
-// https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L137
-export const StakeButton = memo(
-  ({
-    node,
-    account,
-    accountBalance = 0,
-    onStake,
-    onUnstake: onUnstake,
-  }: StakeButtonProps) => {
+// https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L298
+export const LinkCRNButton = memo(
+  ({ node, userNode, account, onLink, onUnlink }: LinkCRNButtonProps) => {
     // @todo: Refactor this (use singleton)
     const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-    const isStakeNode = useMemo(() => {
-      return nodeManager.isUserStake(node)
-    }, [node, nodeManager])
+    const isLinkedNode = useMemo(() => {
+      return nodeManager.isUserLinked(node, userNode)
+    }, [node, nodeManager, userNode])
 
     const isDisabled = useMemo(() => {
-      const [canStake] = nodeManager.isStakeable(node, accountBalance)
-      return !canStake
-    }, [nodeManager, node, accountBalance])
+      const [canLink] = nodeManager.isLinkable(node, userNode)
+      return !canLink
+    }, [nodeManager, node, userNode])
 
     const handleOnClick = useCallback(() => {
-      if (isStakeNode) {
-        onUnstake(node.hash)
+      if (isLinkedNode) {
+        onUnlink(node.hash)
       } else {
-        onStake(node.hash)
+        onLink(node.hash)
       }
-    }, [isStakeNode, onUnstake, node.hash, onStake])
+    }, [isLinkedNode, onUnlink, node.hash, onLink])
 
     return (
       <>
-        {!isStakeNode ? (
+        {!isLinkedNode ? (
           <Button
             kind="neon"
             size="regular"
@@ -51,7 +46,7 @@ export const StakeButton = memo(
             onClick={handleOnClick}
             disabled={isDisabled}
           >
-            Stake
+            Link
           </Button>
         ) : (
           <Button
@@ -61,13 +56,13 @@ export const StakeButton = memo(
             color="main2"
             onClick={handleOnClick}
           >
-            Unstake
+            Unlink
           </Button>
         )}
       </>
     )
   },
 )
-StakeButton.displayName = 'StakeButton'
+LinkCRNButton.displayName = 'LinkCRNButton'
 
-export default StakeButton
+export default LinkCRNButton

@@ -267,6 +267,42 @@ export class NodeManager {
     return res.item_hash
   }
 
+  // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/components/NodesTable.vue#L298
+  async linkComputeResourceNode(crnHash: string): Promise<void> {
+    if (!this.account) throw new Error('Invalid account')
+
+    await post.Publish({
+      account: this.account,
+      postType,
+      channel,
+      ref: crnHash,
+      content: {
+        tags: ['link', ...tags],
+        action: 'link',
+      },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
+  }
+
+  // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/components/NodesTable.vue#L298
+  async unlinkComputeResourceNode(crnHash: string): Promise<void> {
+    if (!this.account) throw new Error('Invalid account')
+
+    await post.Publish({
+      account: this.account,
+      postType,
+      channel,
+      ref: crnHash,
+      content: {
+        tags: ['unlink', ...tags],
+        action: 'unlink',
+      },
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
+  }
+
   protected async fetchAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {
     return fetchAndCache(
       `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
@@ -307,7 +343,16 @@ export class NodeManager {
 
   isUserStake(node: CCN): boolean {
     if (!this.account) return false
-    return node.stakers[this.account.address] !== undefined
+    return !!node.stakers[this.account.address]
+  }
+
+  isUserLinked(node: CRN, userNode?: CCN): boolean {
+    if (!this.account) return false
+    if (!userNode) return false
+
+    return (
+      userNode.hash === node.parent || (this.isUserNode(node) && !!node.parent)
+    )
   }
 
   isStakeable(node: CCN, balance: number): [boolean, string] {
@@ -325,6 +370,27 @@ export class NodeManager {
       return [false, "You can't stake while you operate a node"]
 
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
+  }
+
+  isLinkable(node: CRN, userNode?: CCN): [boolean, string] {
+    if (!this.account) return [false, 'Please login']
+
+    if (!userNode) return [false, "The user doesn't own a core channel node"]
+
+    if (node.locked) return [false, 'This node is locked']
+
+    if (!this.isUserNode(userNode)) return [false, 'Invalid user node']
+
+    if (!!node.parent)
+      return [false, `The node is already linked to ${node.parent}`]
+
+    if (userNode.resource_nodes.length >= 3)
+      return [
+        false,
+        `The user node is already linked to ${userNode.resource_nodes.length} nodes`,
+      ]
+
+    return [true, `Link ${node.hash} to ${userNode.hash}`]
   }
 
   hasIssues(node: AlephNode, staking = false): string | undefined {

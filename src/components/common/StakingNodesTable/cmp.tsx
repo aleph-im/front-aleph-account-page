@@ -20,7 +20,7 @@ export type StakingNodesTableProps = {
   showStakedAmount?: boolean
   nodesIssues?: Record<string, string>
   handleStake: (nodeHash: string) => void
-  handleUnStake: (nodeHash: string) => void
+  handleUnstake: (nodeHash: string) => void
 }
 
 export const StakingNodesTable = memo(
@@ -32,7 +32,7 @@ export const StakingNodesTable = memo(
     showStakedAmount,
     nodesIssues,
     handleStake: onStake,
-    handleUnStake: onUnStake,
+    handleUnstake: onUnstake,
   }: StakingNodesTableProps) => {
     const columns = useMemo(() => {
       const cols = [
@@ -99,7 +99,7 @@ export const StakingNodesTable = memo(
                   account,
                   accountBalance,
                   onStake,
-                  onUnStake,
+                  onUnstake,
                 }}
               />
               <Button
@@ -133,7 +133,7 @@ export const StakingNodesTable = memo(
       nodes,
       nodesIssues,
       onStake,
-      onUnStake,
+      onUnstake,
       showStakedAmount,
     ])
 

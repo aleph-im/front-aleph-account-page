@@ -2,17 +2,17 @@ import { useCallback, useMemo } from 'react'
 import { CCN, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 
-export type UseUserStakeNodesProps = {
+export type UseFilterUserStakeNodesProps = {
   nodes?: CCN[]
 }
 
-export type UseUserStakeNodesReturn = {
+export type UseFilterUserStakeNodesReturn = {
   stakeNodes?: CCN[]
 }
 
-export function useUserStakeNodes({
+export function useFilterUserStakeNodes({
   nodes,
-}: UseUserStakeNodesProps): UseUserStakeNodesReturn {
+}: UseFilterUserStakeNodesProps): UseFilterUserStakeNodesReturn {
   const [state] = useAppState()
   const { account } = state.account
 

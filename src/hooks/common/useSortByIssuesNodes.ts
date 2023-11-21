@@ -1,19 +1,19 @@
 import { useMemo } from 'react'
 import { AlephNode } from '@/domain/node'
 
-export type UseSortedByIssuesNodesProps<T> = {
+export type UseSortByIssuesNodesProps<T> = {
   nodes?: T[]
   nodesIssues: Record<string, string>
 }
 
-export type UseSortedByIssuesNodesReturn<T> = {
+export type UseSortByIssuesNodesReturn<T> = {
   sortedNodes?: T[]
 }
 
-export function useSortedByIssuesNodes<T extends AlephNode>({
+export function useSortByIssuesNodes<T extends AlephNode>({
   nodes,
   nodesIssues,
-}: UseSortedByIssuesNodesProps<T>): UseSortedByIssuesNodesReturn<T> {
+}: UseSortByIssuesNodesProps<T>): UseSortByIssuesNodesReturn<T> {
   const sortedNodes = useMemo(() => {
     if (!nodes) return
 
