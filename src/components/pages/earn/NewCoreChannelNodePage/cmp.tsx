@@ -36,35 +36,16 @@ export const NewCoreChannelNodePage = () => {
           </CompositeTitle>
           <p tw="mt-1 mb-6">Your node name should be short and meaningful.</p>
           <NoisyContainer>
-            <InfoTooltipButton
-              plain
-              my="bottom-left"
-              at="bottom-right"
-              vAlign="top"
-              tooltipContent={
-                <div tw="text-left">
-                  <div>
-                    <div className="tp-body2 fs-18">Name</div>
-                    <div className="tp-body1 fs-18">Blabla</div>
-                  </div>
-                </div>
-              }
-            >
-              <FormLabel
-                label="Node name"
-                error={nameCtrl.fieldState.error}
-                required
-              />
-            </InfoTooltipButton>
             <TextInput
               {...nameCtrl.field}
               {...nameCtrl.fieldState}
               required
+              label="Node name"
               placeholder="Give it a name"
             />
             <p tw="mt-4">
               You can change this later if you want, even add a picture and
-              desctiption.
+              description.
             </p>
           </NoisyContainer>
         </section>
@@ -80,29 +61,11 @@ export const NewCoreChannelNodePage = () => {
             node as well.
           </p>
           <NoisyContainer>
-            <InfoTooltipButton
-              plain
-              my="bottom-left"
-              at="bottom-right"
-              vAlign="top"
-              tooltipContent={
-                <div tw="text-left">
-                  <div>
-                    <div className="tp-body2 fs-18">Multiaddress</div>
-                    <div className="tp-body1 fs-18">Blabla</div>
-                  </div>
-                </div>
-              }
-            >
-              <FormLabel
-                label="Set multiaddress"
-                error={multiaddressCtrl.fieldState.error}
-              />
-            </InfoTooltipButton>
             <TextInput
               {...multiaddressCtrl.field}
               {...multiaddressCtrl.fieldState}
-              placeholder="Multiaddress (optional)"
+              label="Set multiaddress"
+              placeholder="/ip4/{ip-address}/tcp/4025/p2p/SmlS3hb... (optional)"
             />
             <div tw="mt-2">
               <ExternalLinkButton
@@ -124,7 +87,7 @@ export const NewCoreChannelNodePage = () => {
           >
             Create core node
           </Button>
-          <ButtonLink size="regular" href="/earn/ccn">
+          <ButtonLink size="regular" variant="text-only" href="/earn/ccn">
             Cancel
           </ButtonLink>
         </section>

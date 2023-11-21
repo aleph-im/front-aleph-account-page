@@ -16,9 +16,14 @@ export const urlSchema = requiredStringSchema.regex(
   { message: 'Invalid url format' },
 )
 
+export const multiaddressSchema = requiredStringSchema.regex(
+  /^\/ip4\/(?:[0-9]{1,3}\.){3}[0-9]{1,3}\/tcp\/[0-9]{1,4}\/p2p\/Qm[1-9A-HJ-NP-Za-km-z]{44}$/,
+  { message: 'Invalid multiaddress format' },
+)
+
 export const newCCNSchema = z.object({
   name: requiredStringSchema,
-  multiaddress: optionalString(requiredStringSchema),
+  multiaddress: optionalString(multiaddressSchema),
 })
 
 export const newCRNSchema = z.object({

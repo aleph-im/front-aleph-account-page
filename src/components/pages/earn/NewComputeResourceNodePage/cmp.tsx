@@ -39,35 +39,16 @@ export const NewComputeResourceNodePage = () => {
           </CompositeTitle>
           <p tw="mt-1 mb-6">Your node name should be short and meaningful.</p>
           <NoisyContainer>
-            <InfoTooltipButton
-              plain
-              my="bottom-left"
-              at="bottom-right"
-              vAlign="top"
-              tooltipContent={
-                <div tw="text-left">
-                  <div>
-                    <div className="tp-body2 fs-18">Name</div>
-                    <div className="tp-body1 fs-18">Blabla</div>
-                  </div>
-                </div>
-              }
-            >
-              <FormLabel
-                label="Node name"
-                error={nameCtrl.fieldState.error}
-                required
-              />
-            </InfoTooltipButton>
             <TextInput
               {...nameCtrl.field}
               {...nameCtrl.fieldState}
               required
+              label="Node name"
               placeholder="Give it a name"
             />
             <p tw="mt-4">
               You can change this later if you want, even add a picture and
-              desctiption.
+              description.
             </p>
           </NoisyContainer>
         </section>
@@ -80,28 +61,10 @@ export const NewComputeResourceNodePage = () => {
             ultrices consectetur. Id sem facilisis et aliquet a.
           </p>
           <NoisyContainer>
-            <InfoTooltipButton
-              plain
-              my="bottom-left"
-              at="bottom-right"
-              vAlign="top"
-              tooltipContent={
-                <div tw="text-left">
-                  <div>
-                    <div className="tp-body2 fs-18">Address</div>
-                    <div className="tp-body1 fs-18">Blabla</div>
-                  </div>
-                </div>
-              }
-            >
-              <FormLabel
-                label="Set address"
-                error={addressCtrl.fieldState.error}
-              />
-            </InfoTooltipButton>
             <TextInput
               {...addressCtrl.field}
               {...addressCtrl.fieldState}
+              label="Set address"
               placeholder="https://my-domain.tld/"
             />
             <div tw="mt-2">
@@ -124,7 +87,7 @@ export const NewComputeResourceNodePage = () => {
           >
             Register compute node
           </Button>
-          <ButtonLink size="regular" href="/earn/crn">
+          <ButtonLink size="regular" variant="text-only" href="/earn/crn">
             Cancel
           </ButtonLink>
         </section>
