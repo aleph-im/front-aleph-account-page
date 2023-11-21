@@ -18,7 +18,8 @@ export const StakingPage = memo((props) => {
     tabs,
     selectedTab,
     filter,
-    stakeableOnly,
+    isStakeableOnly,
+    isStakeableOnlyDisabled,
     userStake,
     userRewards,
     lastDistribution,
@@ -27,7 +28,7 @@ export const StakingPage = memo((props) => {
     handleFilterChange,
     handleStake,
     handleUnstake,
-    handleChangeStakeableOnly,
+    handleStakeableOnlyChange: handleChangeStakeableOnly,
   } = useStakingPage(props)
 
   return (
@@ -89,10 +90,10 @@ export const StakingPage = memo((props) => {
             />
             <Checkbox
               label="Ready to stake"
-              checked={stakeableOnly}
+              checked={isStakeableOnly}
               onChange={handleChangeStakeableOnly}
               size="xs"
-              disabled={!account || selectedTab !== 'nodes'}
+              disabled={isStakeableOnlyDisabled}
             />
           </div>
           <TextInput

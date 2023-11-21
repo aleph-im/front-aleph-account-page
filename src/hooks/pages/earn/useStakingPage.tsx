@@ -20,7 +20,8 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   filteredStakeNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
-  stakeableOnly: boolean
+  isStakeableOnly: boolean
+  isStakeableOnlyDisabled: boolean
   userStake: number
   userRewards?: number
   lastDistribution?: number
@@ -28,7 +29,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
   handleUnstake: (nodeHash: string) => void
-  handleChangeStakeableOnly: (e: ChangeEvent<HTMLInputElement>) => void
+  handleStakeableOnlyChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function useStakingPage(
@@ -57,12 +58,12 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const [stakeableOnly, setstakeableOnly] = useState(true)
+  const [stakeableOnly, setStakeableOnly] = useState(!!account)
 
   const handleChangeStakeableOnly = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const show = e.target.checked
-      setstakeableOnly(show)
+      setStakeableOnly(show)
     },
     [],
   )
@@ -102,8 +103,8 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const [tab, handleTabChange] = useState('stake')
-  const selectedTab = stakeNodes?.length ? tab : 'nodes'
+  const [tab, handleTabChange] = useState<string>()
+  const selectedTab = tab || (stakeNodes?.length ? 'stake' : 'nodes')
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
@@ -149,6 +150,9 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const isStakeableOnlyDisabled = !account || tab !== 'nodes'
+  const isStakeableOnly = isStakeableOnlyDisabled ? false : stakeableOnly
+
   return {
     account,
     accountBalance,
@@ -157,7 +161,8 @@ export function useStakingPage(
     filteredStakeNodes,
     selectedTab,
     tabs,
-    stakeableOnly,
+    isStakeableOnly,
+    isStakeableOnlyDisabled,
     userStake,
     userRewards,
     lastDistribution,
@@ -166,6 +171,6 @@ export function useStakingPage(
     handleTabChange,
     handleStake,
     handleUnstake,
-    handleChangeStakeableOnly,
+    handleStakeableOnlyChange: handleChangeStakeableOnly,
   }
 }

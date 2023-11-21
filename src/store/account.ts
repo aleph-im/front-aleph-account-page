@@ -56,6 +56,9 @@ export function getAccountReducer(): AccountReducer {
         // Mock CRN owner
         // ;(account as any).address = '0xD20212929FDe829C57f93dbfF9332f3FC8703BCD'
 
+        // Not fully linked node
+        ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
+
         return {
           ...state,
           account,

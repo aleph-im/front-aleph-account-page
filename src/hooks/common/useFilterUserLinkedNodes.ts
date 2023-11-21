@@ -35,6 +35,5 @@ export function useFilterUserLinkedNodes({
     [filterUserNodes, nodes],
   )
 
-  console.log(userLinkedNodes)
   return { userLinkedNodes }
 }

@@ -96,7 +96,7 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
-  // console.log(filteredNodes)
+  console.log(filteredNodes)
 
   return {
     account,

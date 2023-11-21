@@ -369,20 +369,21 @@ export class NodeManager {
     if (this.isUserNode(node))
       return [false, "You can't stake while you operate a node"]
 
+    if (this.isUserStake(node)) return [false, 'Already staking in this node']
+
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
   }
 
   isLinkable(node: CRN, userNode?: CCN): [boolean, string] {
     if (!this.account) return [false, 'Please login']
 
-    if (!userNode) return [false, "The user doesn't own a core channel node"]
+    if (!userNode || !this.isUserNode(userNode))
+      return [false, "The user doesn't own a core channel node"]
 
     if (node.locked) return [false, 'This node is locked']
 
-    if (!this.isUserNode(userNode)) return [false, 'Invalid user node']
-
     if (!!node.parent)
-      return [false, `The node is already linked to ${node.parent}`]
+      return [false, `The node is already linked to ${node.parent} ccn`]
 
     if (userNode.resource_nodes.length >= 3)
       return [

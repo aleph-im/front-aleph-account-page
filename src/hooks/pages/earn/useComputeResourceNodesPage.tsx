@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
@@ -27,11 +27,14 @@ export type UseComputeResourceNodesPageReturn =
     userNode?: CCN
     selectedTab: string
     tabs: TabsProps['tabs']
+    isLinkableOnly: boolean
+    isLinkableOnlyDisabled: boolean
     userRewards?: number
     lastDistribution?: number
     handleLink: (nodeHash: string) => void
     handleUnlink: (nodeHash: string) => void
     handleTabChange: (tab: string) => void
+    handleLinkableOnlyChange: (e: ChangeEvent<HTMLInputElement>) => void
   }
 
 export function useComputeResourceNodesPage(
@@ -39,7 +42,11 @@ export function useComputeResourceNodesPage(
 ): UseComputeResourceNodesPageReturn {
   // ----------------------------- CR NODES
 
-  const { nodes, filteredNodes, ...rest } = useComputeResourceNodes(props)
+  const {
+    nodes,
+    filteredNodes: baseFilteredNodes,
+    ...rest
+  } = useComputeResourceNodes(props)
   const { account } = rest
 
   // -----------------------------
@@ -47,11 +54,27 @@ export function useComputeResourceNodesPage(
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
+  // ----------------------------- USER MAIN CC NODE
+
+  const { userNode } = useUserCoreChannelNode({})
+
+  // ----------------------------- READY TO LINK FILTER
+
+  const [linkableOnly, setlinkableOnly] = useState(!!account)
+
+  const handleLinkableOnlyChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const show = e.target.checked
+      setlinkableOnly(show)
+    },
+    [],
+  )
+
   // ----------------------------- USER NODES
 
   const { userNodes } = useFilterUserNodes({ nodes })
   const { userNodes: baseFilteredUserNodes } = useFilterUserNodes({
-    nodes: filteredNodes,
+    nodes: baseFilteredNodes,
   })
 
   // ----------------------------- LINKED NODES
@@ -59,8 +82,22 @@ export function useComputeResourceNodesPage(
   const { userLinkedNodes } = useFilterUserLinkedNodes({ nodes })
   const { userLinkedNodes: baseFilteredUserLinkedNodes } =
     useFilterUserLinkedNodes({
-      nodes: filteredNodes,
+      nodes: baseFilteredNodes,
     })
+
+  // ----------------------------- FILTERED NODES
+
+  const filteredNodes = useMemo(() => {
+    if (!baseFilteredNodes) return
+    if (!linkableOnly) return baseFilteredNodes
+    if (!account) return baseFilteredNodes
+
+    return baseFilteredNodes.filter(
+      (node) =>
+        nodeManager.isLinkable(node, userNode)[0] &&
+        !nodeManager.isUserLinked(node, userNode),
+    )
+  }, [account, baseFilteredNodes, linkableOnly, nodeManager, userNode])
 
   // ----------------------------- NODE ISSUES
 
@@ -88,7 +125,7 @@ export function useComputeResourceNodesPage(
 
   // ----------------------------- TABS
 
-  const [tab, handleTabChange] = useState()
+  const [tab, handleTabChange] = useState<string>()
   const selectedTab =
     tab ||
     (!!userNodes?.length
@@ -156,8 +193,6 @@ export function useComputeResourceNodesPage(
 
   // ----------------------------- LINK CRN
 
-  const { userNode } = useUserCoreChannelNode({})
-
   const handleLink = useCallback(
     async (nodeHash: string) => {
       await nodeManager.linkComputeResourceNode(nodeHash)
@@ -174,6 +209,9 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
+  const isLinkableOnlyDisabled = !account || tab !== 'nodes'
+  const isLinkableOnly = isLinkableOnlyDisabled ? false : linkableOnly
+
   // console.log(filteredNodes)
 
   return {
@@ -188,11 +226,14 @@ export function useComputeResourceNodesPage(
     userNode,
     selectedTab,
     tabs,
+    isLinkableOnly,
+    isLinkableOnlyDisabled,
     userRewards,
     lastDistribution,
     handleLink,
     handleUnlink,
     handleTabChange,
+    handleLinkableOnlyChange,
     ...rest,
   }
 }

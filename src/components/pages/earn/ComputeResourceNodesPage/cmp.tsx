@@ -1,7 +1,13 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Button, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
+import {
+  Button,
+  Checkbox,
+  Icon,
+  Tabs,
+  TextInput,
+} from '@aleph-front/aleph-core'
 import { useComputeResourceNodesPage } from '@/hooks/pages/earn/useComputeResourceNodesPage'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
@@ -18,19 +24,22 @@ export const ComputeResourceNodesPage = memo((props) => {
     filteredNodes,
     userNodes,
     filteredUserNodes,
-    userLinkedNodes,
     filteredUserLinkedNodes,
+    userLinkedNodesIssues,
     userNode,
     tabs,
     selectedTab,
     filter,
     lastVersion,
+    isLinkableOnly,
+    isLinkableOnlyDisabled,
     userRewards,
     lastDistribution,
     handleLink,
     handleUnlink,
     handleTabChange,
     handleFilterChange,
+    handleLinkableOnlyChange,
   } = useComputeResourceNodesPage(props)
 
   const CreateNode = (
@@ -104,12 +113,21 @@ export const ComputeResourceNodesPage = memo((props) => {
       </section>
       <section tw="mt-14">
         <div tw="flex items-end justify-between mb-8">
-          <Tabs
-            tabs={tabs}
-            align="left"
-            selected={selectedTab}
-            onTabChange={handleTabChange}
-          />
+          <div tw="flex items-center gap-4">
+            <Tabs
+              tabs={tabs}
+              align="left"
+              selected={selectedTab}
+              onTabChange={handleTabChange}
+            />
+            <Checkbox
+              label="Ready to link"
+              checked={isLinkableOnly}
+              onChange={handleLinkableOnlyChange}
+              size="xs"
+              disabled={isLinkableOnlyDisabled}
+            />
+          </div>
           <TextInput
             value={filter}
             name="filter-ccn"
@@ -150,6 +168,7 @@ export const ComputeResourceNodesPage = memo((props) => {
                       lastVersion,
                       handleLink,
                       handleUnlink,
+                      nodesIssues: userLinkedNodesIssues,
                     }}
                   />
                 )}
