@@ -54,11 +54,11 @@ export const NewCoreChannelNodePage = () => {
             Set multiaddress
           </CompositeTitle>
           <p tw="mt-1 mb-6">
-            The physical node as unique identifier called multiaddress. It links
-            the wallet and interface to the physical node. Can be setup later on
-            the info page of the node or at setup if the physical node is
-            already running. This screen has a link to install procedure of the
-            node as well.
+            The physical node has unique identifier called multiaddress. It
+            links the physical node with the interface. Can be setup later on
+            the info page of the node or here if the physical node is running.
+            The link below explains in detail the install procedure and how to
+            retrieve the multiaddress.
           </p>
           <NoisyContainer>
             <TextInput

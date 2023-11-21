@@ -57,13 +57,16 @@ export const NewComputeResourceNodePage = () => {
             Set address
           </CompositeTitle>
           <p tw="mt-1 mb-6">
-            Lorem ipsum dolor sit amet consectetur. Nibh metus posuere sed
-            ultrices consectetur. Id sem facilisis et aliquet a.
+            The physical node has a unique identifier address. It links the
+            wallet and interface to the physical node. This address is mandatory
+            to proceed and the install procedure below will explain how to
+            retrieve this address.
           </p>
           <NoisyContainer>
             <TextInput
               {...addressCtrl.field}
               {...addressCtrl.fieldState}
+              required
               label="Set address"
               placeholder="https://my-domain.tld/"
             />
