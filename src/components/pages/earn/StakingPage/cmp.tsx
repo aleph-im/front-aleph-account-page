@@ -106,36 +106,42 @@ export const StakingPage = memo((props) => {
         </div>
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
-          {nodes && filteredNodes && filteredStakeNodes && (
-            <>
-              {selectedTab === 'stake' ? (
-                <StakingNodesTable
-                  {...{
-                    nodes,
-                    filteredNodes: filteredStakeNodes,
-                    accountBalance,
-                    account,
-                    handleStake,
-                    handleUnstake,
-                    showStakedAmount: true,
-                    nodesIssues,
-                  }}
-                />
-              ) : (
-                <StakingNodesTable
-                  {...{
-                    nodes,
-                    filteredNodes,
-                    accountBalance,
-                    account,
-                    handleStake,
-                    handleUnstake,
-                    nodesIssues,
-                  }}
-                />
-              )}
-            </>
-          )}
+          <>
+            {selectedTab === 'stake' ? (
+              <>
+                {nodes && filteredStakeNodes && (
+                  <StakingNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes: filteredStakeNodes,
+                      accountBalance,
+                      account,
+                      handleStake,
+                      handleUnstake,
+                      showStakedAmount: true,
+                      nodesIssues,
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {nodes && filteredNodes && (
+                  <StakingNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes,
+                      accountBalance,
+                      account,
+                      handleStake,
+                      handleUnstake,
+                      nodesIssues,
+                    }}
+                  />
+                )}
+              </>
+            )}
+          </>
         </div>
       </section>
     </>

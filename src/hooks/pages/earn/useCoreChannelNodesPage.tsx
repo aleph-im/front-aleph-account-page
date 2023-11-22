@@ -18,11 +18,11 @@ export type UseCoreChannelNodesPageProps = {
 export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
   userNodes?: CCN[]
   filteredUserNodes?: CCN[]
+  userNodesIssues: Record<string, string>
   selectedTab: string
   tabs: TabsProps['tabs']
   userRewards?: number
   lastDistribution?: number
-  nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
 }
 
@@ -43,21 +43,22 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
-  const { nodesIssues, warningFlag } = useFilterNodeIssues({
-    nodes: baseFilteredUserNodes,
-  })
+  const { nodesIssues: userNodesIssues, warningFlag: userNodesWarningFlag } =
+    useFilterNodeIssues({
+      nodes: baseFilteredUserNodes,
+    })
 
   // -----------------------------
 
   const { sortedNodes: filteredUserNodes } = useSortByIssuesNodes({
-    nodesIssues,
+    nodesIssues: userNodesIssues,
     nodes: baseFilteredUserNodes,
   })
 
   // -----------------------------
 
-  const [tab, handleTabChange] = useState('user')
-  const selectedTab = userNodes?.length ? tab : 'nodes'
+  const [tab, handleTabChange] = useState<string>()
+  const selectedTab = tab || (!!userNodes?.length ? 'user' : 'nodes')
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
@@ -65,9 +66,11 @@ export function useCoreChannelNodesPage(
         id: 'user',
         name: 'My core nodes',
         disabled: !userNodes?.length,
-        label: warningFlag
+        label: userNodesWarningFlag
           ? {
-              label: <NotificationBadge>{warningFlag}</NotificationBadge>,
+              label: (
+                <NotificationBadge>{userNodesWarningFlag}</NotificationBadge>
+              ),
               position: 'top',
             }
           : undefined,
@@ -76,7 +79,7 @@ export function useCoreChannelNodesPage(
     ]
 
     return tabs
-  }, [userNodes, warningFlag])
+  }, [userNodes, userNodesWarningFlag])
 
   // -----------------------------
 
@@ -96,7 +99,7 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
-  console.log(filteredNodes)
+  // console.log(filteredNodes)
 
   return {
     account,
@@ -109,7 +112,7 @@ export function useCoreChannelNodesPage(
     tabs,
     userRewards,
     lastDistribution,
-    nodesIssues,
+    userNodesIssues,
     ...rest,
     handleTabChange,
   }

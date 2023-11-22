@@ -24,8 +24,7 @@ export const ComputeResourceNodesPage = memo((props) => {
     filteredNodes,
     userNodes,
     filteredUserNodes,
-    filteredUserLinkedNodes,
-    userLinkedNodesIssues,
+    userNodesIssues,
     userNode,
     tabs,
     selectedTab,
@@ -138,7 +137,6 @@ export const ComputeResourceNodesPage = memo((props) => {
         </div>
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
-
           <>
             {selectedTab === 'user' ? (
               <>
@@ -147,28 +145,12 @@ export const ComputeResourceNodesPage = memo((props) => {
                     {...{
                       nodes,
                       filteredNodes: filteredUserNodes,
+                      nodesIssues: userNodesIssues,
                       userNode,
                       account,
                       lastVersion,
                       handleLink,
                       handleUnlink,
-                    }}
-                  />
-                )}
-              </>
-            ) : selectedTab === 'linked' ? (
-              <>
-                {nodes && filteredUserLinkedNodes && (
-                  <ComputeResourceNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes: filteredUserLinkedNodes,
-                      userNode,
-                      account,
-                      lastVersion,
-                      handleLink,
-                      handleUnlink,
-                      nodesIssues: userLinkedNodesIssues,
                     }}
                   />
                 )}

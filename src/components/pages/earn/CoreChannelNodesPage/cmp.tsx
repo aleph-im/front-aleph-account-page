@@ -15,9 +15,10 @@ export const CoreChannelNodesPage = memo((props) => {
   const {
     account,
     nodes,
-    userNodes,
     filteredNodes,
+    userNodes,
     filteredUserNodes,
+    userNodesIssues,
     tabs,
     selectedTab,
     filter,
@@ -113,27 +114,34 @@ export const CoreChannelNodesPage = memo((props) => {
         </div>
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
-          {nodes && filteredNodes && filteredUserNodes && (
-            <>
-              {selectedTab === 'user' ? (
-                <CoreChannelNodesTable
-                  {...{
-                    nodes,
-                    filteredNodes: filteredUserNodes,
-                    lastVersion,
-                  }}
-                />
-              ) : (
-                <CoreChannelNodesTable
-                  {...{
-                    nodes,
-                    filteredNodes,
-                    lastVersion,
-                  }}
-                />
-              )}
-            </>
-          )}
+          <>
+            {selectedTab === 'user' ? (
+              <>
+                {nodes && filteredUserNodes && (
+                  <CoreChannelNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes: filteredUserNodes,
+                      nodesIssues: userNodesIssues,
+                      lastVersion,
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {nodes && filteredNodes && (
+                  <CoreChannelNodesTable
+                    {...{
+                      nodes,
+                      filteredNodes,
+                      lastVersion,
+                    }}
+                  />
+                )}
+              </>
+            )}
+          </>
         </div>
       </section>
     </>

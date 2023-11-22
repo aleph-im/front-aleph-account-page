@@ -10,7 +10,6 @@ import { useLastRewards } from '@/hooks/common/useRewards'
 import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useUserCoreChannelNode } from '@/hooks/common/useUserCoreChannelNode'
-import { useFilterUserLinkedNodes } from '@/hooks/common/useFilterUserLinkedNodes'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -21,9 +20,6 @@ export type UseComputeResourceNodesPageReturn =
     userNodes?: CRN[]
     filteredUserNodes?: CRN[]
     userNodesIssues: Record<string, string>
-    userLinkedNodes?: CRN[]
-    filteredUserLinkedNodes?: CRN[]
-    userLinkedNodesIssues: Record<string, string>
     userNode?: CCN
     selectedTab: string
     tabs: TabsProps['tabs']
@@ -77,14 +73,6 @@ export function useComputeResourceNodesPage(
     nodes: baseFilteredNodes,
   })
 
-  // ----------------------------- LINKED NODES
-
-  const { userLinkedNodes } = useFilterUserLinkedNodes({ nodes })
-  const { userLinkedNodes: baseFilteredUserLinkedNodes } =
-    useFilterUserLinkedNodes({
-      nodes: baseFilteredNodes,
-    })
-
   // ----------------------------- FILTERED NODES
 
   const filteredNodes = useMemo(() => {
@@ -106,33 +94,15 @@ export function useComputeResourceNodesPage(
       nodes: baseFilteredUserNodes,
     })
 
-  const {
-    nodesIssues: userLinkedNodesIssues,
-    warningFlag: userLinkedNodesWarningFlag,
-  } = useFilterNodeIssues({
-    nodes: baseFilteredUserLinkedNodes,
-  })
-
   const { sortedNodes: filteredUserNodes } = useSortByIssuesNodes({
     nodesIssues: userNodesIssues,
     nodes: baseFilteredUserNodes,
   })
 
-  const { sortedNodes: filteredUserLinkedNodes } = useSortByIssuesNodes({
-    nodesIssues: userLinkedNodesIssues,
-    nodes: baseFilteredUserLinkedNodes,
-  })
-
   // ----------------------------- TABS
 
   const [tab, handleTabChange] = useState<string>()
-  const selectedTab =
-    tab ||
-    (!!userNodes?.length
-      ? 'user'
-      : !!userLinkedNodes?.length
-      ? 'linked'
-      : 'nodes')
+  const selectedTab = tab || (!!userNodes?.length ? 'user' : 'nodes')
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
@@ -149,31 +119,11 @@ export function useComputeResourceNodesPage(
             }
           : undefined,
       },
-      {
-        id: 'linked',
-        name: 'Linked compute nodes',
-        disabled: !userLinkedNodes?.length,
-        label: userLinkedNodesWarningFlag
-          ? {
-              label: (
-                <NotificationBadge>
-                  {userLinkedNodesWarningFlag}
-                </NotificationBadge>
-              ),
-              position: 'top',
-            }
-          : undefined,
-      },
       { id: 'nodes', name: 'All compute nodes' },
     ]
 
     return tabs
-  }, [
-    userLinkedNodes,
-    userLinkedNodesWarningFlag,
-    userNodes,
-    userNodesWarningFlag,
-  ])
+  }, [userNodes, userNodesWarningFlag])
 
   // ----------------------------- REWARDS
 
@@ -220,9 +170,6 @@ export function useComputeResourceNodesPage(
     userNodes,
     filteredUserNodes,
     userNodesIssues,
-    userLinkedNodes,
-    filteredUserLinkedNodes,
-    userLinkedNodesIssues,
     userNode,
     selectedTab,
     tabs,

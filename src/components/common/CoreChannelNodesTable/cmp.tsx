@@ -31,7 +31,7 @@ export const CoreChannelNodesTable = memo(
           align: 'center',
           width: 0,
           cellProps: () => ({ css: tw`p-0!` }),
-          hcellProps: () => ({ css: tw`p-0!` }),
+          hcellProps: () => ({ css: tw`p-0! border-0!` }),
           render: (row) =>
             nodesIssues?.[row.hash] ? (
               <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
