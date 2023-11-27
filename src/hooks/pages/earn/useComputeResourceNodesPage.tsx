@@ -56,12 +56,12 @@ export function useComputeResourceNodesPage(
 
   // ----------------------------- READY TO LINK FILTER
 
-  const [linkableOnly, setlinkableOnly] = useState(!!account)
+  const [linkableOnly, setLinkableOnly] = useState<boolean>()
 
   const handleLinkableOnlyChange = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const show = e.target.checked
-      setlinkableOnly(show)
+      setLinkableOnly(show)
     },
     [],
   )
@@ -72,20 +72,6 @@ export function useComputeResourceNodesPage(
   const { userNodes: baseFilteredUserNodes } = useFilterUserNodes({
     nodes: baseFilteredNodes,
   })
-
-  // ----------------------------- FILTERED NODES
-
-  const filteredNodes = useMemo(() => {
-    if (!baseFilteredNodes) return
-    if (!linkableOnly) return baseFilteredNodes
-    if (!account) return baseFilteredNodes
-
-    return baseFilteredNodes.filter(
-      (node) =>
-        nodeManager.isLinkable(node, userNode)[0] &&
-        !nodeManager.isUserLinked(node, userNode),
-    )
-  }, [account, baseFilteredNodes, linkableOnly, nodeManager, userNode])
 
   // ----------------------------- NODE ISSUES
 
@@ -125,6 +111,31 @@ export function useComputeResourceNodesPage(
     return tabs
   }, [userNodes, userNodesWarningFlag])
 
+  // ----------------------------- FILTERED NODES
+
+  const linkableNodes = useMemo(() => {
+    if (!baseFilteredNodes) return
+    return baseFilteredNodes.filter(
+      (node) =>
+        nodeManager.isLinkable(node, userNode)[0] &&
+        !nodeManager.isUserLinked(node, userNode),
+    )
+  }, [baseFilteredNodes, nodeManager, userNode])
+
+  const isLinkableOnlyDisabled =
+    !linkableNodes?.length || selectedTab !== 'nodes'
+  const isLinkableOnly = isLinkableOnlyDisabled
+    ? false
+    : linkableOnly !== undefined
+    ? linkableOnly
+    : !!account
+
+  const filteredNodes = useMemo(() => {
+    if (!isLinkableOnly) return baseFilteredNodes
+    if (!account) return baseFilteredNodes
+    return linkableNodes
+  }, [account, baseFilteredNodes, linkableNodes, isLinkableOnly])
+
   // ----------------------------- REWARDS
 
   const { lastRewardsCalculation, lastRewardsDistribution } = useLastRewards()
@@ -158,9 +169,6 @@ export function useComputeResourceNodesPage(
   )
 
   // -----------------------------
-
-  const isLinkableOnlyDisabled = !account || selectedTab !== 'nodes'
-  const isLinkableOnly = isLinkableOnlyDisabled ? false : linkableOnly
 
   // console.log(filteredNodes)
 

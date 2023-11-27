@@ -58,7 +58,7 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const [stakeableOnly, setStakeableOnly] = useState(!!account)
+  const [stakeableOnly, setStakeableOnly] = useState<boolean>()
 
   const handleChangeStakeableOnly = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -80,25 +80,6 @@ export function useStakingPage(
   const { nodesIssues, warningFlag } = useFilterNodeIssues({
     nodes: baseFilteredStakeNodes,
     isStaking: true,
-  })
-
-  // -----------------------------
-
-  const filteredNodes = useMemo(() => {
-    if (!baseFilteredNodes) return
-    if (!stakeableOnly) return baseFilteredNodes
-    if (!account) return baseFilteredNodes
-
-    return baseFilteredNodes.filter(
-      (node) =>
-        nodeManager.isStakeable(node, accountBalance)[0] &&
-        !nodeManager.isUserStake(node),
-    )
-  }, [baseFilteredNodes, stakeableOnly, account, nodeManager, accountBalance])
-
-  const { sortedNodes: filteredStakeNodes } = useSortByIssuesNodes({
-    nodesIssues,
-    nodes: baseFilteredStakeNodes,
   })
 
   // -----------------------------
@@ -127,6 +108,36 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const stakeableNodes = useMemo(() => {
+    if (!baseFilteredNodes) return
+    return baseFilteredNodes.filter(
+      (node) =>
+        nodeManager.isStakeable(node, accountBalance)[0] &&
+        !nodeManager.isUserStake(node),
+    )
+  }, [accountBalance, baseFilteredNodes, nodeManager])
+
+  const isStakeableOnlyDisabled =
+    !stakeableNodes?.length || selectedTab !== 'nodes'
+  const isStakeableOnly = isStakeableOnlyDisabled
+    ? false
+    : stakeableOnly !== undefined
+    ? stakeableOnly
+    : !!account
+
+  const filteredNodes = useMemo(() => {
+    if (!isStakeableOnly) return baseFilteredNodes
+    if (!account) return baseFilteredNodes
+    return stakeableNodes
+  }, [isStakeableOnly, baseFilteredNodes, account, stakeableNodes])
+
+  const { sortedNodes: filteredStakeNodes } = useSortByIssuesNodes({
+    nodesIssues,
+    nodes: baseFilteredStakeNodes,
+  })
+
+  // -----------------------------
+
   const stakeManager = useMemo(() => new StakeManager(account), [account])
 
   const handleStake = useCallback(
@@ -149,9 +160,6 @@ export function useStakingPage(
   )
 
   // -----------------------------
-
-  const isStakeableOnlyDisabled = !account || selectedTab !== 'nodes'
-  const isStakeableOnly = isStakeableOnlyDisabled ? false : stakeableOnly
 
   return {
     account,

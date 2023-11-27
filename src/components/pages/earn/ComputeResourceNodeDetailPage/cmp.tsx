@@ -159,17 +159,6 @@ export const ComputeResourceNodeDetailPage = () => {
             <Card2 title="PERFORMANCE">
               <Card2Field name="AVERAGE RESPONSE" value="?????" />
               <Card2Field name="RESPONSIVENESS" value="?????" />
-              <Card2Field
-                name="TOTAL STAKED"
-                value={
-                  <div tw="inline-flex gap-2 items-center">
-                    <div tw="whitespace-nowrap">
-                      {node?.total_staked?.toFixed(5)}
-                    </div>
-                    <Logo text="" color="main0" />
-                  </div>
-                }
-              />
               <Card2Field name="TIME LEFT" value="?????" />
               <Card2Field name="UPTIME" value="?????" />
               <Card2Field name="CREATION TIME" value={creationDate} />
