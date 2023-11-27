@@ -19,12 +19,11 @@ export const StyledNav1Link = styled(Link).attrs(addClasses('tp-nav'))<{
     ${StyledLinkContentCss}
     ${tw`relative justify-center`}
 
+    color: ${theme.color.main0}${$isActive ? 'ff' : '66'};
+
     &:hover {
       color: ${theme.color.main0};
     }
-
-    color: ${theme.color.main0}${$isActive ? 'ff' : '66'};
-    transition: color ease-in-out 0.25s 0s;
 
     ${$isActive &&
     css`
@@ -65,17 +64,12 @@ export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
 
     color: ${$isActive ? theme.color.main0 : theme.color.base0};
 
-    & > svg {
-      transition: color ease-in-out 0.25s 0s !important;
-    }
-
     &:hover > svg {
       color: ${theme.color.main0};
     }
 
     & > span {
       ${tw`overflow-hidden`}
-      transition: color ease-in-out 0.25s 0s !important;
     }
   `}
 `
@@ -195,7 +189,8 @@ export const StyledSidebar = styled.aside<{
             visibility: visible;
 
             transition: opacity ease-in-out ${0.2 / $speed}s ${0.45 / $speed}s,
-              visibility linear ${0.2 / $speed}s ${0.45 / $speed}s;
+              visibility linear ${0.2 / $speed}s ${0.45 / $speed}s,
+              color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledNav1Link}::after {
@@ -227,7 +222,8 @@ export const StyledSidebar = styled.aside<{
             ${tw`relative left-0 translate-x-0`}
             transition: left linear 0s ${0.5 / $speed}s, 
               transform linear 0s ${0.5 / $speed}s,
-              font-size linear 0s ${0.5 / $speed}s;
+              font-size linear 0s ${0.5 / $speed}s,
+              color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledNav2Title} {
@@ -236,7 +232,8 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav2Link} > span {
             max-width: 100%;
-            transition: max-width linear 0s ${0.5 / $speed}s;
+            transition: max-width linear 0s ${0.5 / $speed}s,
+              color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledToggleButton} {
@@ -267,7 +264,7 @@ export const StyledSidebar = styled.aside<{
             visibility: hidden;
 
             transition: opacity ease-in-out ${0.2 / $speed}s 0s,
-              visibility linear ${0.2 / $speed}s 0s;
+              visibility linear ${0.2 / $speed}s 0s, color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledNav1Link}::after {
@@ -302,7 +299,8 @@ export const StyledSidebar = styled.aside<{
             ${tw`relative left-1/2 -translate-x-1/2`}
             transition: left linear 0s ${0.45 / $speed}s, 
               transform linear 0s ${0.45 / $speed}s,
-              font-size linear 0s ${0.45 / $speed}s;
+              font-size linear 0s ${0.45 / $speed}s,
+              color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledNav2Title} {
@@ -311,7 +309,8 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav2Link} > span {
             max-width: 0;
-            transition: max-width linear 0s ${0.45 / $speed}s;
+            transition: max-width linear 0s ${0.45 / $speed}s,
+              color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledToggleButton} {
