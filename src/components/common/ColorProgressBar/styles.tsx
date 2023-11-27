@@ -1,9 +1,16 @@
 import tw from 'twin.macro'
 import styled, { css } from 'styled-components'
 
-export const StyledProgressBar = styled.div<{ $percent: number }>(
-  ({ theme, $percent }) => {
-    const color = $percent >= 1 ? theme.color.main1 : theme.color.main0
+export type StyledProgressBarProps = {
+  $percent: number
+  $color?: string
+  $gradient?: string
+}
+
+export const StyledProgressBar = styled.div<StyledProgressBarProps>(
+  ({ theme, $color = 'main0', $gradient, $percent }) => {
+    const gradient = $gradient ? theme.gradient[$gradient]?.fn : undefined
+    const color = gradient || theme.color[$color] || $color
     const bgColor = `${theme.color.base0}20`
 
     return [

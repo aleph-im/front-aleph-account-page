@@ -1,9 +1,9 @@
 import { memo } from 'react'
-import { StyledProgressBar } from './styles'
 import { Icon } from '@aleph-front/aleph-core'
+import StyledProgressBar from '../ColorProgressBar'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L137
-export const StakedCell = memo(
+export const NodeStaked = memo(
   ({
     staked,
     status,
@@ -17,6 +17,7 @@ export const StakedCell = memo(
     const minStaked = 500_000
     const percent = Math.min(staked, minStaked) / minStaked
     const amount = Number(staked / 1_000).toFixed(0)
+    const color = percent >= 1 ? 'main1' : 'main0'
 
     return (
       <div className="fs-10" tw="leading-4 w-full">
@@ -30,12 +31,12 @@ export const StakedCell = memo(
           </div>
         </div>
         <div tw="flex items-center gap-1">
-          <StyledProgressBar $percent={percent} />
+          <StyledProgressBar $percent={percent} $color={color} />
         </div>
       </div>
     )
   },
 )
-StakedCell.displayName = 'StakedCell'
+NodeStaked.displayName = 'NodeStaked'
 
-export default StakedCell
+export default NodeStaked

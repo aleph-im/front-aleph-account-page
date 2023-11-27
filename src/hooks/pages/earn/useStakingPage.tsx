@@ -150,7 +150,7 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const isStakeableOnlyDisabled = !account || tab !== 'nodes'
+  const isStakeableOnlyDisabled = !account || selectedTab !== 'nodes'
   const isStakeableOnly = isStakeableOnlyDisabled ? false : stakeableOnly
 
   return {

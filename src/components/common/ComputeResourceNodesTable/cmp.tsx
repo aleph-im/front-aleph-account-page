@@ -1,15 +1,16 @@
 import { memo, useMemo } from 'react'
 import tw from 'twin.macro'
-import { Button, NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
-import NameCell from '@/components/common/NameCell'
+import NodeName from '@/components/common/NodeName'
 import ScoreCell from '@/components/common/ScoreCell'
 import VersionCell from '../VersionCell'
-import DecentralizedCell from '../DecentralizedCell'
+import NodeDecentralization from '../NodeDecentralization'
 import CRNRewardsCell from '../CRNRewardsCell'
 import LinkCRNButton from '../LinkCRNButton'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import ButtonLink from '../ButtonLink'
 
 export type ComputeResourceNodesTableProps = {
   nodes: CRN[]
@@ -41,29 +42,29 @@ export const ComputeResourceNodesTable = memo(
           width: 0,
           cellProps: () => ({ css: tw`p-0!` }),
           hcellProps: () => ({ css: tw`p-0! border-0!` }),
-          render: (row) =>
-            nodesIssues?.[row.hash] ? (
+          render: (node) =>
+            nodesIssues?.[node.hash] ? (
               <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
             ) : null,
         },
         {
           label: 'SCORE',
           sortable: true,
-          sortBy: (row) => row.score,
-          render: (row) => <ScoreCell score={row.score} />,
+          sortBy: (node) => node.score,
+          render: (node) => <ScoreCell score={node.score} />,
         },
         {
           label: 'LINKED',
           sortable: true,
-          sortBy: (row) => row.parentData?.name,
-          render: (row) => (
+          sortBy: (node) => node.parentData?.name,
+          render: (node) => (
             <>
-              {row.parentData ? (
-                <NameCell
-                  hash={row.parentData.hash}
-                  name={row.parentData.name}
-                  picture={row.parentData.picture}
-                ></NameCell>
+              {node.parentData ? (
+                <NodeName
+                  hash={node.parentData.hash}
+                  name={node.parentData.name}
+                  picture={node.parentData.picture}
+                />
               ) : (
                 '-'
               )}
@@ -73,36 +74,36 @@ export const ComputeResourceNodesTable = memo(
         {
           label: 'NAME',
           sortable: true,
-          sortBy: (row) => row.name,
-          render: (row) => (
-            <NameCell
-              hash={row.hash}
-              name={row.name}
-              picture={row.picture}
-            ></NameCell>
+          sortBy: (node) => node.name,
+          render: (node) => (
+            <NodeName
+              hash={node.hash}
+              name={node.name}
+              picture={node.picture}
+            />
           ),
         },
         {
           label: 'DECENTRALIZED',
           sortable: true,
-          sortBy: (row) => row.decentralization,
-          render: (row) => (
-            <DecentralizedCell decentralization={row.decentralization} />
+          sortBy: (node) => node.decentralization,
+          render: (node) => (
+            <NodeDecentralization decentralization={node.decentralization} />
           ),
         },
         {
           label: 'EST. REWARDS',
           align: 'right',
-          render: (row) => <CRNRewardsCell node={row} />,
+          render: (node) => <CRNRewardsCell node={node} />,
         },
         {
           label: 'VERSION',
           sortable: true,
           align: 'right',
           width: '100%',
-          sortBy: (row) => row.metricsData?.version,
-          render: (row) => (
-            <VersionCell node={row} nodes={nodes} lastVersion={lastVersion} />
+          sortBy: (node) => node.metricsData?.version,
+          render: (node) => (
+            <VersionCell node={node} nodes={nodes} lastVersion={lastVersion} />
           ),
         },
         {
@@ -119,14 +120,15 @@ export const ComputeResourceNodesTable = memo(
                   onUnlink,
                 }}
               />
-              <Button
+              <ButtonLink
                 kind="neon"
                 size="regular"
                 variant="secondary"
                 color="main0"
+                href={`/earn/crn/${node.hash}`}
               >
                 Info
-              </Button>
+              </ButtonLink>
             </div>
           ),
         },

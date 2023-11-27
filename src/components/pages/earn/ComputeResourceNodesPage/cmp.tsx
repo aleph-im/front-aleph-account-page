@@ -175,6 +175,7 @@ export const ComputeResourceNodesPage = memo((props) => {
           </>
         </div>
       </section>
+      <SpinnerOverlay show={!nodes} center />
     </>
   )
 })

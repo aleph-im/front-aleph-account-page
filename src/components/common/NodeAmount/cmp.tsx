@@ -2,14 +2,14 @@ import { memo } from 'react'
 import { Logo } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L258
-export const AmountCell = memo(({ amount }: { amount: number }) => {
+export const NodeAmount = memo(({ amount, ...rest }: { amount: number }) => {
   return (
-    <div tw="inline-flex gap-2 items-center">
+    <div tw="inline-flex gap-2 items-center" {...rest}>
       {amount.toFixed(2)}
       <Logo text="" />
     </div>
   )
 })
-AmountCell.displayName = 'AmountCell'
+NodeAmount.displayName = 'NodeAmount'
 
-export default AmountCell
+export default NodeAmount

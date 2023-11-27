@@ -1,7 +1,8 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
 import { MessageType, StoreMessage } from 'aleph-sdk-ts/dist/messages/types'
-import { apiServer, defaultAccountChannel } from '@/helpers/constants'
+import { apiServer, channel, defaultAccountChannel } from '@/helpers/constants'
+import { store } from 'aleph-sdk-ts/dist/messages'
 
 const { any } = messages
 
@@ -100,5 +101,18 @@ export class FileManager {
     } catch (error) {
       console.log('Files API is not yet implemented on the node')
     }
+  }
+
+  async uploadFile(fileObject: File): Promise<string> {
+    if (!this.account) throw new Error('Invalid account')
+
+    const message = await store.Publish({
+      account: this.account,
+      channel,
+      APIServer: apiServer,
+      fileObject,
+    })
+
+    return message.content.item_hash
   }
 }

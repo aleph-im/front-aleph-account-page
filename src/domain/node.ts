@@ -15,8 +15,9 @@ import {
 } from '@/helpers/utils'
 import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
 import { newCCNSchema, newCRNSchema } from '@/helpers/schemas'
+import { FileManager } from './file'
 
-const { post } = messages
+const { post, forget } = messages
 
 export type NodeType = 'ccn' | 'crn'
 
@@ -26,28 +27,30 @@ export type NodeLastVersions = {
   outdated: string | null
 }
 
+export type BaseNodeStatus = 'active' | 'waiting'
+
 export type BaseNode = {
-  address: string
+  address?: string
   multiaddress: string
-  banner: string
+  banner?: string
   decentralization: number
-  description: string
+  description?: string
   hash: string
   locked: boolean
-  manager: string
+  manager?: string
   name: string
   owner: string
   performance: number
-  picture: string
+  picture?: string
   score: number
   score_updated: boolean
-  registration_url: string
+  registration_url?: string
   reward: string
-  status: string
   time: number
 }
 
 export type CCN = BaseNode & {
+  status: BaseNodeStatus
   authorized: string[]
   has_bonus: true
   resource_nodes: string[]
@@ -59,6 +62,7 @@ export type CCN = BaseNode & {
 }
 
 export type CRN = BaseNode & {
+  status: BaseNodeStatus | 'linked'
   authorized: string
   parent: string
   type: string
@@ -77,45 +81,38 @@ export type BaseNodeScore = {
   version: number
 }
 
+export type BaseNodeScoreMeasurements = {
+  total_nodes: number
+  node_version_other: number
+  node_version_latest: number
+  node_version_missing: number
+  node_version_obsolete: number
+  node_version_outdated: number
+  base_latency_score_p25: number
+  base_latency_score_p95: number
+  node_version_prerelease: number
+  nodes_with_identical_asn: number
+}
+
 export type CCNScore = BaseNodeScore & {
-  measurements: {
+  measurements: BaseNodeScoreMeasurements & {
+    metrics_latency_score_p25: number
+    metrics_latency_score_p95: number
     aggregate_latency_score_p25: number
     aggregate_latency_score_p95: number
-    base_latency_score_p25: number
-    base_latency_score_p95: number
     eth_height_remaining_score_p25: number
     eth_height_remaining_score_p95: number
     file_download_latency_score_p25: number
     file_download_latency_score_p95: number
-    metrics_latency_score_p25: number
-    metrics_latency_score_p95: number
-    node_version_latest: number
-    node_version_missing: number
-    node_version_obsolete: number
-    node_version_other: number
-    node_version_outdated: number
-    node_version_prerelease: number
-    nodes_with_identical_asn: number
-    total_nodes: number
   }
 }
 
 export type CRNScore = BaseNodeScore & {
-  measurements: {
-    base_latency_score_p25: number
-    base_latency_score_p95: number
-    diagnostic_vm_latency_score_p25: number
-    diagnostic_vm_latency_score_p95: number
+  measurements: BaseNodeScoreMeasurements & {
     full_check_latency_score_p25: number
     full_check_latency_score_p95: number
-    node_version_latest: number
-    node_version_missing: number
-    node_version_obsolete: number
-    node_version_other: number
-    node_version_outdated: number
-    node_version_prerelease: number
-    nodes_with_identical_asn: number
-    total_nodes: number
+    diagnostic_vm_latency_score_p25: number
+    diagnostic_vm_latency_score_p95: number
   }
 }
 
@@ -154,6 +151,25 @@ export type NewCRN = {
   address: string
 }
 
+export type UpdateCCN = {
+  hash: string
+  name?: string
+  multiaddress?: string
+  manager?: string
+  registration_url?: string
+  address?: string
+  description?: string
+  reward?: string
+  picture?: string
+  banner?: string
+  locked?: boolean
+  authorized: string[]
+}
+
+export type UpdateCRN = UpdateCCN
+
+export type UpdateAlephNode = UpdateCCN | UpdateCRN
+
 export class NodeManager {
   static newCCNSchema = newCCNSchema
   static newCRNSchema = newCRNSchema
@@ -161,6 +177,7 @@ export class NodeManager {
   constructor(
     protected account?: Account,
     protected channel = defaultAccountChannel,
+    protected fileManager: FileManager = new FileManager(account, channel),
   ) {}
 
   async getCCNNodes(): Promise<CCN[]> {
@@ -267,6 +284,28 @@ export class NodeManager {
     return res.item_hash
   }
 
+  async updateCoreChannelNode(updateCCN: UpdateCCN): Promise<string> {
+    return this.updateNode(updateCCN, 'create-node')
+  }
+
+  async updateComputeResourceNode(updateCRN: UpdateCRN): Promise<string> {
+    return this.updateNode(updateCRN, 'create-resource-node')
+  }
+
+  async removeNode(hash: string): Promise<string> {
+    if (!this.account) throw new Error('Invalid account')
+
+    const res = await forget.Publish({
+      hashes: [hash],
+      channel,
+      account: this.account,
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
+
+    return res.item_hash
+  }
+
   // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/components/NodesTable.vue#L298
   async linkComputeResourceNode(crnHash: string): Promise<void> {
     if (!this.account) throw new Error('Invalid account')
@@ -316,6 +355,45 @@ export class NodeManager {
         return { ccns, crns }
       },
     )
+  }
+
+  protected async updateNode(
+    { hash, ...details }: UpdateAlephNode,
+    action: 'create-node' | 'create-resource-node',
+  ): Promise<string> {
+    if (!this.account) throw new Error('Invalid account')
+
+    if (!details.locked) {
+      details.registration_url = ''
+    }
+
+    // if (this.picture) {
+    //   picture = await this.upload_file(this.picture)
+    // }
+    // let banner = this.node.banner
+    // if (this.banner) {
+    //   banner = await this.upload_file(this.banner)
+    // }
+    // let amend_action = 'create-node'
+    // if (this.nodeType === 'resource') {
+    //   amend_action = 'create-resource-node'
+    // }
+
+    const res = await post.Publish({
+      postType: 'amend',
+      ref: hash,
+      content: {
+        tags: [action, ...tags],
+        action,
+        details,
+      },
+      channel,
+      account: this.account,
+      storageEngine: ItemType.inline,
+      APIServer: apiServer,
+    })
+
+    return res.item_hash
   }
 
   isCRN(node: AlephNode): node is CRN {

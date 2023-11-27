@@ -96,6 +96,7 @@ const Sidebar = memo(() => {
   // -------------------------------------------
 
   const [open, setOpen] = useState<boolean | undefined>(undefined)
+  const [hover, setHover] = useState<boolean | undefined>(false)
 
   const handleToggle = useCallback(
     (e: MouseEvent) => {
@@ -111,7 +112,15 @@ const Sidebar = memo(() => {
     [setOpen],
   )
 
-  const handlePreventToggle = useCallback((e: MouseEvent) => {
+  const handleMouseOver = useCallback(() => {
+    setHover(true)
+  }, [])
+
+  const handleMouseOut = useCallback(() => {
+    setHover(false)
+  }, [])
+
+  const handlePreventPropagation = useCallback((e: MouseEvent) => {
     e.stopPropagation()
   }, [])
 
@@ -179,7 +188,7 @@ const Sidebar = memo(() => {
   const storePercent = allowedSize ? consumedSize / allowedSize : 0
 
   return (
-    <StyledSidebar $isOpen={open}>
+    <StyledSidebar $isOpen={open} $isHover={hover}>
       <StyledNav1>
         <StyledLogo />
         {routes.map((child) => (
@@ -208,8 +217,16 @@ const Sidebar = memo(() => {
           target="_blank"
         />
       </StyledNav1>
-      <StyledNav2 onClick={handleToggle}>
-        <StyledNav2LinkContainer onClick={handlePreventToggle}>
+      <StyledNav2
+        onClick={handleToggle}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
+        <StyledNav2LinkContainer
+          onClick={handlePreventPropagation}
+          onMouseOver={handlePreventPropagation}
+          onMouseOut={handlePreventPropagation}
+        >
           {currentRoute?.children && (
             <>
               {currentRoute?.name && (
@@ -233,11 +250,11 @@ const Sidebar = memo(() => {
           <div tw="px-6">
             <StyledToggleButton onClick={handleToggle} />
           </div>
-          <StyledStorageContainer onClick={handlePreventToggle}>
+          <StyledStorageContainer>
             <div tw="mb-4 flex gap-1 flex-wrap">
               <span tw="whitespace-nowrap">{consumedSize.toFixed(3)} GB</span>
               <span tw="opacity-60 font-normal whitespace-nowrap">
-                of {allowedSize.toFixed(3)}
+                of {allowedSize.toFixed(3)} GB
               </span>
             </div>
             <StyledProgressBar $percent={storePercent} />

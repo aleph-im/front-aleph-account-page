@@ -144,6 +144,7 @@ export const CoreChannelNodesPage = memo((props) => {
           </>
         </div>
       </section>
+      <SpinnerOverlay show={!nodes} center />
     </>
   )
 })

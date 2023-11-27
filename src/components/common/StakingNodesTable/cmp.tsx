@@ -1,16 +1,17 @@
 import { memo, useMemo } from 'react'
-import { Button, NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
-import NameCell from '@/components/common/NameCell'
-import LinkedCell from '@/components/common/LinkedCell'
+import NodeName from '@/components/common/NodeName'
+import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
 import ScoreCell from '@/components/common/ScoreCell'
 import APYCell from '@/components/common/APYCell'
-import StakedCell from '@/components/common/StakedCell'
+import NodeStaked from '@/components/common/NodeStaked'
 import StakeButton from '@/components/common/StakeButton'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import AmountCell from '@/components/common/AmountCell'
+import NodeAmount from '@/components/common/NodeAmount'
 import tw from 'twin.macro'
+import ButtonLink from '../ButtonLink'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]
@@ -42,51 +43,51 @@ export const StakingNodesTable = memo(
           width: 0,
           cellProps: () => ({ css: tw`p-0!` }),
           hcellProps: () => ({ css: tw`p-0! border-0!` }),
-          render: (row) =>
-            nodesIssues?.[row.hash] ? (
+          render: (node) =>
+            nodesIssues?.[node.hash] ? (
               <NotificationBadge tw="flex! mx-auto!">&nbsp;</NotificationBadge>
             ) : null,
         },
         {
           label: 'EST. APY',
-          render: (row) => <APYCell node={row} nodes={nodes} />,
+          render: (node) => <APYCell node={node} nodes={nodes} />,
         },
         {
           label: 'NAME',
           sortable: true,
-          sortBy: (row) => row.name,
-          render: (row) => (
-            <NameCell
-              hash={row.hash}
-              name={row.name}
-              picture={row.picture}
-            ></NameCell>
+          sortBy: (node) => node.name,
+          render: (node) => (
+            <NodeName
+              hash={node.hash}
+              name={node.name}
+              picture={node.picture}
+            />
           ),
         },
         {
           label: 'STAKED',
           sortable: true,
           width: '100%',
-          sortBy: (row) => row.total_staked,
-          render: (row) => (
-            <StakedCell
-              staked={row.total_staked}
-              status={row.status}
-              locked={row.locked}
+          sortBy: (node) => node.total_staked,
+          render: (node) => (
+            <NodeStaked
+              staked={node.total_staked}
+              status={node.status}
+              locked={node.locked}
             />
           ),
         },
         {
           label: 'LINKED',
           sortable: true,
-          sortBy: (row) => row.resource_nodes.length,
-          render: (row) => <LinkedCell nodes={row.crnsData} />,
+          sortBy: (node) => node.resource_nodes.length,
+          render: (node) => <NodeLinkedNodes nodes={node.crnsData} />,
         },
         {
           label: 'SCORE',
           sortable: true,
-          sortBy: (row) => row.score,
-          render: (row) => <ScoreCell score={row.score} />,
+          sortBy: (node) => node.score,
+          render: (node) => <ScoreCell score={node.score} />,
         },
         {
           label: '',
@@ -102,14 +103,15 @@ export const StakingNodesTable = memo(
                   onUnstake,
                 }}
               />
-              <Button
+              <ButtonLink
                 kind="neon"
                 size="regular"
                 variant="secondary"
                 color="main0"
+                href={`/earn/ccn/${node.hash}`}
               >
                 Info
-              </Button>
+              </ButtonLink>
             </div>
           ),
         },
@@ -119,9 +121,9 @@ export const StakingNodesTable = memo(
         cols.splice(cols.length - 1, 0, {
           label: 'AMOUNT',
           sortable: true,
-          sortBy: (row) => row.stakers[account.address] || 0,
-          render: (row) => (
-            <AmountCell amount={row.stakers[account.address] || 0} />
+          sortBy: (node) => node.stakers[account.address] || 0,
+          render: (node) => (
+            <NodeAmount amount={node.stakers[account.address] || 0} />
           ),
         })
       }

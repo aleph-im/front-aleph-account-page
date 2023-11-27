@@ -193,6 +193,23 @@ export const getDate = (time: number): string => {
   return `${date} ${hours}`
 }
 
+export const getETHExplorerURL = ({
+  hash,
+  address,
+  tokenAddress,
+}: {
+  hash?: string
+  address?: string
+  tokenAddress?: string
+}) =>
+  hash
+    ? `https://etherscan.io/tx/${hash}`
+    : address
+    ? `https://etherscan.io/address/${address}`
+    : tokenAddress
+    ? `https://etherscan.io/token/0x27702a26126e0B3702af63Ee09aC4d1A084EF628?a=${tokenAddress}`
+    : '#'
+
 /**
  * Converts a UNIX timestamp to an ISO date, or returns a default value if the timestamp is invalid
  *

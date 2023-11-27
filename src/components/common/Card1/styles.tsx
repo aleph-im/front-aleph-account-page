@@ -3,7 +3,8 @@ import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
 export const StyledContainer = styled.div.attrs(addClasses('fx-dark-main0'))`
-  ${tw`p-6 rounded-3xl bg-transparent! relative`}
+  ${tw`p-6 rounded-3xl relative`}
+  background: #00000019 !important;
 `
 
 export const StyledContent = styled.div<{

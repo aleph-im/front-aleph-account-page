@@ -159,7 +159,7 @@ export function useComputeResourceNodesPage(
 
   // -----------------------------
 
-  const isLinkableOnlyDisabled = !account || tab !== 'nodes'
+  const isLinkableOnlyDisabled = !account || selectedTab !== 'nodes'
   const isLinkableOnly = isLinkableOnlyDisabled ? false : linkableOnly
 
   // console.log(filteredNodes)

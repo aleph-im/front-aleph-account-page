@@ -116,7 +116,7 @@ export const NetworkHealthChart = memo(
           </PieChart>
 
           <div tw="mt-1 flex items-stretch justify-between w-full gap-4">
-            {Array.from({ length: cols }).map((_, col) => (
+            {Array.from({ length: cols }, (_, col) => (
               <div key={col} tw="flex flex-col gap-4">
                 {data.slice(col * cols, col * cols + cols).map((entry) => (
                   <div key={entry.label} tw="flex items-center gap-3">

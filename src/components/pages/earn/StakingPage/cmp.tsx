@@ -144,6 +144,7 @@ export const StakingPage = memo((props) => {
           </>
         </div>
       </section>
+      <SpinnerOverlay show={!nodes} center />
     </>
   )
 })

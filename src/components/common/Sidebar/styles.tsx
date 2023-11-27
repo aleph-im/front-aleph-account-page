@@ -19,7 +19,12 @@ export const StyledNav1Link = styled(Link).attrs(addClasses('tp-nav'))<{
     ${StyledLinkContentCss}
     ${tw`relative justify-center`}
 
+    &:hover {
+      color: ${theme.color.main0};
+    }
+
     color: ${theme.color.main0}${$isActive ? 'ff' : '66'};
+    transition: color ease-in-out 0.25s 0s;
 
     ${$isActive &&
     css`
@@ -48,7 +53,7 @@ export const StyledNav2Title = styled.div.attrs(addClasses('tp-nav'))`
 
 export const StyledNav2LinkContainer = styled.div`
   ${tw`flex flex-col items-start cursor-auto`}
-  margin-top: 7rem;
+  padding-top: 7rem;
 `
 
 export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
@@ -57,11 +62,20 @@ export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
 }>`
   ${({ theme, $isActive }) => css`
     ${StyledLinkContentCss}
+
     color: ${$isActive ? theme.color.main0 : theme.color.base0};
-    transition: color ease-in-out 0.25s 0s !important;
+
+    & > svg {
+      transition: color ease-in-out 0.25s 0s !important;
+    }
+
+    &:hover > svg {
+      color: ${theme.color.main0};
+    }
 
     & > span {
       ${tw`overflow-hidden`}
+      transition: color ease-in-out 0.25s 0s !important;
     }
   `}
 `
@@ -162,11 +176,12 @@ const fadeOutIn2Reverse = keyframes`
 
 export const StyledSidebar = styled.aside<{
   $isOpen?: boolean
+  $isHover?: boolean
   $speed?: number
 }>`
   ${tw`flex items-stretch justify-start`}
 
-  ${({ $isOpen, $speed = 1 }) =>
+  ${({ $isOpen, $isHover, $speed = 1 }) =>
     $isOpen || $isOpen === undefined
       ? css`
           & ${StyledNav1} {
@@ -196,9 +211,10 @@ export const StyledSidebar = styled.aside<{
               padding-left ease-in-out ${0.4 / $speed}s 0s,
               box-shadow ease-in-out ${0.4 / $speed}s 0s;
 
-            &:hover {
+            ${$isHover &&
+            css`
               cursor: auto;
-            }
+            `}
           }
 
           & ${StyledNav2LinkContainer} {
@@ -267,12 +283,13 @@ export const StyledSidebar = styled.aside<{
               padding-left ease-in-out ${0.4 / $speed}s 0s,
               box-shadow ease-in-out ${0.4 / $speed}s 0s;
 
-            &:hover {
+            ${$isHover &&
+            css`
               cursor: pointer;
 
               padding-left: 0.375rem;
               box-shadow: 0.375rem 0px 0px 0px #00000020;
-            }
+            `}
           }
 
           & ${StyledNav2LinkContainer} {
