@@ -155,15 +155,15 @@ export type UpdateCCN = {
   hash: string
   name?: string
   multiaddress?: string
-  manager?: string
-  registration_url?: string
   address?: string
-  description?: string
-  reward?: string
   picture?: string
   banner?: string
-  locked?: boolean
+  description?: string
+  reward?: string
+  manager?: string
   authorized: string[]
+  locked?: boolean
+  registration_url?: string
 }
 
 export type UpdateCRN = UpdateCCN
@@ -295,10 +295,23 @@ export class NodeManager {
   async removeNode(hash: string): Promise<string> {
     if (!this.account) throw new Error('Invalid account')
 
-    const res = await forget.Publish({
-      hashes: [hash],
-      channel,
+    // const res = await forget.Publish({
+    //   hashes: [hash],
+    //   channel,
+    //   account: this.account,
+    //   storageEngine: ItemType.inline,
+    //   APIServer: apiServer,
+    // })
+
+    const res = await post.Publish({
       account: this.account,
+      postType,
+      channel,
+      ref: hash,
+      content: {
+        tags: ['drop-node', ...tags],
+        action: 'drop-node',
+      },
       storageEngine: ItemType.inline,
       APIServer: apiServer,
     })
