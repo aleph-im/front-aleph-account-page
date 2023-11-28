@@ -7,6 +7,7 @@ import StakingNodesTable from '@/components/common/StakingNodesTable'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import RewardChart from '@/components/common/RewardChart'
+import StakeChart from '@/components/common/StakeChart'
 
 export const StakingPage = memo((props) => {
   const {
@@ -50,18 +51,17 @@ export const StakingPage = memo((props) => {
               <h2 className="tp-h7" tw="mb-0">
                 What is staking with Aleph.im?
               </h2>
-              <p className="fs-16">
-                Staking is the heartbeat of our dynamic peer-to-peer network,
-                driving security, decentralization, and rewards. Stakers, the
-                lifeblood of our ecosystem, with a minimum stake of 10,000 Aleph
-                tokens, form the network&apos;s foundation. Rewards are
-                distributed every 10 days and are auto-compounded, allowing your
-                stake to grow organically. The Annual Percentage Yield (APY)
-                depends on factors like linked Compute Resource Nodes (CRNs) and
-                node scoring, ensuring a fair and dynamic staking experience.
-                Aleph.im staking empowers you to control the controllers,
-                shaping decentralized connectivity while earning rewards for
-                your participation. Plus, it&apos;s non-custodial.{' '}
+              <p className="fs-12">
+                What is staking with Aleph.im? Staking is the heartbeat of our
+                dynamic peer-to-peer network, driving security,
+                decentralization, and rewards. With a minimum of 10,000 Aleph
+                tokens, stakeholders form the network&apos;s foundation. Rewards
+                are distributed every 10 days and are auto-compounded, allowing
+                your stake to grow organically. The APY depends on factors like
+                linked Compute Resource Nodes (CRNs) and node scoring, ensuring
+                a fair and dynamic experience. Aleph.im staking empowers you to
+                control the controllers, shaping decentralized connectivity
+                while earning rewards. Plus, it&apos;s non-custodial.
                 <strong className="text-main1" tw="font-bold">
                   Join us today!
                 </strong>
@@ -75,6 +75,7 @@ export const StakingPage = memo((props) => {
                 distributionTimestamp={lastDistribution}
                 disabled={!account || !userStake}
               />
+              <StakeChart nodes={nodes} />
             </div>
           </div>
         </ToggleDashboard>

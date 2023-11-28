@@ -3,13 +3,13 @@ import Head from 'next/head'
 import { Button, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
 import { useCoreChannelNodesPage } from '@/hooks/pages/earn/useCoreChannelNodesPage'
 import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable'
-import StakeChart from '@/components/common/StakeChart'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import RewardChart from '@/components/common/RewardChart'
+import EstimatedNodeRewardsChart from '@/components/common/EstimatedNodeRewardsChart'
 
 export const CoreChannelNodesPage = memo((props) => {
   const {
@@ -61,7 +61,7 @@ export const CoreChannelNodesPage = memo((props) => {
           <div tw="flex items-start gap-6">
             <div tw="flex items-stretch gap-6">
               <NetworkHealthChart nodes={nodes} title="CCN NETWORK HEALTH" />
-              <StakeChart nodes={nodes} />
+              <EstimatedNodeRewardsChart nodes={nodes} />
               <RewardChart
                 title="CCN REWARDS"
                 calculatedRewards={userRewards}

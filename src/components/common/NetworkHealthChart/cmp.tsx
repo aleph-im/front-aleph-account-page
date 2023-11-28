@@ -5,6 +5,7 @@ import { useTheme } from 'styled-components'
 import Card1 from '../Card1'
 import { TextGradient } from '@aleph-front/aleph-core'
 import ColorDot from '../ColorDot'
+import { SVGGradients } from '../charts'
 
 export const NetworkHealthChart = memo(
   ({ title, nodes }: { title: string; nodes?: AlephNode[] }) => {
@@ -33,13 +34,13 @@ export const NetworkHealthChart = memo(
           label: 'active nodes',
           value: `${activeNodes} nodes`,
           percentage: activeNodes / totalNodes,
-          color: 'main1',
+          gradient: 'main1',
         },
         {
           label: '50% < 80%',
           value: `${warningNodes} nodes`,
           percentage: warningNodes / totalNodes,
-          color: 'main2',
+          gradient: 'main2',
         },
         {
           label: '< 50%',
@@ -78,6 +79,9 @@ export const NetworkHealthChart = memo(
             margin={{}}
             tw="my-3 min-h-[6.25rem]"
           >
+            <defs>
+              <SVGGradients data={data} />
+            </defs>
             <Pie
               data={[{ v: 1 }]}
               dataKey="v"
@@ -99,7 +103,13 @@ export const NetworkHealthChart = memo(
               endAngle={0 + 90}
             >
               {reverseData.map((entry) => {
-                const fill = theme.color[entry.color] || entry.color
+                const color = `gr-${entry.gradient}`
+                const fill = entry.gradient
+                  ? `url(#${color})`
+                  : entry.color
+                  ? theme.color[entry.color] || entry.color
+                  : undefined
+
                 return <Cell key={entry.label} fill={fill} />
               })}
             </Pie>
@@ -126,6 +136,7 @@ export const NetworkHealthChart = memo(
                           ? disabledColor
                           : entry.color
                       }
+                      $gradient={entry.gradient}
                       $size="1.25rem"
                     />
                     <div
