@@ -219,10 +219,10 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
           <div>
             <Card2 title="PERFORMANCE">
-              <Card2Field name="AVERAGE RESPONSE" value="?????" />
+              {/* <Card2Field name="AVERAGE RESPONSE" value="?????" />
               <Card2Field name="RESPONSIVENESS" value="?????" />
               <Card2Field name="TIME LEFT" value="?????" />
-              <Card2Field name="UPTIME" value="?????" />
+              <Card2Field name="UPTIME" value="?????" /> */}
               <Card2Field name="CREATION TIME" value={creationDate} />
             </Card2>
           </div>
