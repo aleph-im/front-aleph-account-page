@@ -153,23 +153,23 @@ const Sidebar = memo(() => {
           },
         ],
       },
-      {
-        name: 'PROFILE',
-        path: '/profile',
-        icon: 'profile',
-        children: [
-          {
-            name: 'My profile',
-            path: '/profile',
-            icon: 'profile',
-          },
-          {
-            name: 'Notification center',
-            path: '/notification',
-            icon: 'notification',
-          },
-        ],
-      },
+      // {
+      //   name: 'PROFILE',
+      //   path: '/profile',
+      //   icon: 'profile',
+      //   children: [
+      //     {
+      //       name: 'My profile',
+      //       path: '/profile',
+      //       icon: 'profile',
+      //     },
+      //     {
+      //       name: 'Notification center',
+      //       path: '/notification',
+      //       icon: 'notification',
+      //     },
+      //   ],
+      // },
     ]
   }, [stakeNodesWarningFlag, userCCNsWarningFlag, userCRNsWarningFlag])
 
