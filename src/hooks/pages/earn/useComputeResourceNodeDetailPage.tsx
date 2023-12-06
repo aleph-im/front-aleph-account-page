@@ -9,13 +9,17 @@ import {
   useNodeDetail,
 } from '@/hooks/common/useNodeDetail'
 import { useUserCoreChannelNode } from '@/hooks/common/useUserCoreChannelNode'
+import {
+  UseEditComputeResourceNodeFormReturn,
+  useEditComputeResourceNodeForm,
+} from '@/hooks/form/useEditComputeResourceNodeForm'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
 }
 
-export type UseComputeResourceNodeDetailPageReturn =
-  UseNodeDetailReturn<CRN> & {
+export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
+  UseEditComputeResourceNodeFormReturn & {
     nodes?: CRN[]
     node?: CRN
     userNode?: CCN
@@ -82,6 +86,22 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
+  const formProps = useEditComputeResourceNodeForm({
+    defaultValues: {
+      hash: node?.hash,
+      name: node?.name,
+      description: node?.description,
+      reward: node?.reward,
+      authorized: node?.authorized,
+      locked: node?.locked,
+      registration_url: node?.registration_url,
+      manager: node?.manager,
+      picture: node?.picture,
+      banner: node?.banner,
+      address: node?.address,
+    },
+  })
+
   return {
     nodes,
     node,
@@ -91,6 +111,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     isLinkable,
     handleLink,
     handleUnlink,
+    ...formProps,
     ...details,
   }
 }

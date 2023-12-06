@@ -14,6 +14,8 @@ import { ellipseAddress, getETHExplorerURL } from '@/helpers/utils'
 import ButtonLink from '@/components/common/ButtonLink'
 import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
+import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 
 export const CoreChannelNodeDetailPage = () => {
   const {
@@ -28,10 +30,19 @@ export const CoreChannelNodeDetailPage = () => {
     calculatedRewards,
     creationDate,
     isOwner,
-    locked,
-    handleUnlink,
+    nameCtrl,
+    descriptionCtrl,
+    multiaddressCtrl,
+    pictureCtrl,
+    bannerCtrl,
+    rewardCtrl,
+    managerCtrl,
+    lockedCtrl,
+    registrationUrlCtrl,
+    isDirty,
     handleRemove,
-    handleLockChange,
+    handleSubmit,
+    handleUnlink,
   } = useCoreChannelNodeDetailPage()
 
   return (
@@ -42,8 +53,41 @@ export const CoreChannelNodeDetailPage = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <section>
-        <NodeDetailHeader node={node} />
+        <NodeDetailHeader
+          {...{
+            node,
+            nameCtrl,
+            descriptionCtrl,
+            bannerCtrl,
+            pictureCtrl,
+            isOwner,
+          }}
+        />
       </section>
+      {isOwner && (
+        <section tw="my-8 flex items-center justify-end gap-7">
+          <Button
+            kind="flat"
+            variant="text-only"
+            size="regular"
+            color="error"
+            onClick={handleRemove}
+          >
+            <Icon name="trash" color="error" size="lg" />
+            remove node
+          </Button>
+          <Button
+            kind="neon"
+            variant="primary"
+            size="regular"
+            color="main2"
+            onClick={handleSubmit}
+            disabled={!isDirty}
+          >
+            save changes
+          </Button>
+        </section>
+      )}
       <section tw="mt-8">
         <ColumnLayout>
           <div>
@@ -65,37 +109,78 @@ export const CoreChannelNodeDetailPage = () => {
               <Card2Field
                 name="REWARD ADDRESS"
                 value={
-                  <Link
-                    href={getETHExplorerURL({ tokenAddress: node?.reward })}
-                    target="_blank"
+                  <NodeDetailEditableField
+                    {...rewardCtrl.field}
+                    {...rewardCtrl.fieldState}
+                    placeholder="address"
+                    isOwner={isOwner}
                   >
-                    {ellipseAddress(node?.reward || '')}
-                  </Link>
+                    <Link
+                      href={getETHExplorerURL({
+                        tokenAddress: rewardCtrl.field.value,
+                      })}
+                      target="_blank"
+                    >
+                      {ellipseAddress(rewardCtrl.field.value || 'NONE')}
+                    </Link>
+                  </NodeDetailEditableField>
                 }
                 big
               />
-              <Card2Field name="MULTI ADDRESS" value={node?.multiaddress} big />
+              <Card2Field
+                name="MULTI ADDRESS"
+                value={
+                  <NodeDetailEditableField
+                    {...multiaddressCtrl.field}
+                    {...multiaddressCtrl.fieldState}
+                    placeholder="multi address"
+                    isOwner={isOwner}
+                  >
+                    {ellipseAddress(multiaddressCtrl.field.value || 'NONE')}
+                  </NodeDetailEditableField>
+                }
+                big
+              />
             </Card2>
           </div>
           <div>
             <Card2 title="ADDITIONAL SETTINGS">
               <Card2Field
                 name="MANAGER"
-                value={ellipseAddress(node?.manager || 'NONE')}
+                value={
+                  <NodeDetailEditableField
+                    {...managerCtrl.field}
+                    {...managerCtrl.fieldState}
+                    placeholder="manager address"
+                    isOwner={isOwner}
+                  >
+                    {ellipseAddress(managerCtrl.field.value || 'NONE')}
+                  </NodeDetailEditableField>
+                }
                 big
               />
               <Card2Field
-                name="Registration URL"
-                value={node?.registration_url || 'NONE'}
+                name="REGISTRATION URL"
+                value={
+                  <NodeDetailEditableField
+                    {...registrationUrlCtrl.field}
+                    {...registrationUrlCtrl.fieldState}
+                    placeholder="registration url"
+                    isOwner={isOwner}
+                  >
+                    {registrationUrlCtrl.field.value || 'NONE'}
+                  </NodeDetailEditableField>
+                }
                 big
               />
               <Card2Field
-                name={locked ? 'LOCKED' : 'UNLOCKED'}
+                name={lockedCtrl.field.value ? 'LOCKED' : 'UNLOCKED'}
                 value={
                   <NodeDetailLockSwitch
-                    checked={locked}
+                    {...(lockedCtrl.field as any)}
+                    {...lockedCtrl.fieldState}
+                    checked={lockedCtrl.field.value}
                     disabled={!isOwner}
-                    onChange={handleLockChange}
                   />
                 }
               />
@@ -122,12 +207,18 @@ export const CoreChannelNodeDetailPage = () => {
                 $color="main0"
               />
               <Card2Field name="LAST CHECK" value={lastMetricsCheck} />
+              <Card2Field
+                name="linked resources"
+                value={
+                  <NodeLinkedNodes nodes={node?.crnsData} subfix=" linked" />
+                }
+              />
             </Card2>
           </div>
           <div>
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
-                name="FROM OWNED STAKED"
+                name="TOTAL REWARDS"
                 value={
                   <div tw="inline-flex gap-2 items-center">
                     <div tw="whitespace-nowrap">
@@ -141,7 +232,6 @@ export const CoreChannelNodeDetailPage = () => {
           </div>
           <div>
             <Card2 title="LINKED RESOURCES">
-              <NodeLinkedNodes nodes={node?.crnsData} subfix=" linked" />
               {Array.from(
                 { length: Math.max(3, node?.crnsData.length || 0) },
                 (_, i) => {
@@ -212,19 +302,8 @@ export const CoreChannelNodeDetailPage = () => {
             </Card2>
           </div>
         </ColumnLayout>
-        <div tw="mt-9">
-          <Button
-            kind="flat"
-            variant="secondary"
-            size="regular"
-            color="error"
-            onClick={handleRemove}
-          >
-            <Icon name="trash" color="error" size="lg" />
-            remove node
-          </Button>
-        </div>
       </section>
+      <SpinnerOverlay show={!node} center />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { RequestState, useRequestState } from '@aleph-front/aleph-core'
-import { FormEvent, useCallback, useMemo, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   useForm as useFormLib,
   UseFormReturn as UseFormReturnLib,
@@ -16,6 +16,7 @@ export type UseFormProps<
   onSubmit: (state: FormState) => Promise<Response>
   onSuccess?: (data: Response) => Promise<void>
   onError?: (error: Error) => Promise<void>
+  readyDeps?: any[]
 }
 
 export type UseFormReturn<
@@ -46,9 +47,18 @@ export function useForm<FormState extends Record<string, any>, Response>({
   onSubmit,
   onSuccess: onFormSuccess,
   onError: onFormError,
+  readyDeps = [],
   ...props
 }: UseFormProps<FormState, Response>): UseFormReturn<FormState, Response> {
   const form = useFormLib<FormState>(props)
+
+  useEffect(() => {
+    // @todo: add support to other cases
+    if (typeof props.defaultValues !== 'object') return
+    form.reset(props.defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, readyDeps)
+
   const [state, setState] = useState<RequestState<Response>>({
     data: undefined,
     error: undefined,

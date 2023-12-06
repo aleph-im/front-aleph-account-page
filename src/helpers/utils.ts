@@ -550,3 +550,18 @@ export function timeUntilNextScoreMessage(metrics: any) {
 
   return Math.round(nextMessage / 3600) + ' hours'
 }
+
+export function fileToImg(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.readAsDataURL(file)
+    reader.addEventListener('error', reject)
+    reader.addEventListener('load', () => {
+      const img = new Image()
+      img.src = reader.result as string
+
+      resolve(img)
+    })
+  })
+}

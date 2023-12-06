@@ -18,7 +18,7 @@ export const Card2Field = memo(
           {name}
         </div>
         <div
-          tw="ml-auto overflow-hidden whitespace-nowrap text-ellipsis"
+          tw="ml-auto overflow-hidden whitespace-nowrap text-ellipsis max-w-full"
           className={`${!big ? 'tp-body fs-12' : 'tp-body3 fs-16'}`}
         >
           {value}

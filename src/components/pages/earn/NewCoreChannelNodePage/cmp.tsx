@@ -62,8 +62,9 @@ export const NewCoreChannelNodePage = () => {
             <TextInput
               {...multiaddressCtrl.field}
               {...multiaddressCtrl.fieldState}
+              required
               label="Set multiaddress"
-              placeholder="/ip4/{ip-address}/tcp/4025/p2p/SmlS3hb... (optional)"
+              placeholder="/ip4/{ip-address}/tcp/4025/p2p/SmlS3hb..."
             />
             <div tw="mt-2">
               <ExternalLinkButton

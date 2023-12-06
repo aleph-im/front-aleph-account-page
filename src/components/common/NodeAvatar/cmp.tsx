@@ -6,23 +6,30 @@ import tw from 'twin.macro'
 import { AlephNode } from '@/domain/node'
 
 export type NodeAvatarProps = {
-  picture: AlephNode['picture']
+  picture?: AlephNode['picture']
+  src?: string
   size?: 'md' | 'lg'
 }
 
 export const NodeAvatar = memo(
-  ({ picture, size = 'md', ...rest }: NodeAvatarProps) => {
+  ({ picture, src: srcProp, size = 'md', ...rest }: NodeAvatarProps) => {
     const imgSize = useMemo(() => (size === 'md' ? 24 : 48), [size])
     const twSize = useMemo(
       () => [tw`rounded-full`, size === 'md' ? tw`w-6 h-6` : tw`w-12 h-12`],
       [size],
     )
+    const src = useMemo(
+      () =>
+        srcProp ||
+        (picture ? `${apiServer}/api/v0/storage/raw/${picture}` : undefined),
+      [picture, srcProp],
+    )
 
     return (
       <>
-        {picture ? (
+        {src ? (
           <Image
-            src={`${apiServer}/api/v0/storage/raw/${picture}`}
+            src={src}
             alt="Node profile image"
             width={imgSize}
             height={imgSize}

@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useAppState } from '@/contexts/appState'
 import { CCN, NodeManager } from '@/domain/node'
 import { useRouter } from 'next/router'
@@ -8,23 +8,27 @@ import {
   UseNodeDetailReturn,
   useNodeDetail,
 } from '@/hooks/common/useNodeDetail'
+import {
+  UseEditCoreChannelNodeFormReturn,
+  useEditCoreChannelNodeForm,
+} from '@/hooks/form/useEditCoreChannelNodeForm'
 
 export type UseCoreChannelNodeDetailPageProps = {
   nodes?: CCN[]
 }
 
-export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> & {
-  nodes?: CCN[]
-  node?: CCN
-  aggregateLatency?: string
-  fileDownloadLatency?: string
-  metricsLatency?: string
-  relativeETHHeightPercent?: number
-  calculatedRewards?: number
-  locked?: boolean
-  handleUnlink: (hash: string) => void
-  handleLockChange: (e: ChangeEvent<HTMLInputElement>) => void
-}
+export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
+  UseEditCoreChannelNodeFormReturn & {
+    nodes?: CCN[]
+    node?: CCN
+    aggregateLatency?: string
+    fileDownloadLatency?: string
+    metricsLatency?: string
+    relativeETHHeightPercent?: number
+    calculatedRewards?: number
+    locked?: boolean
+    handleUnlink: (hash: string) => void
+  }
 
 export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageReturn {
   const router = useRouter()
@@ -96,28 +100,6 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
-  const [locked, setLocked] = useState(node?.locked)
-
-  const handleLockChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      if (!node) return
-
-      const locked = e.target.checked
-      setLocked(locked)
-
-      try {
-        await nodeManager.updateCoreChannelNode({
-          ...node,
-          locked,
-        })
-      } catch (e) {
-        setLocked(!locked)
-        throw e
-      }
-    },
-    [node, nodeManager],
-  )
-
   const handleUnlink = useCallback(
     async (hash: string) => {
       if (!node) return
@@ -134,15 +116,30 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
+  const formProps = useEditCoreChannelNodeForm({
+    defaultValues: {
+      hash: node?.hash,
+      name: node?.name,
+      picture: node?.picture,
+      banner: node?.banner,
+      description: node?.description,
+      reward: node?.reward,
+      authorized: node?.authorized,
+      locked: node?.locked,
+      registration_url: node?.registration_url,
+      manager: node?.manager,
+      multiaddress: node?.multiaddress,
+    },
+  })
+
   return {
     aggregateLatency,
     fileDownloadLatency,
     metricsLatency,
     relativeETHHeightPercent,
     calculatedRewards,
-    locked,
     handleUnlink,
-    handleLockChange,
+    ...formProps,
     ...details,
   }
 }

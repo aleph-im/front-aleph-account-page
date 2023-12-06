@@ -11,6 +11,8 @@ import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import Link from 'next/link'
 import NodeName from '@/components/common/NodeName'
 import NodeDecentralization from '@/components/common/NodeDecentralization'
+import SpinnerOverlay from '@/components/common/SpinnerOverlay'
+import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
 
 export const ComputeResourceNodeDetailPage = () => {
   const {
@@ -22,7 +24,16 @@ export const ComputeResourceNodeDetailPage = () => {
     isUserLinked,
     isLinkable,
     creationDate,
+    nameCtrl,
+    descriptionCtrl,
+    bannerCtrl,
+    pictureCtrl,
+    isOwner,
+    isDirty,
+    rewardCtrl,
+    addressCtrl,
     handleRemove,
+    handleSubmit,
     handleLink,
     handleUnlink,
   } = useComputeResourceNodeDetailPage()
@@ -35,8 +46,41 @@ export const ComputeResourceNodeDetailPage = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <section>
-        <NodeDetailHeader node={node} />
+        <NodeDetailHeader
+          {...{
+            node,
+            nameCtrl,
+            descriptionCtrl,
+            bannerCtrl,
+            pictureCtrl,
+            isOwner,
+          }}
+        />
       </section>
+      {isOwner && (
+        <section tw="my-8 flex items-center justify-end gap-7">
+          <Button
+            kind="flat"
+            variant="text-only"
+            size="regular"
+            color="error"
+            onClick={handleRemove}
+          >
+            <Icon name="trash" color="error" size="lg" />
+            remove node
+          </Button>
+          <Button
+            kind="neon"
+            variant="primary"
+            size="regular"
+            color="main2"
+            onClick={handleSubmit}
+            disabled={!isDirty}
+          >
+            save changes
+          </Button>
+        </section>
+      )}
       <section tw="mt-8">
         <ColumnLayout>
           <div>
@@ -58,21 +102,37 @@ export const ComputeResourceNodeDetailPage = () => {
               <Card2Field
                 name="REWARD ADDRESS"
                 value={
-                  <Link
-                    href={getETHExplorerURL({ tokenAddress: node?.reward })}
-                    target="_blank"
+                  <NodeDetailEditableField
+                    {...rewardCtrl.field}
+                    {...rewardCtrl.fieldState}
+                    placeholder="address"
+                    isOwner={isOwner}
                   >
-                    {ellipseAddress(node?.reward || '')}
-                  </Link>
+                    <Link
+                      href={getETHExplorerURL({
+                        tokenAddress: rewardCtrl.field.value,
+                      })}
+                      target="_blank"
+                    >
+                      {ellipseAddress(rewardCtrl.field.value || 'NONE')}
+                    </Link>
+                  </NodeDetailEditableField>
                 }
                 big
               />
               <Card2Field
                 name="ADDRESS"
                 value={
-                  <Link href={node?.address || '#'} target="_blank">
-                    {node?.address}
-                  </Link>
+                  <NodeDetailEditableField
+                    {...addressCtrl.field}
+                    {...addressCtrl.fieldState}
+                    placeholder="address"
+                    isOwner={isOwner}
+                  >
+                    <Link href={node?.address || '#'} target="_blank">
+                      {node?.address}
+                    </Link>
+                  </NodeDetailEditableField>
                 }
                 big
               />
@@ -165,19 +225,8 @@ export const ComputeResourceNodeDetailPage = () => {
             </Card2>
           </div>
         </ColumnLayout>
-        <div tw="mt-9">
-          <Button
-            kind="flat"
-            variant="secondary"
-            size="regular"
-            color="error"
-            onClick={handleRemove}
-          >
-            <Icon name="trash" color="error" size="lg" tw="w-4 h-4" />
-            remove node
-          </Button>
-        </div>
       </section>
+      <SpinnerOverlay show={!node} center />
     </>
   )
 }

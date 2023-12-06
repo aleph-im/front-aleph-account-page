@@ -14,10 +14,15 @@ import {
   stripExtraTagDescription,
 } from '@/helpers/utils'
 import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
-import { newCCNSchema, newCRNSchema } from '@/helpers/schemas'
+import {
+  newCCNSchema,
+  newCRNSchema,
+  updateCCNSchema,
+  updateCRNSchema,
+} from '@/helpers/schemas'
 import { FileManager } from './file'
 
-const { post, forget } = messages
+const { post } = messages
 
 export type NodeType = 'ccn' | 'crn'
 
@@ -30,28 +35,30 @@ export type NodeLastVersions = {
 export type BaseNodeStatus = 'active' | 'waiting'
 
 export type BaseNode = {
-  address?: string
-  multiaddress: string
-  banner?: string
-  decentralization: number
-  description?: string
   hash: string
-  locked: boolean
-  manager?: string
-  name: string
   owner: string
-  performance: number
-  picture?: string
+  reward: string
+  locked: boolean
+  authorized: string[]
+  time: number
   score: number
   score_updated: boolean
+  decentralization: number
+  performance: number
+  name?: string
+  picture?: string
+  banner?: string
+  description?: string
+  manager?: string
+
+  // --------- CCN fields ?
   registration_url?: string
-  reward: string
-  time: number
 }
 
 export type CCN = BaseNode & {
+  multiaddress?: string
   status: BaseNodeStatus
-  authorized: string[]
+
   has_bonus: true
   resource_nodes: string[]
   stakers: Record<string, number>
@@ -62,8 +69,9 @@ export type CCN = BaseNode & {
 }
 
 export type CRN = BaseNode & {
+  address?: string
   status: BaseNodeStatus | 'linked'
-  authorized: string
+
   parent: string
   type: string
   scoreData?: CRNScore
@@ -151,28 +159,34 @@ export type NewCRN = {
   address: string
 }
 
-export type UpdateCCN = {
-  hash: string
+export type BaseUpdateNode = {
+  hash?: string
+  picture?: string | File
+  banner?: string | File
   name?: string
-  multiaddress?: string
-  address?: string
-  picture?: string
-  banner?: string
   description?: string
   reward?: string
-  manager?: string
-  authorized: string[]
+  authorized?: string[]
   locked?: boolean
   registration_url?: string
+  manager?: string
 }
 
-export type UpdateCRN = UpdateCCN
+export type UpdateCCN = BaseUpdateNode & {
+  multiaddress?: string
+}
+
+export type UpdateCRN = BaseUpdateNode & {
+  address?: string
+}
 
 export type UpdateAlephNode = UpdateCCN | UpdateCRN
 
 export class NodeManager {
   static newCCNSchema = newCCNSchema
   static newCRNSchema = newCRNSchema
+  static updateCCNSchema = updateCCNSchema
+  static updateCRNSchema = updateCRNSchema
 
   constructor(
     protected account?: Account,
@@ -285,10 +299,14 @@ export class NodeManager {
   }
 
   async updateCoreChannelNode(updateCCN: UpdateCCN): Promise<string> {
+    updateCCN = await NodeManager.updateCCNSchema.parseAsync(updateCCN)
+
     return this.updateNode(updateCCN, 'create-node')
   }
 
   async updateComputeResourceNode(updateCRN: UpdateCRN): Promise<string> {
+    updateCRN = await NodeManager.updateCRNSchema.parseAsync(updateCRN)
+
     return this.updateNode(updateCRN, 'create-resource-node')
   }
 
@@ -375,22 +393,19 @@ export class NodeManager {
     action: 'create-node' | 'create-resource-node',
   ): Promise<string> {
     if (!this.account) throw new Error('Invalid account')
+    if (!hash) throw new Error('Invalid node hash')
 
     if (!details.locked) {
       details.registration_url = ''
     }
 
-    // if (this.picture) {
-    //   picture = await this.upload_file(this.picture)
-    // }
-    // let banner = this.node.banner
-    // if (this.banner) {
-    //   banner = await this.upload_file(this.banner)
-    // }
-    // let amend_action = 'create-node'
-    // if (this.nodeType === 'resource') {
-    //   amend_action = 'create-resource-node'
-    // }
+    if (details.picture instanceof File) {
+      details.picture = await this.fileManager.uploadFile(details.picture)
+    }
+
+    if (details.banner instanceof File) {
+      details.banner = await this.fileManager.uploadFile(details.banner)
+    }
 
     const res = await post.Publish({
       postType: 'amend',
