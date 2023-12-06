@@ -21,23 +21,15 @@ export const AutoBreadcrumb = ({
     const links = parts
       .map((item, index) => {
         const href = parts.slice(0, index + 1).join('/')
-        const name = names[href] || names[item] || uppercase(item)
+        let name = names[href] || names[item] || uppercase(item)
+        name = typeof name === 'function' ? name(router) : name
         return { href, name }
       })
       .filter(({ name }) => name !== '' && name !== '-')
-      .map(({ name, href }, index, arr) => {
-        if (index === arr.length - 1) {
-          const [, hash] = router.asPath.split('#')
-          const itemName = typeof name === 'object' ? name[hash] : name
-
-          return <span key={itemName}>{itemName}</span>
-        }
-
-        const itemName = typeof name === 'object' ? name['/'] : name
-
+      .map(({ name, href }) => {
         return (
-          <Link key={itemName} href={href}>
-            {itemName}
+          <Link key={name} href={href}>
+            {name}
           </Link>
         )
       })
@@ -51,7 +43,7 @@ export const AutoBreadcrumb = ({
     }
 
     return links
-  }, [router.pathname, router.asPath, names, isHome, includeHome])
+  }, [router, names, isHome, includeHome])
 
   return isHome ? null : <Breadcrumb navLinks={navLinks} {...rest} />
 }

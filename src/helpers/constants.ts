@@ -1,14 +1,5 @@
 export const defaultAccountChannel = 'ALEPH-ACCOUNT'
 
-export const breadcrumbNames = {
-  '/': 'HOME',
-  // '/earn': '-',
-  '/earn/ccn': 'CORE NODES',
-  '/earn/crn': 'COMPUTE RESOURCE NODES',
-  '/earn/ccn/new': 'CREATE CORE NODE',
-  '/earn/crn/new': 'CREATE COMPUTE RESOURCE NODE',
-}
-
 // Default node ops message config
 export const channel = 'FOUNDATION'
 export const tags = ['mainnet']

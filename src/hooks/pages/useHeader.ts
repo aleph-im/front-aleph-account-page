@@ -12,6 +12,10 @@ import {
   useWindowScroll,
   useWindowSize,
 } from '@aleph-front/aleph-core'
+import {
+  UseBreadcrumbNamesReturn,
+  useBreadcrumbNames,
+} from '../common/useBreadcrumbNames'
 
 export type UseHeaderReturn = {
   theme: DefaultTheme
@@ -23,6 +27,7 @@ export type UseHeaderReturn = {
   walletPickerRef: RefObject<HTMLDivElement>
   walletPickerTriggerRef: RefObject<HTMLButtonElement>
   walletPosition: { x: number; y: number }
+  breadcrumbNames: UseBreadcrumbNamesReturn['names']
   handleConnect: () => void
   handleDisplayWalletPicker: () => void
   provider: () => void
@@ -128,6 +133,8 @@ export function useHeader(): UseHeaderReturn {
 
   const walletPickerOpen = state === 'enter'
 
+  const { names: breadcrumbNames } = useBreadcrumbNames()
+
   return {
     theme,
     account,
@@ -138,6 +145,7 @@ export function useHeader(): UseHeaderReturn {
     walletPickerRef: myRef,
     walletPickerTriggerRef: atRef,
     walletPosition: position,
+    breadcrumbNames,
     handleConnect,
     handleDisplayWalletPicker,
     provider,

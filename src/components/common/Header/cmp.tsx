@@ -2,7 +2,6 @@ import { Button, Icon } from '@aleph-front/aleph-core'
 import { StyledHeader, StyledButton, StyledWalletPicker } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import { useHeader } from '@/hooks/pages/useHeader'
-import { breadcrumbNames } from '@/helpers/constants'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
 import { memo } from 'react'
 import { createPortal } from 'react-dom'
@@ -18,6 +17,7 @@ export const Header = memo(() => {
     walletPickerRef,
     walletPickerTriggerRef,
     walletPosition,
+    breadcrumbNames,
     provider,
     handleConnect,
     handleDisplayWalletPicker,
