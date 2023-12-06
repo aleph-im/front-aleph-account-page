@@ -46,7 +46,7 @@ export function useComputeResourceNodes({
 
       return nodes.filter(
         (node) =>
-          node.name.toLowerCase().includes(query.toLowerCase()) ||
+          node.name?.toLowerCase().includes(query.toLowerCase()) ||
           (node.parentData?.name || '')
             .toLowerCase()
             .includes(query.toLowerCase()),

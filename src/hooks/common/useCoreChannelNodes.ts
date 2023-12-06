@@ -45,7 +45,7 @@ export function useCoreChannelNodes({
       if (!query) return nodes
 
       return nodes.filter((node) =>
-        node.name.toLowerCase().includes(query.toLowerCase()),
+        node.name?.toLowerCase().includes(query.toLowerCase()),
       )
     },
     [],
