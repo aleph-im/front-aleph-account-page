@@ -49,6 +49,7 @@ export const ComputeResourceNodesPage = memo((props) => {
         variant="secondary"
         size="regular"
         tw="gap-2.5"
+        disabled={!account}
       >
         <Icon name="key" />
         Create compute node
