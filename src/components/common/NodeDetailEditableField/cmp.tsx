@@ -14,8 +14,8 @@ import { Icon } from '@aleph-front/aleph-core'
 
 export type NodeDetailEditableFieldProps =
   InputHTMLAttributes<HTMLDivElement> & {
-    children: ReactNode
-    isOwner: boolean | undefined
+    children?: ReactNode
+    isOwner?: boolean
   }
 
 function moveCursorToEnd(el: Element) {

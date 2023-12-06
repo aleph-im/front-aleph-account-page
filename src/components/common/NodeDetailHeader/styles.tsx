@@ -44,11 +44,24 @@ export const StyledContainer = styled.div<StyledContainerProps>`
     return css`
       ${tw`relative flex flex-col h-[12.5rem] justify-end overflow-hidden`}
       background-image: ${bg};
-      background-position: center center;
+      background-position: center;
       background-size: cover;
 
-      &:hover > ${StyledBackgroundEditInput} {
-        ${tw`opacity-100 top-0 right-0`}
+      &:before {
+        ${tw`absolute inset-0 scale-100 origin-center`}
+        content: '';
+        background: inherit;
+        transition: transform 0.4s ease-in-out;
+      }
+
+      &:hover {
+        &:before {
+          ${tw`scale-110`}
+        }
+
+        & > ${StyledBackgroundEditInput} {
+          ${tw`opacity-100 top-0 right-0`}
+        }
       }
     `
   }}
@@ -57,7 +70,7 @@ export const StyledContainer = styled.div<StyledContainerProps>`
 export const StyledTitle = styled.h1.attrs(addClasses('tp-h5'))`
   ${({ theme }) => {
     return css`
-      ${tw`w-full text-ellipsis overflow-hidden whitespace-nowrap m-0 py-0.5 px-6`}
+      ${tw`w-full text-ellipsis overflow-hidden whitespace-nowrap m-0 py-0.5 px-6 z-10`}
       color: ${theme.color.text};
       /* background-color: ${theme.color.base1}19; */
       background-color: ${theme.color.base1}E5;
@@ -93,7 +106,7 @@ export const StyledNodeAvatarEditInput = styled(HiddenFileInput).attrs(
 `
 
 export const StyledNodeAvatarContainer = styled.div`
-  ${tw`my-4 mx-6 relative inline-flex overflow-hidden`}
+  ${tw`my-4 mx-6 relative inline-flex overflow-hidden z-10`}
 
   &:hover > ${StyledNodeAvatarEditInput} {
     ${tw`opacity-100`}

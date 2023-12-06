@@ -13,6 +13,7 @@ import NodeName from '@/components/common/NodeName'
 import NodeDecentralization from '@/components/common/NodeDecentralization'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
+import NodeDetailLink from '@/components/common/NodeDetailLink'
 
 export const ComputeResourceNodeDetailPage = () => {
   const {
@@ -90,12 +91,12 @@ export const ComputeResourceNodeDetailPage = () => {
               <Card2Field
                 name="OWNER"
                 value={
-                  <Link
+                  <NodeDetailLink
                     href={getETHExplorerURL({ address: node?.owner })}
-                    target="_blank"
+                    isOwner={false}
                   >
-                    {ellipseAddress(node?.owner || '')}
-                  </Link>
+                    {node?.owner && ellipseAddress(node?.owner)}
+                  </NodeDetailLink>
                 }
                 big
               />
@@ -108,14 +109,15 @@ export const ComputeResourceNodeDetailPage = () => {
                     placeholder="address"
                     isOwner={isOwner}
                   >
-                    <Link
+                    <NodeDetailLink
                       href={getETHExplorerURL({
                         tokenAddress: rewardCtrl.field.value,
                       })}
-                      target="_blank"
+                      isOwner={isOwner}
                     >
-                      {ellipseAddress(rewardCtrl.field.value || 'NONE')}
-                    </Link>
+                      {rewardCtrl.field.value &&
+                        ellipseAddress(rewardCtrl.field.value)}
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big
@@ -129,9 +131,9 @@ export const ComputeResourceNodeDetailPage = () => {
                     placeholder="address"
                     isOwner={isOwner}
                   >
-                    <Link href={node?.address || '#'} target="_blank">
+                    <NodeDetailLink href={node?.address} isOwner={isOwner}>
                       {node?.address}
-                    </Link>
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big

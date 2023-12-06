@@ -31,9 +31,6 @@ export const NodeDetailHeader = memo(
     node,
     ...rest
   }: NodeDetailHeaderProps) => {
-    const name = nameCtrl.field.value
-    const description = descriptionCtrl.field.value
-
     const { img: pictureImg } = useFileToImg({ file: pictureCtrl.field.value })
     const { img: bannerImg } = useFileToImg({ file: bannerCtrl.field.value })
 
@@ -83,21 +80,20 @@ export const NodeDetailHeader = memo(
               {...nameCtrl.fieldState}
               placeholder="name"
               isOwner={isOwner}
-            >
-              {name}
-            </NodeDetailEditableField>
+            />
           </StyledTitle>
         </StyledContainer>
-        <StyledDescription>
-          <NodeDetailEditableField
-            {...descriptionCtrl.field}
-            {...descriptionCtrl.fieldState}
-            placeholder="description"
-            isOwner={isOwner}
-          >
-            {description}
-          </NodeDetailEditableField>
-        </StyledDescription>
+        {descriptionCtrl.field.value ||
+          (isOwner && (
+            <StyledDescription>
+              <NodeDetailEditableField
+                {...descriptionCtrl.field}
+                {...descriptionCtrl.fieldState}
+                placeholder="description"
+                isOwner={isOwner}
+              />
+            </StyledDescription>
+          ))}
       </div>
     )
   },

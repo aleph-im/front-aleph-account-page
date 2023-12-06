@@ -50,11 +50,8 @@ export const imgFileSchema = z
     (file) => {
       return (
         file.type === 'image/jpeg' ||
-        file.type === 'image/svg+xml' ||
-        file.name.endsWith('.png') ||
-        file.name.endsWith('.jpg') ||
-        file.name.endsWith('.jpeg') ||
-        file.name.endsWith('.svg')
+        file.type === 'image/png' ||
+        file.type === 'image/svg+xml'
       )
     },
     { message: 'only png, jpg, jpeg or svg formats are valid' },
@@ -71,7 +68,9 @@ export const updateBaseNodeSchema = z.object({
   description: optionalString(requiredStringSchema),
   reward: optionalString(ethereumAddressSchema),
   manager: optionalString(ethereumAddressSchema),
-  authorized: z.array(ethereumAddressSchema).optional(),
+  authorized: optionalString(requiredStringSchema).or(
+    z.array(ethereumAddressSchema),
+  ),
   locked: z.boolean().optional(),
   registration_url: optionalString(urlSchema),
 })

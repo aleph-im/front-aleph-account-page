@@ -10,12 +10,17 @@ import StyledProgressBar from '@/components/common/ColorProgressBar'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
 import NodeName from '@/components/common/NodeName'
 import Link from 'next/link'
-import { ellipseAddress, getETHExplorerURL } from '@/helpers/utils'
+import {
+  ellipseAddress,
+  getETHExplorerURL,
+  getMultiaddressUrl,
+} from '@/helpers/utils'
 import ButtonLink from '@/components/common/ButtonLink'
 import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
+import NodeDetailLink from '@/components/common/NodeDetailLink'
 
 export const CoreChannelNodeDetailPage = () => {
   const {
@@ -52,6 +57,7 @@ export const CoreChannelNodeDetailPage = () => {
         <meta name="description" content="Aleph.im Compute Resource Node" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+
       <section>
         <NodeDetailHeader
           {...{
@@ -97,12 +103,12 @@ export const CoreChannelNodeDetailPage = () => {
               <Card2Field
                 name="OWNER"
                 value={
-                  <Link
+                  <NodeDetailLink
                     href={getETHExplorerURL({ address: node?.owner })}
-                    target="_blank"
+                    isOwner={false}
                   >
-                    {ellipseAddress(node?.owner || '')}
-                  </Link>
+                    {node?.owner && ellipseAddress(node?.owner)}
+                  </NodeDetailLink>
                 }
                 big
               />
@@ -115,14 +121,15 @@ export const CoreChannelNodeDetailPage = () => {
                     placeholder="address"
                     isOwner={isOwner}
                   >
-                    <Link
+                    <NodeDetailLink
                       href={getETHExplorerURL({
                         tokenAddress: rewardCtrl.field.value,
                       })}
-                      target="_blank"
+                      isOwner={isOwner}
                     >
-                      {ellipseAddress(rewardCtrl.field.value || 'NONE')}
-                    </Link>
+                      {rewardCtrl.field.value &&
+                        ellipseAddress(rewardCtrl.field.value)}
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big
@@ -136,7 +143,15 @@ export const CoreChannelNodeDetailPage = () => {
                     placeholder="multi address"
                     isOwner={isOwner}
                   >
-                    {ellipseAddress(multiaddressCtrl.field.value || 'NONE')}
+                    <NodeDetailLink
+                      href={getMultiaddressUrl({
+                        multiaddress: multiaddressCtrl.field.value,
+                      })}
+                      isOwner={isOwner}
+                    >
+                      {multiaddressCtrl.field.value &&
+                        ellipseAddress(multiaddressCtrl.field.value)}
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big
@@ -154,7 +169,15 @@ export const CoreChannelNodeDetailPage = () => {
                     placeholder="manager address"
                     isOwner={isOwner}
                   >
-                    {ellipseAddress(managerCtrl.field.value || 'NONE')}
+                    <NodeDetailLink
+                      href={getETHExplorerURL({
+                        address: managerCtrl.field.value,
+                      })}
+                      isOwner={isOwner}
+                    >
+                      {managerCtrl.field.value &&
+                        ellipseAddress(managerCtrl.field.value)}
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big
@@ -168,7 +191,12 @@ export const CoreChannelNodeDetailPage = () => {
                     placeholder="registration url"
                     isOwner={isOwner}
                   >
-                    {registrationUrlCtrl.field.value || 'NONE'}
+                    <NodeDetailLink
+                      href={registrationUrlCtrl.field.value}
+                      isOwner={isOwner}
+                    >
+                      {registrationUrlCtrl.field.value}
+                    </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
                 big
