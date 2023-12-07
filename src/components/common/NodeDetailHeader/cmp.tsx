@@ -83,17 +83,16 @@ export const NodeDetailHeader = memo(
             />
           </StyledTitle>
         </StyledContainer>
-        {descriptionCtrl.field.value ||
-          (isOwner && (
-            <StyledDescription>
-              <NodeDetailEditableField
-                {...descriptionCtrl.field}
-                {...descriptionCtrl.fieldState}
-                placeholder="description"
-                isOwner={isOwner}
-              />
-            </StyledDescription>
-          ))}
+        {(descriptionCtrl.field.value || isOwner) && (
+          <StyledDescription>
+            <NodeDetailEditableField
+              {...descriptionCtrl.field}
+              {...descriptionCtrl.fieldState}
+              placeholder="description"
+              isOwner={isOwner}
+            />
+          </StyledDescription>
+        )}
       </div>
     )
   },

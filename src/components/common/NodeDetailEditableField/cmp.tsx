@@ -101,21 +101,21 @@ export const NodeDetailEditableField = memo(
             {...rest}
           />
         ) : (
-          <>{children ? children : value || 'NONE'}</>
+          <div tw="max-w-full text-ellipsis overflow-hidden whitespace-nowrap">
+            {children ? children : value || 'NONE'}
+          </div>
         )}
         {isOwner && (
           <div
-            tw="flex justify-end"
+            tw="shrink-0 flex justify-end overflow-hidden"
             css={{
-              width: '1.75rem',
               maxWidth: isEditing ? '0' : '1.75rem',
               transition: 'max-width ease-in-out 0.25s 0s',
-              overflow: 'hidden',
             }}
           >
             <Icon
               name="edit"
-              tw="cursor-pointer w-4 h-4"
+              tw="cursor-pointer ml-3 w-3.5 h-3.5"
               onClick={handleEditClick}
             />
           </div>

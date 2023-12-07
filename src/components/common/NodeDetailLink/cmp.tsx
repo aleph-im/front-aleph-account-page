@@ -26,7 +26,9 @@ export const NodeDetailLink = memo(
             tw="flex items-center w-full"
           >
             {content}
-            {!isOwner && <Icon tw="ml-2" name="external-link-square-alt" />}
+            {!isOwner && (
+              <Icon tw="ml-3 w-3.5 h-3.5" name="external-link-square-alt" />
+            )}
           </Link>
         ) : (
           <span tw="flex items-center w-full">{content}</span>

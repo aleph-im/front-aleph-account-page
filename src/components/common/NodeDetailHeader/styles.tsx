@@ -70,7 +70,7 @@ export const StyledContainer = styled.div<StyledContainerProps>`
 export const StyledTitle = styled.h1.attrs(addClasses('tp-h5'))`
   ${({ theme }) => {
     return css`
-      ${tw`w-full text-ellipsis overflow-hidden whitespace-nowrap m-0 py-0.5 px-6 z-10`}
+      ${tw`m-0 py-0.5 px-6 z-10`}
       color: ${theme.color.text};
       /* background-color: ${theme.color.base1}19; */
       background-color: ${theme.color.base1}E5;
@@ -81,7 +81,7 @@ export const StyledTitle = styled.h1.attrs(addClasses('tp-h5'))`
 export const StyledDescription = styled.h2.attrs(addClasses('tp-body3'))`
   ${({ theme }) => {
     return css`
-      ${tw`w-full text-ellipsis overflow-hidden whitespace-nowrap m-0 py-3 px-6`}
+      ${tw`m-0 py-3 px-6`}
       color: ${theme.color.text};
     `
   }};
