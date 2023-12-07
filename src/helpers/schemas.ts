@@ -61,7 +61,7 @@ export const imgFileSchema = z
   })
 
 export const updateBaseNodeSchema = z.object({
-  name: optionalString(requiredStringSchema),
+  name: requiredStringSchema,
   hash: messageHashSchema,
   picture: optionalString(requiredStringSchema).or(imgFileSchema),
   banner: optionalString(requiredStringSchema).or(imgFileSchema),
