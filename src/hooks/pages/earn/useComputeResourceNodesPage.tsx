@@ -1,5 +1,9 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
+import {
+  NotificationBadge,
+  TabsProps,
+  useNotification,
+} from '@aleph-front/aleph-core'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
@@ -154,18 +158,52 @@ export function useComputeResourceNodesPage(
 
   // ----------------------------- LINK CRN
 
+  const noti = useNotification()
+
   const handleLink = useCallback(
     async (nodeHash: string) => {
-      await nodeManager.linkComputeResourceNode(nodeHash)
+      if (!noti) throw new Error('Notification not ready')
+
+      try {
+        await nodeManager.linkComputeResourceNode(nodeHash)
+
+        noti.add({
+          variant: 'success',
+          title: 'Success',
+          text: `Linked resource node "${nodeHash}" successfully.`,
+        })
+      } catch (e) {
+        noti?.add({
+          variant: 'error',
+          title: 'Error',
+          text: (e as Error).message,
+        })
+      }
     },
-    [nodeManager],
+    [nodeManager, noti],
   )
 
   const handleUnlink = useCallback(
     async (nodeHash: string) => {
-      await nodeManager.unlinkComputeResourceNode(nodeHash)
+      if (!noti) throw new Error('Notification not ready')
+
+      try {
+        await nodeManager.unlinkComputeResourceNode(nodeHash)
+
+        noti.add({
+          variant: 'success',
+          title: 'Success',
+          text: `Unlinked resource node "${nodeHash}" successfully.`,
+        })
+      } catch (e) {
+        noti?.add({
+          variant: 'error',
+          title: 'Error',
+          text: (e as Error).message,
+        })
+      }
     },
-    [nodeManager],
+    [nodeManager, noti],
   )
 
   // -----------------------------

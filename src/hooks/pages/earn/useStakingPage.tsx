@@ -9,7 +9,11 @@ import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
-import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
+import {
+  NotificationBadge,
+  TabsProps,
+  useNotification,
+} from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
 export type UseStakingPageProps = {
@@ -139,19 +143,58 @@ export function useStakingPage(
   // -----------------------------
 
   const stakeManager = useMemo(() => new StakeManager(account), [account])
+  const noti = useNotification()
 
   const handleStake = useCallback(
     async (nodeHash: string) => {
-      await stakeManager.stake(nodeHash)
+      if (!noti) throw new Error('Notification not ready')
+
+      try {
+        await stakeManager.stake(nodeHash)
+
+        noti.add({
+          variant: 'success',
+          title: 'Success',
+          text: `Staked in "${nodeHash}" successfully.`,
+        })
+
+        handleTabChange('stake')
+      } catch (e) {
+        noti?.add({
+          variant: 'error',
+          title: 'Error',
+          text: (e as Error).message,
+        })
+      }
     },
-    [stakeManager],
+    [noti, stakeManager],
   )
 
   const handleUnstake = useCallback(
     async (nodeHash: string) => {
-      await stakeManager.unstake(nodeHash)
+      if (!noti) throw new Error('Notification not ready')
+
+      try {
+        await stakeManager.unstake(nodeHash)
+
+        noti.add({
+          variant: 'success',
+          title: 'Success',
+          text: `Unstaked from "${nodeHash}" successfully.`,
+        })
+
+        if (!stakeNodes || stakeNodes.length <= 1) {
+          handleTabChange('nodes')
+        }
+      } catch (e) {
+        noti?.add({
+          variant: 'error',
+          title: 'Error',
+          text: (e as Error).message,
+        })
+      }
     },
-    [stakeManager],
+    [noti, stakeManager, stakeNodes],
   )
 
   const userStake = useMemo(

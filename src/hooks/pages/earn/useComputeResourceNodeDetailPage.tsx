@@ -13,6 +13,7 @@ import {
   UseEditComputeResourceNodeFormReturn,
   useEditComputeResourceNodeForm,
 } from '@/hooks/form/useEditComputeResourceNodeForm'
+import { useNotification } from '@aleph-front/aleph-core'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
@@ -32,6 +33,7 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
   }
 
 export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetailPageReturn {
+  const noti = useNotification()
   const router = useRouter()
   const { hash } = router.query
 
@@ -69,20 +71,52 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
   }, [node, nodeManager, userNode])
 
   const handleLink = useCallback(async () => {
+    if (!noti) throw new Error('Notification not ready')
+
     if (!node) return
     if (nodeManager.isUserLinked(node, userNode)) return
-
     const { hash } = node
-    await nodeManager.linkComputeResourceNode(hash)
-  }, [node, nodeManager, userNode])
+
+    try {
+      await nodeManager.linkComputeResourceNode(hash)
+
+      noti.add({
+        variant: 'success',
+        title: 'Success',
+        text: `Linked resource node "${hash}" successfully.`,
+      })
+    } catch (e) {
+      noti?.add({
+        variant: 'error',
+        title: 'Error',
+        text: (e as Error).message,
+      })
+    }
+  }, [node, nodeManager, noti, userNode])
 
   const handleUnlink = useCallback(async () => {
+    if (!noti) throw new Error('Notification not ready')
+
     if (!node) return
     if (!nodeManager.isUserLinked(node, userNode)) return
-
     const { hash } = node
-    await nodeManager.unlinkComputeResourceNode(hash)
-  }, [node, nodeManager, userNode])
+
+    try {
+      await nodeManager.unlinkComputeResourceNode(hash)
+
+      noti.add({
+        variant: 'success',
+        title: 'Success',
+        text: `Unlinked resource node "${hash}" successfully.`,
+      })
+    } catch (e) {
+      noti?.add({
+        variant: 'error',
+        title: 'Error',
+        text: (e as Error).message,
+      })
+    }
+  }, [node, nodeManager, noti, userNode])
 
   // -----------------------------
 
