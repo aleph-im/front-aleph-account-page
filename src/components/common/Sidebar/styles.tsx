@@ -1,10 +1,18 @@
-import { Icon, Logo, addClasses } from '@aleph-front/aleph-core'
+import {
+  Icon,
+  Logo,
+  NotificationBadge,
+  addClasses,
+} from '@aleph-front/aleph-core'
 import Link from 'next/link'
 import styled, { css, keyframes } from 'styled-components'
 import tw from 'twin.macro'
 
 export const StyledLinkContentCss = css`
-  ${tw`flex items-center justify-start gap-2.5 py-2 px-6 whitespace-nowrap w-full`}
+  ${tw`flex items-center justify-start gap-2.5 whitespace-nowrap w-full`}
+`
+export const StyledLinkContentPaddingCss = css`
+  ${tw`py-2 px-6`}
 `
 
 export const StyledNav1 = styled.nav`
@@ -17,6 +25,7 @@ export const StyledNav1Link = styled(Link).attrs(addClasses('tp-nav'))<{
 }>`
   ${({ theme, $isActive }) => css`
     ${StyledLinkContentCss}
+    ${StyledLinkContentPaddingCss}
     ${tw`relative justify-center`}
 
     color: ${theme.color.main0}${$isActive ? 'ff' : '66'};
@@ -47,12 +56,26 @@ export const StyledNav2 = styled.nav`
 `
 
 export const StyledNav2Title = styled.div.attrs(addClasses('tp-nav'))`
-  ${tw`py-2 px-6 w-auto`}
+  ${StyledLinkContentPaddingCss}
+  ${tw`w-auto`}
 `
 
 export const StyledNav2LinkContainer = styled.div`
   ${tw`flex flex-col items-start cursor-auto`}
   padding-top: 7rem;
+`
+
+export const StyledNav2LinkText = styled.div`
+  ${StyledLinkContentCss}
+  ${tw`overflow-hidden`}
+`
+
+export const StyledNav2LinkIcon = styled.div`
+  ${tw`relative`}
+`
+
+export const StyledNotificationBadge = styled(NotificationBadge)`
+  ${tw`absolute top-0.5 left-full`}
 `
 
 export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
@@ -61,15 +84,12 @@ export const StyledNav2Link = styled(Link).attrs(addClasses('tp-nav'))<{
 }>`
   ${({ theme, $isActive }) => css`
     ${StyledLinkContentCss}
+    ${StyledLinkContentPaddingCss}
 
     color: ${$isActive ? theme.color.main0 : theme.color.base0};
 
-    &:hover > svg {
+    &:hover > ${StyledNav2LinkIcon} {
       color: ${theme.color.main0};
-    }
-
-    & > span {
-      ${tw`overflow-hidden`}
     }
   `}
 `
@@ -185,8 +205,7 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav1Link} > svg,
           & ${StyledLogo} {
-            opacity: 1;
-            visibility: visible;
+            ${tw`opacity-100 visible`}
 
             transition: opacity ease-in-out ${0.2 / $speed}s ${0.45 / $speed}s,
               visibility linear ${0.2 / $speed}s ${0.45 / $speed}s,
@@ -218,7 +237,7 @@ export const StyledSidebar = styled.aside<{
             animation: ${1 / $speed}s ease-in-out 0s ${fadeOutIn1Reverse};
           }
 
-          & ${StyledNav2Title}, & ${StyledNav2Link} > svg {
+          & ${StyledNav2Title}, & ${StyledNav2LinkIcon} {
             ${tw`relative left-0 translate-x-0`}
             transition: left linear 0s ${0.5 / $speed}s, 
               transform linear 0s ${0.5 / $speed}s,
@@ -230,10 +249,17 @@ export const StyledSidebar = styled.aside<{
             font-size: 1.125rem;
           }
 
-          & ${StyledNav2Link} > span {
+          & ${StyledNav2LinkText} {
             max-width: 100%;
             transition: max-width linear 0s ${0.5 / $speed}s,
               color ease-in-out 0.25s 0s !important;
+          }
+
+          & ${StyledNotificationBadge} {
+            ${tw`opacity-0 invisible`}
+
+            transition: opacity ease-in-out 0s ${0.5 / $speed}s,
+              visibility linear 0s ${0.5 / $speed}s;
           }
 
           & ${StyledToggleButton} {
@@ -260,11 +286,11 @@ export const StyledSidebar = styled.aside<{
 
           & ${StyledNav1Link} > svg,
           & ${StyledLogo} {
-            opacity: 0;
-            visibility: hidden;
+            ${tw`opacity-0 invisible`}
 
             transition: opacity ease-in-out ${0.2 / $speed}s 0s,
-              visibility linear ${0.2 / $speed}s 0s, color ease-in-out 0.25s 0s !important;
+              visibility linear ${0.2 /
+            $speed}s 0s, color ease-in-out 0.25s 0s !important;
           }
 
           & ${StyledNav1Link}::after {
@@ -295,7 +321,7 @@ export const StyledSidebar = styled.aside<{
             animation: ${1 / $speed}s ease-in-out 0s ${fadeOutIn1};
           }
 
-          & ${StyledNav2Title}, & ${StyledNav2Link} > svg {
+          & ${StyledNav2Title}, & ${StyledNav2LinkIcon} {
             ${tw`relative left-1/2 -translate-x-1/2`}
             transition: left linear 0s ${0.45 / $speed}s, 
               transform linear 0s ${0.45 / $speed}s,
@@ -307,10 +333,17 @@ export const StyledSidebar = styled.aside<{
             font-size: 0.75rem;
           }
 
-          & ${StyledNav2Link} > span {
+          & ${StyledNav2LinkText} {
             max-width: 0;
             transition: max-width linear 0s ${0.45 / $speed}s,
               color ease-in-out 0.25s 0s !important;
+          }
+
+          & ${StyledNotificationBadge} {
+            ${tw`opacity-100 visible`}
+
+            transition: opacity ease-in-out 0s ${0.45 / $speed}s,
+              visibility linear 0s ${0.45 / $speed}s;
           }
 
           & ${StyledToggleButton} {

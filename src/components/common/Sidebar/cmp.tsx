@@ -16,7 +16,10 @@ import {
   StyledNav2,
   StyledNav2Link,
   StyledNav2LinkContainer,
+  StyledNav2LinkIcon,
+  StyledNav2LinkText,
   StyledNav2Title,
+  StyledNotificationBadge,
   StyledProgressBar,
   StyledSidebar,
   StyledStorageContainer,
@@ -63,9 +66,14 @@ const SidebarLink = memo(
       <StyledNav1Link {...props}>{iconCmp}</StyledNav1Link>
     ) : (
       <StyledNav2Link {...props}>
-        {iconCmp}
-        <span>{children}</span>
-        {flag && <NotificationBadge>{flag}</NotificationBadge>}
+        <StyledNav2LinkIcon>
+          {iconCmp}
+          {flag && <StyledNotificationBadge>{flag}</StyledNotificationBadge>}
+        </StyledNav2LinkIcon>
+        <StyledNav2LinkText>
+          {children}
+          {flag && <NotificationBadge>{flag}</NotificationBadge>}
+        </StyledNav2LinkText>
       </StyledNav2Link>
     )
   },
