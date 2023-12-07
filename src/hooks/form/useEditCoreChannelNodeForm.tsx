@@ -65,8 +65,8 @@ export function useEditCoreChannelNodeForm({
     async (state: UseEditCoreChannelNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
 
-      const hash = await manager.updateCoreChannelNode(state)
-      return hash
+      await manager.updateCoreChannelNode(state)
+      return state.hash as string
     },
     [manager],
   )

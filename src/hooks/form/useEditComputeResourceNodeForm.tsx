@@ -71,8 +71,8 @@ export function useEditComputeResourceNodeForm({
     async (state: UseEditComputeResourceNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
 
-      const hash = await manager.updateComputeResourceNode(state)
-      return hash
+      await manager.updateComputeResourceNode(state)
+      return state.hash as string
     },
     [manager],
   )
