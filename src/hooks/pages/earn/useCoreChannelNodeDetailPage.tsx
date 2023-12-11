@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeManager } from '@/domain/node'
+import { CCN } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useCoreChannelNode } from '@/hooks/common/useCoreChannelNode'
 import { useAccountRewards } from '@/hooks/common/useRewards'
@@ -12,6 +12,7 @@ import {
   UseEditCoreChannelNodeFormReturn,
   useEditCoreChannelNodeForm,
 } from '@/hooks/form/useEditCoreChannelNodeForm'
+import { useLinking } from '@/hooks/common/useLinking'
 
 export type UseCoreChannelNodeDetailPageProps = {
   nodes?: CCN[]
@@ -27,7 +28,7 @@ export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
     relativeETHHeightPercent?: number
     calculatedRewards?: number
     locked?: boolean
-    handleUnlink: (hash: string) => void
+    handleUnlink: (nodeHash: string) => void
   }
 
 export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageReturn {
@@ -35,13 +36,9 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
   const { hash } = router.query
 
   const [state] = useAppState()
-  const { account } = state.account
   const { entities: nodes } = state.ccns
 
   const { node } = useCoreChannelNode({ hash })
-
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new NodeManager(account), [account])
 
   // @todo: Remove the fixed value and fetch it from the store / rpc node
   const ethLastBlockHeight = 18643103
@@ -100,19 +97,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
-  const handleUnlink = useCallback(
-    async (hash: string) => {
-      if (!node) return
-
-      const crn = node?.crnsData.find((crn) => crn.hash === hash)
-
-      if (!crn) return
-      if (!nodeManager.isUserLinked(crn, node)) return
-
-      await nodeManager.unlinkComputeResourceNode(hash)
-    },
-    [node, nodeManager],
-  )
+  const { handleUnlink } = useLinking()
 
   // -----------------------------
 

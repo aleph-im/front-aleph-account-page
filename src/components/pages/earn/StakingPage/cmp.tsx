@@ -108,7 +108,7 @@ export const StakingPage = memo((props) => {
         <div tw="relative">
           <SpinnerOverlay show={!nodes} />
           <>
-            {selectedTab === 'stake' ? (
+            {selectedTab === 'user' ? (
               <>
                 {nodes && filteredStakeNodes && (
                   <StakingNodesTable

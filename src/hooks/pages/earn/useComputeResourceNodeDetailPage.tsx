@@ -13,7 +13,7 @@ import {
   UseEditComputeResourceNodeFormReturn,
   useEditComputeResourceNodeForm,
 } from '@/hooks/form/useEditComputeResourceNodeForm'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useLinking } from '@/hooks/common/useLinking'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
@@ -33,7 +33,6 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
   }
 
 export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetailPageReturn {
-  const noti = useNotification()
   const router = useRouter()
   const { hash } = router.query
 
@@ -70,53 +69,28 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     return nodeManager.isLinkable(node, userNode)[0]
   }, [node, nodeManager, userNode])
 
+  const { handleLink: handleLinkBase, handleUnlink: handleUnlinkBase } =
+    useLinking()
+
   const handleLink = useCallback(async () => {
-    if (!noti) throw new Error('Notification not ready')
-
     if (!node) return
-    if (nodeManager.isUserLinked(node, userNode)) return
-    const { hash } = node
 
-    try {
-      await nodeManager.linkComputeResourceNode(hash)
+    const success = await handleLinkBase(node.hash)
+    if (!success) return
 
-      noti.add({
-        variant: 'success',
-        title: 'Success',
-        text: `Linked resource node "${hash}" successfully.`,
-      })
-    } catch (e) {
-      noti?.add({
-        variant: 'error',
-        title: 'Error',
-        text: (e as Error).message,
-      })
-    }
-  }, [node, nodeManager, noti, userNode])
+    if (!userNode) return
+    router.replace(`/earn/ccn/${userNode.hash}`)
+  }, [handleLinkBase, router, node, userNode])
 
   const handleUnlink = useCallback(async () => {
-    if (!noti) throw new Error('Notification not ready')
-
     if (!node) return
-    if (!nodeManager.isUserLinked(node, userNode)) return
-    const { hash } = node
 
-    try {
-      await nodeManager.unlinkComputeResourceNode(hash)
+    const success = await handleUnlinkBase(node.hash)
+    if (!success) return
 
-      noti.add({
-        variant: 'success',
-        title: 'Success',
-        text: `Unlinked resource node "${hash}" successfully.`,
-      })
-    } catch (e) {
-      noti?.add({
-        variant: 'error',
-        title: 'Error',
-        text: (e as Error).message,
-      })
-    }
-  }, [node, nodeManager, noti, userNode])
+    if (!userNode) return
+    router.replace(`/earn/ccn/${userNode?.hash}`)
+  }, [handleUnlinkBase, router, node, userNode])
 
   // -----------------------------
 

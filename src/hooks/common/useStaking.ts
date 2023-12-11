@@ -5,22 +5,22 @@ import { EntityAddAction } from '@/store/entity'
 import { useNotification } from '@aleph-front/aleph-core'
 import { useCallback, useMemo } from 'react'
 
-export type UseStakeReturn = {
+export type UseStakingReturn = {
   userStake: number
   handleStake: (nodeHash: string) => Promise<boolean>
   handleUnstake: (nodeHash: string) => Promise<boolean>
 }
 
-function calculateVirtualNodesAdd(
+function calculateVirtualNodesStake(
   nodes: CCN[] = [],
-  addNode: CCN,
+  stakeNode: CCN,
   address: string,
   balance: number,
   nodeManager: NodeManager,
 ): CCN[] {
   const userStakingNodes = [
     ...nodes.filter((node) => nodeManager.isUserStake(node)),
-    addNode,
+    stakeNode,
   ]
   const perNodeStake = balance / userStakingNodes.length
   const newStakers = userStakingNodes.map((node) => {
@@ -34,9 +34,9 @@ function calculateVirtualNodesAdd(
   return newStakers
 }
 
-function calculateVirtualNodesDel(
+function calculateVirtualNodesUnstake(
   nodes: CCN[] = [],
-  delNode: CCN,
+  unstakeNode: CCN,
   address: string,
   balance: number,
   nodeManager: NodeManager,
@@ -46,7 +46,7 @@ function calculateVirtualNodesDel(
   const newStakers = userStakingNodes.map((node) => {
     let stakers
 
-    if (node.hash === delNode.hash) {
+    if (node.hash === unstakeNode.hash) {
       const { [address]: _, ...rest } = node.stakers
       stakers = rest
     } else {
@@ -63,7 +63,7 @@ function calculateVirtualNodesDel(
   return newStakers
 }
 
-export function useStaking(): UseStakeReturn {
+export function useStaking(): UseStakingReturn {
   const [state, dispatch] = useAppState()
   const { account, balance = 0 } = state.account
   const { entities: nodes } = state.ccns
@@ -87,6 +87,12 @@ export function useStaking(): UseStakeReturn {
         const targetNode = nodes?.find((node) => node.hash === nodeHash)
         if (!targetNode) throw new Error('Invalid staking node')
 
+        if (
+          !nodeManager.isStakeable(targetNode, balance) ||
+          nodeManager.isUserStake(targetNode)
+        )
+          throw new Error('Not stakeable node')
+
         await stakeManager.stake(nodeHash)
 
         noti.add({
@@ -95,7 +101,7 @@ export function useStaking(): UseStakeReturn {
           text: `Staked in "${nodeHash}" successfully.`,
         })
 
-        const entities = calculateVirtualNodesAdd(
+        const entities = calculateVirtualNodesStake(
           nodes,
           targetNode,
           account.address,
@@ -133,6 +139,9 @@ export function useStaking(): UseStakeReturn {
         const targetNode = nodes?.find((node) => node.hash === nodeHash)
         if (!targetNode) throw new Error('Invalid staking node')
 
+        if (!nodeManager.isUserStake(targetNode))
+          throw new Error('Not stakeable node')
+
         await stakeManager.unstake(nodeHash)
 
         noti.add({
@@ -141,7 +150,7 @@ export function useStaking(): UseStakeReturn {
           text: `Unstaked from "${nodeHash}" successfully.`,
         })
 
-        const entities = calculateVirtualNodesDel(
+        const entities = calculateVirtualNodesUnstake(
           nodes,
           targetNode,
           account.address,

@@ -1,6 +1,5 @@
 import { useAppState } from '@/contexts/appState'
 import { CCN, NodeManager } from '@/domain/node'
-import { StakeManager } from '@/domain/stake'
 import {
   UseCoreChannelNodesReturn,
   useCoreChannelNodes,
@@ -11,7 +10,7 @@ import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { useStaking } from '@/hooks/common/useStake'
+import { useStaking } from '@/hooks/common/useStaking'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
@@ -86,12 +85,12 @@ export function useStakingPage(
   // -----------------------------
 
   const [tab, handleTabChange] = useState<string>()
-  const selectedTab = tab || (stakeNodes?.length ? 'stake' : 'nodes')
+  const selectedTab = tab || (stakeNodes?.length ? 'user' : 'nodes')
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
       {
-        id: 'stake',
+        id: 'user',
         name: 'My stakes',
         disabled: !stakeNodes?.length,
         label: warningFlag
@@ -139,8 +138,6 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const stakeManager = useMemo(() => new StakeManager(account), [account])
-
   const {
     userStake,
     handleStake: handleStakeBase,
@@ -152,7 +149,7 @@ export function useStakingPage(
       const success = await handleStakeBase(nodeHash)
       if (!success) return
 
-      handleTabChange('stake')
+      handleTabChange('user')
     },
     [handleStakeBase],
   )
