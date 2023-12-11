@@ -596,8 +596,11 @@ export class NodeManager {
 
   protected parseResourceNodes(ccns: CCN[], crns: CRN[]): CCN[] {
     const crnsMap = crns.reduce((ac, cu) => {
+      if (!cu.parent) return ac
+
       const crns = (ac[cu.parent] = ac[cu.parent] || [])
       crns.push(cu)
+
       return ac
     }, {} as Record<string, CRN[]>)
 
@@ -619,6 +622,8 @@ export class NodeManager {
     }, {} as Record<string, CCN>)
 
     return crns.map((crn) => {
+      if (!crn.parent) return crn
+
       const parentData = ccnsMap[crn.parent]
       if (!parentData) return crn
 
