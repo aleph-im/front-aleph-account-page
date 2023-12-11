@@ -171,7 +171,7 @@ export type BaseUpdateNode = {
   name?: string
   description?: string
   reward?: string
-  authorized?: string[]
+  authorized?: string | string[]
   locked?: boolean
   registration_url?: string
   manager?: string
