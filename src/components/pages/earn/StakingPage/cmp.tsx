@@ -15,6 +15,7 @@ export const StakingPage = memo((props) => {
     accountBalance,
     nodes,
     filteredNodes,
+    stakeNodes,
     filteredStakeNodes,
     tabs,
     selectedTab,
@@ -110,19 +111,30 @@ export const StakingPage = memo((props) => {
           <>
             {selectedTab === 'user' ? (
               <>
-                {nodes && filteredStakeNodes && (
-                  <StakingNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes: filteredStakeNodes,
-                      accountBalance,
-                      account,
-                      handleStake,
-                      handleUnstake,
-                      showStakedAmount: true,
-                      nodesIssues,
-                    }}
-                  />
+                {nodes && filteredStakeNodes ? (
+                  <>
+                    <StakingNodesTable
+                      {...{
+                        nodes,
+                        filteredNodes: filteredStakeNodes,
+                        accountBalance,
+                        account,
+                        handleStake,
+                        handleUnstake,
+                        showStakedAmount: true,
+                        nodesIssues,
+                      }}
+                    />
+                    <div tw="my-10 mx-4 text-center opacity-60">
+                      {!account
+                        ? 'Connect your wallet to see your stakes.'
+                        : !stakeNodes?.length
+                        ? 'You are not staking.'
+                        : ''}
+                    </div>
+                  </>
+                ) : (
+                  <>No data</>
                 )}
               </>
             ) : (

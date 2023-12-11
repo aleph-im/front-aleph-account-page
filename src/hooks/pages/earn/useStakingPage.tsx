@@ -17,6 +17,7 @@ export type UseStakingPageProps = {
 }
 
 export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
+  stakeNodes?: CCN[]
   filteredStakeNodes?: CCN[]
   selectedTab: string
   tabs: TabsProps['tabs']
@@ -89,10 +90,10 @@ export function useStakingPage(
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
+      { id: 'nodes', name: 'All core nodes' },
       {
         id: 'user',
         name: 'My stakes',
-        disabled: !stakeNodes?.length,
         label: warningFlag
           ? {
               label: <NotificationBadge>{warningFlag}</NotificationBadge>,
@@ -100,11 +101,10 @@ export function useStakingPage(
             }
           : undefined,
       },
-      { id: 'nodes', name: 'All core nodes' },
     ]
 
     return tabs
-  }, [stakeNodes, warningFlag])
+  }, [warningFlag])
 
   // -----------------------------
 
@@ -173,6 +173,7 @@ export function useStakingPage(
     accountBalance,
     nodes,
     filteredNodes,
+    stakeNodes,
     filteredStakeNodes,
     selectedTab,
     tabs,

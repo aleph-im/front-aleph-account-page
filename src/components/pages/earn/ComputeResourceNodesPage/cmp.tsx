@@ -142,18 +142,27 @@ export const ComputeResourceNodesPage = memo((props) => {
             {selectedTab === 'user' ? (
               <>
                 {nodes && filteredUserNodes && (
-                  <ComputeResourceNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes: filteredUserNodes,
-                      nodesIssues: userNodesIssues,
-                      userNode,
-                      account,
-                      lastVersion,
-                      handleLink,
-                      handleUnlink,
-                    }}
-                  />
+                  <>
+                    <ComputeResourceNodesTable
+                      {...{
+                        nodes,
+                        filteredNodes: filteredUserNodes,
+                        nodesIssues: userNodesIssues,
+                        userNode,
+                        account,
+                        lastVersion,
+                        handleLink,
+                        handleUnlink,
+                      }}
+                    />
+                    <div tw="my-10 mx-4 text-center opacity-60">
+                      {!account
+                        ? 'Connect your wallet to see your compute node running.'
+                        : !userNodes?.length
+                        ? 'You have no compute node running.'
+                        : ''}
+                    </div>
+                  </>
                 )}
               </>
             ) : (

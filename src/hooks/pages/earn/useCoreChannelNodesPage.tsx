@@ -62,10 +62,10 @@ export function useCoreChannelNodesPage(
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
+      { id: 'nodes', name: 'All core nodes' },
       {
         id: 'user',
         name: 'My core nodes',
-        disabled: !userNodes?.length,
         label: userNodesWarningFlag
           ? {
               label: (
@@ -75,11 +75,10 @@ export function useCoreChannelNodesPage(
             }
           : undefined,
       },
-      { id: 'nodes', name: 'All core nodes' },
     ]
 
     return tabs
-  }, [userNodes, userNodesWarningFlag])
+  }, [userNodesWarningFlag])
 
   // -----------------------------
 

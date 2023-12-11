@@ -119,14 +119,23 @@ export const CoreChannelNodesPage = memo((props) => {
             {selectedTab === 'user' ? (
               <>
                 {nodes && filteredUserNodes && (
-                  <CoreChannelNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes: filteredUserNodes,
-                      nodesIssues: userNodesIssues,
-                      lastVersion,
-                    }}
-                  />
+                  <>
+                    <CoreChannelNodesTable
+                      {...{
+                        nodes,
+                        filteredNodes: filteredUserNodes,
+                        nodesIssues: userNodesIssues,
+                        lastVersion,
+                      }}
+                    />
+                    <div tw="my-10 mx-4 text-center opacity-60">
+                      {!account
+                        ? 'Connect your wallet to see your core node running.'
+                        : !userNodes?.length
+                        ? 'You have no core node running.'
+                        : ''}
+                    </div>
+                  </>
                 )}
               </>
             ) : (

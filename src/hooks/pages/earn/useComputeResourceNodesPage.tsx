@@ -94,10 +94,10 @@ export function useComputeResourceNodesPage(
 
   const tabs = useMemo(() => {
     const tabs: TabsProps['tabs'] = [
+      { id: 'nodes', name: 'All compute nodes' },
       {
         id: 'user',
         name: 'My compute nodes',
-        disabled: !userNodes?.length,
         label: userNodesWarningFlag
           ? {
               label: (
@@ -107,11 +107,10 @@ export function useComputeResourceNodesPage(
             }
           : undefined,
       },
-      { id: 'nodes', name: 'All compute nodes' },
     ]
 
     return tabs
-  }, [userNodes, userNodesWarningFlag])
+  }, [userNodesWarningFlag])
 
   // ----------------------------- FILTERED NODES
 
