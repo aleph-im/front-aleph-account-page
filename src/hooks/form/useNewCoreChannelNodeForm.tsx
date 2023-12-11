@@ -1,7 +1,6 @@
 import { useAppState } from '@/contexts/appState'
 import { FormEvent, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
-import useConnectedWard from '@/hooks/common/useConnectedWard'
 import { useForm } from '@/hooks/common/useForm'
 import {
   Control,
@@ -11,8 +10,9 @@ import {
   useWatch,
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { NewCCN, NodeManager } from '@/domain/node'
+import { CCN, NewCCN, NodeManager } from '@/domain/node'
 import { useNotification } from '@aleph-front/aleph-core'
+import { EntityAddAction } from '@/store/entity'
 
 export type NewCoreChannelNodeFormState = NewCCN
 
@@ -33,11 +33,38 @@ export type UseNewCoreChannelNodeFormReturn = {
   handleSubmit: (e: FormEvent) => Promise<void>
 }
 
-export function useNewCoreChannelNodeForm(): UseNewCoreChannelNodeFormReturn {
-  useConnectedWard()
+function calculateVirtualNode(
+  state: NewCoreChannelNodeFormState,
+  hash: string,
+  address: string,
+): CCN {
+  const virtualNode: CCN = {
+    hash,
+    owner: address,
+    reward: address,
+    locked: false,
+    authorized: [],
+    resource_nodes: [],
+    crnsData: [],
+    time: Date.now(),
+    stakers: {},
+    total_staked: 0,
+    status: 'waiting',
+    score: 0,
+    score_updated: false,
+    decentralization: 0,
+    performance: 0,
+    has_bonus: false,
+    ...state,
+    virtual: Date.now(),
+  }
 
+  return virtualNode
+}
+
+export function useNewCoreChannelNodeForm(): UseNewCoreChannelNodeFormReturn {
   const router = useRouter()
-  const [appState] = useAppState()
+  const [appState, dispatch] = useAppState()
   const { account } = appState.account
 
   const noti = useNotification()
@@ -48,26 +75,37 @@ export function useNewCoreChannelNodeForm(): UseNewCoreChannelNodeFormReturn {
   const onSubmit = useCallback(
     async (state: NewCoreChannelNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
+      if (!account) throw new Error('Invalid account')
 
       const hash = await manager.newCoreChannelNode(state)
-      return hash
+
+      const entity = calculateVirtualNode(state, hash, account.address)
+
+      return entity
     },
-    [manager],
+    [account, manager],
   )
 
   const onSuccess = useCallback(
-    async (hash: string) => {
+    async (entity: CCN) => {
       if (!noti) throw new Error('Notification not ready')
 
       noti.add({
         variant: 'success',
         title: 'Success',
-        text: `Your node "${hash}" was created successfully.`,
+        text: `Your node "${entity.hash}" was created successfully.`,
       })
 
-      router.replace(`/earn/ccn/${hash}`)
+      dispatch(
+        new EntityAddAction({
+          name: 'ccns',
+          entities: [entity],
+        }),
+      )
+
+      router.replace(`/earn/ccn/${entity.hash}`)
     },
-    [noti, router],
+    [dispatch, noti, router],
   )
 
   const {

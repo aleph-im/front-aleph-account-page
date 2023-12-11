@@ -10,8 +10,9 @@ import {
   useWatch,
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { NewCRN, NodeManager } from '@/domain/node'
+import { CRN, NewCRN, NodeManager } from '@/domain/node'
 import { useNotification } from '@aleph-front/aleph-core'
+import { EntityAddAction } from '@/store/entity'
 
 export type NewComputeResourceNodeFormState = NewCRN
 
@@ -31,9 +32,36 @@ export type UseNewComputeResourceNodeFormReturn = {
   handleSubmit: (e: FormEvent) => Promise<void>
 }
 
+function calculateVirtualNode(
+  state: NewComputeResourceNodeFormState,
+  hash: string,
+  address: string,
+): CRN {
+  const virtualNode: CRN = {
+    hash,
+    owner: address,
+    manager: address,
+    reward: address,
+    locked: false,
+    authorized: [],
+    parent: null,
+    time: Date.now(),
+    status: 'waiting',
+    score: 0,
+    score_updated: false,
+    decentralization: 0,
+    performance: 0,
+    type: 'compute',
+    ...state,
+    virtual: Date.now(),
+  }
+
+  return virtualNode
+}
+
 export function useNewComputeResourceNodeForm(): UseNewComputeResourceNodeFormReturn {
   const router = useRouter()
-  const [appState] = useAppState()
+  const [appState, dispatch] = useAppState()
   const { account } = appState.account
 
   const noti = useNotification()
@@ -44,26 +72,37 @@ export function useNewComputeResourceNodeForm(): UseNewComputeResourceNodeFormRe
   const onSubmit = useCallback(
     async (state: NewComputeResourceNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
+      if (!account) throw new Error('Invalid account')
 
       const hash = await manager.newComputeResourceNode(state)
-      return hash
+
+      const entity = calculateVirtualNode(state, hash, account.address)
+
+      return entity
     },
-    [manager],
+    [account, manager],
   )
 
   const onSuccess = useCallback(
-    async (hash: string) => {
+    async (entity: CRN) => {
       if (!noti) throw new Error('Notification not ready')
 
       noti.add({
         variant: 'success',
         title: 'Success',
-        text: `Your node "${hash}" was created successfully.`,
+        text: `Your node "${entity.hash}" was created successfully.`,
       })
 
-      router.replace(`/earn/crn/${hash}`)
+      dispatch(
+        new EntityAddAction({
+          name: 'crns',
+          entities: [entity],
+        }),
+      )
+
+      router.replace(`/earn/crn/${entity.hash}`)
     },
-    [noti, router],
+    [dispatch, noti, router],
   )
 
   const {

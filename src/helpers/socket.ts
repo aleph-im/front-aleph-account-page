@@ -6,7 +6,7 @@ export async function* subscribeSocketFeed<T>(
 ): AsyncGenerator<T> {
   let socket: WebSocket | undefined
 
-  console.log('__ SOCKET')
+  // console.log('__ SOCKET')
 
   const values: T[] = []
   const futures: Future<T>[] = []
@@ -39,16 +39,16 @@ export async function* subscribeSocketFeed<T>(
     const ws = new WebSocket(url)
     socket = ws
 
-    console.log('__ CONNECT')
+    // console.log('__ CONNECT')
 
     ws.addEventListener('message', handleMessage)
     ws.addEventListener('close', handleClose)
     ws.addEventListener('error', handleError)
     ws.addEventListener('open', () => {
-      console.log('__ OPEN')
+      // console.log('__ OPEN')
     })
 
-    console.log('Oppening Socket', ws.readyState)
+    // console.log('Oppening Socket', ws.readyState)
   }
 
   const close = (e?: CloseEvent, reconnect = true) => {
@@ -60,19 +60,19 @@ export async function* subscribeSocketFeed<T>(
     ws.removeEventListener('error', handleError)
 
     function defferClose() {
-      console.log('__ CLOSE')
+      // console.log('__ CLOSE')
 
       ws.close()
       ws.removeEventListener('open', defferClose)
 
       if (reconnect) {
-        console.log('Reconnecting Socket in 1 second')
+        // console.log('Reconnecting Socket in 1 second')
         setTimeout(connect, 1000)
       }
     }
 
     socket = undefined
-    console.log('Closing Socket', e?.reason, ws.readyState)
+    // console.log('Closing Socket', e?.reason, ws.readyState)
 
     if (ws.readyState === 1) {
       defferClose()

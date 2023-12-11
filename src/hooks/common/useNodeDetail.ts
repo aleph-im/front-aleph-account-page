@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useNotification } from '@aleph-front/aleph-core'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
+import { EntityDelAction } from '@/store/entity'
 
 export type UseNodeDetailProps<N> = {
   node?: N
@@ -27,11 +28,16 @@ export function useNodeDetail<N extends AlephNode>({
   const router = useRouter()
   const noti = useNotification()
 
-  const [state] = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.account
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
+
+  const isCRN = useMemo(
+    () => (node ? nodeManager.isCRN(node) : undefined),
+    [nodeManager, node],
+  )
 
   const handleRemove = useCallback(async () => {
     if (!node) return
@@ -47,7 +53,14 @@ export function useNodeDetail<N extends AlephNode>({
         text: `Your node "${node.hash}" was deleted successfully.`,
       })
 
-      router.replace(`.`)
+      dispatch(
+        new EntityDelAction({
+          name: isCRN ? 'crns' : 'ccns',
+          keys: [nodeHash],
+        }),
+      )
+
+      router.replace(`/earn/${isCRN ? 'crn' : 'ccn'}`)
     } catch (e) {
       noti?.add({
         variant: 'error',
@@ -55,17 +68,10 @@ export function useNodeDetail<N extends AlephNode>({
         text: (e as Error).message,
       })
     }
-  }, [node, nodeManager, noti, router])
+  }, [dispatch, isCRN, node, nodeManager, noti, router])
 
   const { nodes_with_identical_asn: nodesOnSameASN } =
     node?.scoreData?.measurements || {}
-
-  // const nodesOnSameASN = useMemo(() => {
-  //   if (!nodes) return
-
-  //   return nodes.filter((n) => n.metricsData?.asn === node?.metricsData?.asn)
-  //     .length
-  // }, [nodes, node])
 
   const { base_latency, measured_at } = node?.metricsData || {}
 

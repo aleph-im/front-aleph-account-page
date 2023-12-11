@@ -1,6 +1,5 @@
 import { useAppState } from '@/contexts/appState'
 import { FormEvent, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/router'
 import { useForm } from '@/hooks/common/useForm'
 import {
   Control,
@@ -58,7 +57,6 @@ export type UseEditComputeResourceNodeFormReturn = {
 export function useEditComputeResourceNodeForm({
   defaultValues,
 }: UseEditComputeResourceNodeFormProps): UseEditComputeResourceNodeFormReturn {
-  const router = useRouter()
   const [appState] = useAppState()
   const { account } = appState.account
 
@@ -86,10 +84,8 @@ export function useEditComputeResourceNodeForm({
         title: 'Success',
         text: `Your node "${hash}" was updated successfully.`,
       })
-
-      router.replace(`/earn/crn/${hash}`)
     },
-    [noti, router],
+    [noti],
   )
 
   const {

@@ -64,7 +64,7 @@ export type CCN = BaseNode & {
   multiaddress?: string
   status: BaseNodeStatus
 
-  has_bonus: true
+  has_bonus: boolean
   resource_nodes: string[]
   stakers: Record<string, number>
   total_staked: number
@@ -77,8 +77,8 @@ export type CRN = BaseNode & {
   address?: string
   status: BaseNodeStatus | 'linked'
 
-  parent: string
-  type: string
+  parent: string | null
+  type: string | 'compute'
   scoreData?: CRNScore
   metricsData?: CRNMetrics
   parentData?: CCN

@@ -90,7 +90,7 @@ function delEntityFromCollection<E>(
   collection: E[],
   key: keyof E,
 ): E[] {
-  const idSet = new Set(...(Array.isArray(ids) ? ids : [ids]))
+  const idSet = new Set(Array.isArray(ids) ? ids : [ids])
   return collection.filter((e) => !idSet.has(e[key] as string))
 }
 

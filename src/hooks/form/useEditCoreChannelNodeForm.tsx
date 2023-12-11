@@ -1,6 +1,5 @@
 import { useAppState } from '@/contexts/appState'
 import { FormEvent, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/router'
 import { useForm } from '@/hooks/common/useForm'
 import {
   Control,
@@ -52,7 +51,6 @@ export type UseEditCoreChannelNodeFormReturn = {
 export function useEditCoreChannelNodeForm({
   defaultValues,
 }: UseEditCoreChannelNodeFormProps): UseEditCoreChannelNodeFormReturn {
-  const router = useRouter()
   const [appState] = useAppState()
   const { account } = appState.account
 
@@ -80,10 +78,8 @@ export function useEditCoreChannelNodeForm({
         title: 'Success',
         text: `Your node "${hash}" was updated successfully.`,
       })
-
-      router.replace(`/earn/ccn/${hash}`)
     },
-    [noti, router],
+    [noti],
   )
 
   const {
