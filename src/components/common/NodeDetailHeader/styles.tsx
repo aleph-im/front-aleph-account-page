@@ -42,7 +42,7 @@ export const StyledContainer = styled.div<StyledContainerProps>`
       : `linear-gradient(90deg, ${c1}cc 0%, ${c2}cc 100%)`
 
     return css`
-      ${tw`relative flex flex-col h-[12.5rem] justify-end overflow-hidden`}
+      ${tw`relative flex flex-col h-[12.5rem] justify-end overflow-hidden z-0`}
       background-image: ${bg};
       background-position: center;
       background-size: cover;

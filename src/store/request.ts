@@ -19,24 +19,26 @@ export enum RequestActionType {
   REQUEST_ERROR = 'REQUEST_ERROR',
 }
 
-export type RequestSetAction<T> = {
-  readonly type: RequestActionType.REQUEST_SET
-  payload: { name: string; state: RequestState<T> }
+export class RequestSetAction<T> {
+  readonly type = RequestActionType.REQUEST_SET
+  constructor(public payload: { name: string; state: RequestState<T> }) {}
 }
 
-export type RequestStartAction = {
-  readonly type: RequestActionType.REQUEST_START
-  payload: { name: string; flushData?: boolean }
+export class RequestStartAction {
+  readonly type = RequestActionType.REQUEST_START
+  constructor(public payload: { name: string; flushData?: boolean }) {}
 }
 
-export type RequestSuccessAction<T> = {
-  readonly type: RequestActionType.REQUEST_SUCCESS
-  payload: { name: string; data: T }
+export class RequestSuccessAction<T> {
+  readonly type = RequestActionType.REQUEST_SUCCESS
+  constructor(public payload: { name: string; data: T }) {}
 }
 
-export type RequestErrorAction = {
-  readonly type: RequestActionType.REQUEST_ERROR
-  payload: { name: string; error: Error; flushData?: boolean }
+export class RequestErrorAction {
+  readonly type = RequestActionType.REQUEST_ERROR
+  constructor(
+    public payload: { name: string; error: Error; flushData?: boolean },
+  ) {}
 }
 
 export type RequestAction<T> =

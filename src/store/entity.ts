@@ -24,34 +24,34 @@ export enum EntityActionType {
   ENTITY_DEL = 'ENTITY_DEL',
 }
 
-export type EntitySetAction<T> = {
-  readonly type: EntityActionType.ENTITY_SET
-  payload: { name: string; state: RequestState<T[]> }
+export class EntitySetAction<T> {
+  readonly type = EntityActionType.ENTITY_SET
+  constructor(public payload: { name: string; state: RequestState<T[]> }) {}
 }
 
-export type EntityLoadAction = {
-  readonly type: EntityActionType.ENTITY_LOAD
-  payload: { name: string }
+export class EntityLoadAction {
+  readonly type = EntityActionType.ENTITY_LOAD
+  constructor(public payload: { name: string }) {}
 }
 
-export type EntitySuccessAction<T> = {
-  readonly type: EntityActionType.ENTITY_SUCCESS
-  payload: { name: string; entities: T | T[] }
+export class EntitySuccessAction<T> {
+  readonly type = EntityActionType.ENTITY_SUCCESS
+  constructor(public payload: { name: string; entities: T | T[] }) {}
 }
 
-export type EntityErrorAction = {
-  readonly type: EntityActionType.ENTITY_ERROR
-  payload: { name: string; error: Error }
+export class EntityErrorAction {
+  readonly type = EntityActionType.ENTITY_ERROR
+  constructor(public payload: { name: string; error: Error }) {}
 }
 
-export type EntityAddAction<T> = {
-  readonly type: EntityActionType.ENTITY_ADD
-  payload: { name: string; entities: T | T[] }
+export class EntityAddAction<T> {
+  readonly type = EntityActionType.ENTITY_ADD
+  constructor(public payload: { name: string; entities: T | T[] }) {}
 }
 
-export type EntityDelAction = {
-  readonly type: EntityActionType.ENTITY_DEL
-  payload: { name: string; keys: string | string[] }
+export class EntityDelAction {
+  readonly type = EntityActionType.ENTITY_DEL
+  constructor(public payload: { name: string; keys: string | string[] }) {}
 }
 
 export type EntityAction<T> =

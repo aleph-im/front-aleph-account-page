@@ -54,8 +54,8 @@ export type StoreState = {
 
 export const storeReducer = mergeReducers<StoreState>({
   account: getAccountReducer(),
-  ccns: getEntityReducer<CCN>('ccns', 'hash'),
-  crns: getEntityReducer<CRN>('crns', 'hash'),
+  ccns: getEntityReducer<CCN>('ccns', 'hash', 'virtual'),
+  crns: getEntityReducer<CRN>('crns', 'hash', 'virtual'),
   lastCRNVersion: getRequestReducer<NodeLastVersions>('lastCRNVersion'),
   lastCCNVersion: getRequestReducer<NodeLastVersions>('lastCCNVersion'),
   lastRewardsDistribution: getRequestReducer<RewardsResponse>(

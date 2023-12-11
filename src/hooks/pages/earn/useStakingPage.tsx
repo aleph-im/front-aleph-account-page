@@ -9,12 +9,9 @@ import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
-import {
-  NotificationBadge,
-  TabsProps,
-  useNotification,
-} from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { useStaking } from '@/hooks/common/useStake'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
@@ -143,63 +140,33 @@ export function useStakingPage(
   // -----------------------------
 
   const stakeManager = useMemo(() => new StakeManager(account), [account])
-  const noti = useNotification()
+
+  const {
+    userStake,
+    handleStake: handleStakeBase,
+    handleUnstake: handleUnstakeBase,
+  } = useStaking()
 
   const handleStake = useCallback(
     async (nodeHash: string) => {
-      if (!noti) throw new Error('Notification not ready')
+      const success = await handleStakeBase(nodeHash)
+      if (!success) return
 
-      try {
-        await stakeManager.stake(nodeHash)
-
-        noti.add({
-          variant: 'success',
-          title: 'Success',
-          text: `Staked in "${nodeHash}" successfully.`,
-        })
-
-        handleTabChange('stake')
-      } catch (e) {
-        noti?.add({
-          variant: 'error',
-          title: 'Error',
-          text: (e as Error).message,
-        })
-      }
+      handleTabChange('stake')
     },
-    [noti, stakeManager],
+    [handleStakeBase],
   )
 
   const handleUnstake = useCallback(
     async (nodeHash: string) => {
-      if (!noti) throw new Error('Notification not ready')
+      const success = await handleUnstakeBase(nodeHash)
+      if (!success) return
 
-      try {
-        await stakeManager.unstake(nodeHash)
-
-        noti.add({
-          variant: 'success',
-          title: 'Success',
-          text: `Unstaked from "${nodeHash}" successfully.`,
-        })
-
-        if (!stakeNodes || stakeNodes.length <= 1) {
-          handleTabChange('nodes')
-        }
-      } catch (e) {
-        noti?.add({
-          variant: 'error',
-          title: 'Error',
-          text: (e as Error).message,
-        })
+      if (!stakeNodes || stakeNodes.length <= 1) {
+        handleTabChange('nodes')
       }
     },
-    [noti, stakeManager, stakeNodes],
-  )
-
-  const userStake = useMemo(
-    () => stakeManager.totalStakedByUser(nodes || []),
-    [nodes, stakeManager],
+    [handleUnstakeBase, stakeNodes],
   )
 
   // -----------------------------

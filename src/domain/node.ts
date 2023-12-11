@@ -2,9 +2,11 @@ import {
   apiServer,
   channel,
   defaultAccountChannel,
+  monitorAddress,
   postType,
   scoringAddress,
   tags,
+  wsServer,
 } from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
@@ -13,7 +15,7 @@ import {
   getLatestReleases,
   stripExtraTagDescription,
 } from '@/helpers/utils'
-import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
+import { AggregateMessage, ItemType } from 'aleph-sdk-ts/dist/messages/types'
 import {
   newCCNSchema,
   newCRNSchema,
@@ -21,6 +23,7 @@ import {
   updateCRNSchema,
 } from '@/helpers/schemas'
 import { FileManager } from './file'
+import { subscribeSocketFeed } from '@/helpers/socket'
 
 const { post } = messages
 
@@ -53,6 +56,8 @@ export type BaseNode = {
 
   // --------- CCN fields ?
   registration_url?: string
+
+  virtual?: number
 }
 
 export type CCN = BaseNode & {
@@ -182,6 +187,8 @@ export type UpdateCRN = BaseUpdateNode & {
 
 export type UpdateAlephNode = UpdateCCN | UpdateCRN
 
+export type NodesResponse = { ccns: CCN[]; crns: CRN[]; timestamp: number }
+
 export class NodeManager {
   static newCCNSchema = newCCNSchema
   static newCRNSchema = newCRNSchema
@@ -218,8 +225,11 @@ export class NodeManager {
     return crns
   }
 
-  async getAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {
-    let { ccns, crns } = await this.fetchAllNodes()
+  async getAllNodes(): Promise<NodesResponse> {
+    const response = await this.fetchAllNodes()
+
+    const { timestamp } = response
+    let { ccns, crns } = response
 
     ccns = this.parseResourceNodes(ccns, crns)
     ccns = await this.parseScores(ccns, false)
@@ -229,7 +239,45 @@ export class NodeManager {
     crns = await this.parseScores(crns, true)
     crns = await this.parseMetrics(crns, true)
 
-    return { ccns, crns }
+    return { ccns, crns, timestamp }
+  }
+
+  async *subscribeNodesFeed(
+    abort: Promise<void>,
+  ): AsyncGenerator<NodesResponse> {
+    const feed = subscribeSocketFeed<AggregateMessage<any>>(
+      `${wsServer}/api/ws0/messages?msgType=AGGREGATE&history=1&addresses=${monitorAddress}`,
+      abort,
+    )
+
+    for await (const data of feed) {
+      if (!data.content) return
+      if (!data.content.content) return
+
+      const { content, address, key, time } = data.content || {}
+      const { nodes, resource_nodes } = content
+
+      if (
+        address === monitorAddress &&
+        key === 'corechannel' &&
+        (nodes !== undefined || resource_nodes !== undefined)
+      ) {
+        let crns: CRN[] = resource_nodes
+        let ccns: CCN[] = nodes
+
+        ccns = this.parseResourceNodes(ccns, crns)
+        ccns = await this.parseScores(ccns, false)
+        ccns = await this.parseMetrics(ccns, false)
+
+        crns = this.parseParentNodes(crns, ccns)
+        crns = await this.parseScores(crns, true)
+        crns = await this.parseMetrics(crns, true)
+
+        const timestamp = Math.trunc(time * 1000)
+
+        yield { ccns, crns, timestamp }
+      }
+    }
   }
 
   async getLatestVersion(node: AlephNode): Promise<NodeLastVersions> {
@@ -373,7 +421,7 @@ export class NodeManager {
     })
   }
 
-  protected async fetchAllNodes(): Promise<{ ccns: CCN[]; crns: CRN[] }> {
+  protected async fetchAllNodes(): Promise<NodesResponse> {
     return fetchAndCache(
       `${apiServer}/api/v0/aggregates/0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10.json?keys=corechannel&limit=100`,
       'nodes',
@@ -383,7 +431,9 @@ export class NodeManager {
         const crns: CRN[] = content?.data?.corechannel?.resource_nodes
         const ccns: CCN[] = content?.data?.corechannel?.nodes
 
-        return { ccns, crns }
+        const timestamp = 0
+
+        return { ccns, crns, timestamp }
       },
     )
   }

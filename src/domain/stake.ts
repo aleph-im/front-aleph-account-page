@@ -10,9 +10,10 @@ import {
   wsServer,
 } from '@/helpers/constants'
 import { AlephNode, CCN, CRN } from './node'
-import { Future, normalizeValue } from '@/helpers/utils'
+import { normalizeValue } from '@/helpers/utils'
 import { post } from 'aleph-sdk-ts/dist/messages'
-import { ItemType } from 'aleph-sdk-ts/dist/messages/types'
+import { ItemType, PostMessage } from 'aleph-sdk-ts/dist/messages/types'
+import { subscribeSocketFeed } from '@/helpers/socket'
 
 export type RewardsResponse = {
   type: 'calculation' | 'distribution'
@@ -69,109 +70,34 @@ export class StakeManager {
     }
   }
 
-  async *subscribeRewardsFeed(): AsyncGenerator<RewardsResponse> {
-    let socket: WebSocket | undefined
+  async *subscribeRewardsFeed(
+    abort: Promise<void>,
+  ): AsyncGenerator<RewardsResponse> {
+    const feed = subscribeSocketFeed<PostMessage<any>>(
+      // `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress},${monitorAddress}`,
+      `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress}`,
+      abort,
+    )
 
-    const values: RewardsResponse[] = []
-    const futures: Future<RewardsResponse>[] = []
-
-    function deliver() {
-      while (true) {
-        if (values.length === 0 || futures.length === 0) return
-
-        const nextValue = values.shift() as RewardsResponse
-        const nextFuture = futures.shift() as Future<RewardsResponse>
-
-        nextFuture?.resolve(nextValue)
-      }
-    }
-
-    const connect = () => {
-      socket = new WebSocket(
-        // `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress},${monitorAddress}`,
-        `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress}`,
-      )
-
-      socket.addEventListener('message', handleMessage)
-      socket.addEventListener('close', handleClose)
-      socket.addEventListener('error', handleError)
-
-      console.log('Oppening Socket', socket.readyState)
-    }
-
-    const close = (e?: CloseEvent, reconnect = true) => {
-      const ws = socket
-
-      socket?.removeEventListener('message', handleMessage)
-      socket?.removeEventListener('close', handleClose)
-      socket?.removeEventListener('error', handleError)
-
-      socket?.close()
-      socket = undefined
-
-      console.log('Closing Socket', e?.reason, ws?.readyState)
-
-      if (reconnect) {
-        console.log('Reconnecting Socket in 1 second')
-        setTimeout(connect, 1000)
-      }
-    }
-
-    const push = (value: RewardsResponse) => {
-      values.push(value)
-      deliver()
-    }
-
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data)
-
+    for await (const data of feed) {
       if (!data.content) return
       if (!data.content.content) return
 
-      const { content, time } = data.content
+      const { content, time } = data.content || {}
       const { status: type, rewards, end_height: lastHeight } = content
 
       if (
         type === 'calculation' ||
         (type === 'distribution' &&
-          data.content.content.targets.every(({ success }: any) => success))
+          data.content.content.targets.some(({ success }: any) => success))
       ) {
-        push({
+        yield {
           type,
           rewards,
           lastHeight,
           timestamp: Math.trunc(time * 1000),
-        })
+        }
       }
-    }
-
-    const handleClose = (e: CloseEvent) => {
-      close(e, true)
-    }
-
-    const handleError = (err: any) => {
-      console.error(
-        'Socket encountered error: ',
-        err?.message,
-        'Closing socket',
-      )
-      close(undefined, false)
-    }
-
-    connect()
-
-    try {
-      while (true) {
-        const future = new Future<RewardsResponse>()
-        futures.push(future)
-
-        deliver()
-
-        yield await future.promise
-      }
-    } finally {
-      // @note. close socket on desubs
-      close()
     }
   }
 
