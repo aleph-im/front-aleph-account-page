@@ -9,8 +9,9 @@ import {
   useWatch,
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { NodeManager, UpdateCRN } from '@/domain/node'
+import { CRN, NodeManager, UpdateCRN } from '@/domain/node'
 import { useNotification } from '@aleph-front/aleph-core'
+import { EntityAddAction } from '@/store/entity'
 
 export type UseEditComputeResourceNodeFormState = UpdateCRN
 
@@ -54,11 +55,22 @@ export type UseEditComputeResourceNodeFormReturn = {
   handleSubmit: (e: FormEvent) => Promise<void>
 }
 
+function calculateVirtualNode(node: CRN, updated: Partial<CRN>): CRN {
+  const virtualNode: CRN = {
+    ...(node || {}),
+    ...updated,
+    virtual: Date.now(),
+  }
+
+  return virtualNode
+}
+
 export function useEditComputeResourceNodeForm({
   defaultValues,
 }: UseEditComputeResourceNodeFormProps): UseEditComputeResourceNodeFormReturn {
-  const [appState] = useAppState()
+  const [appState, dispatch] = useAppState()
   const { account } = appState.account
+  const { entities: nodes } = appState.crns
 
   const noti = useNotification()
 
@@ -68,24 +80,36 @@ export function useEditComputeResourceNodeForm({
   const onSubmit = useCallback(
     async (state: UseEditComputeResourceNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
+      if (!account) throw new Error('Invalid account')
 
-      await manager.updateComputeResourceNode(state)
-      return state.hash as string
+      const [, partialCRN] = await manager.updateComputeResourceNode(state)
+
+      const node = nodes?.find((node) => node.hash === partialCRN.hash)
+      const entity = calculateVirtualNode(node as CRN, partialCRN)
+
+      return entity
     },
-    [manager],
+    [account, manager, nodes],
   )
 
   const onSuccess = useCallback(
-    async (hash: string) => {
+    async (entity: CRN) => {
       if (!noti) throw new Error('Notification not ready')
 
       noti.add({
         variant: 'success',
         title: 'Success',
-        text: `Your node "${hash}" was updated successfully.`,
+        text: `Your node "${entity.hash}" was updated successfully.`,
       })
+
+      dispatch(
+        new EntityAddAction({
+          name: 'crns',
+          entities: [entity],
+        }),
+      )
     },
-    [noti],
+    [dispatch, noti],
   )
 
   const {
@@ -97,7 +121,7 @@ export function useEditComputeResourceNodeForm({
     onSubmit,
     onSuccess,
     resolver: zodResolver(NodeManager.updateCCNSchema),
-    readyDeps: [defaultValues?.hash],
+    readyDeps: [defaultValues],
   })
   // @note: dont use watch, use useWatch instead: https://github.com/react-hook-form/react-hook-form/issues/10753
   const values = useWatch({ control }) as UseEditComputeResourceNodeFormState

@@ -9,8 +9,9 @@ import {
   useWatch,
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { NodeManager, UpdateCCN } from '@/domain/node'
+import { CCN, NodeManager, UpdateCCN } from '@/domain/node'
 import { useNotification } from '@aleph-front/aleph-core'
+import { EntityAddAction } from '@/store/entity'
 
 export type UseEditCoreChannelNodeFormState = UpdateCCN
 
@@ -48,11 +49,22 @@ export type UseEditCoreChannelNodeFormReturn = {
   handleSubmit: (e: FormEvent) => Promise<void>
 }
 
+function calculateVirtualNode(node: CCN, updated: Partial<CCN>): CCN {
+  const virtualNode: CCN = {
+    ...(node || {}),
+    ...updated,
+    virtual: Date.now(),
+  }
+
+  return virtualNode
+}
+
 export function useEditCoreChannelNodeForm({
   defaultValues,
 }: UseEditCoreChannelNodeFormProps): UseEditCoreChannelNodeFormReturn {
-  const [appState] = useAppState()
+  const [appState, dispatch] = useAppState()
   const { account } = appState.account
+  const { entities: nodes } = appState.ccns
 
   const noti = useNotification()
 
@@ -62,24 +74,36 @@ export function useEditCoreChannelNodeForm({
   const onSubmit = useCallback(
     async (state: UseEditCoreChannelNodeFormState) => {
       if (!manager) throw new Error('Manager not ready')
+      if (!account) throw new Error('Invalid account')
 
-      await manager.updateCoreChannelNode(state)
-      return state.hash as string
+      const [, partialCCN] = await manager.updateCoreChannelNode(state)
+
+      const node = nodes?.find((node) => node.hash === partialCCN.hash)
+      const entity = calculateVirtualNode(node as CCN, partialCCN)
+
+      return entity
     },
-    [manager],
+    [account, manager, nodes],
   )
 
   const onSuccess = useCallback(
-    async (hash: string) => {
+    async (entity: CCN) => {
       if (!noti) throw new Error('Notification not ready')
 
       noti.add({
         variant: 'success',
         title: 'Success',
-        text: `Your node "${hash}" was updated successfully.`,
+        text: `Your node "${entity.hash}" was updated successfully.`,
       })
+
+      dispatch(
+        new EntityAddAction({
+          name: 'ccns',
+          entities: [entity],
+        }),
+      )
     },
-    [noti],
+    [dispatch, noti],
   )
 
   const {
@@ -91,7 +115,7 @@ export function useEditCoreChannelNodeForm({
     onSubmit,
     onSuccess,
     resolver: zodResolver(NodeManager.updateCCNSchema),
-    readyDeps: [defaultValues?.hash],
+    readyDeps: [defaultValues],
   })
   // @note: dont use watch, use useWatch instead: https://github.com/react-hook-form/react-hook-form/issues/10753
   const values = useWatch({ control }) as UseEditCoreChannelNodeFormState

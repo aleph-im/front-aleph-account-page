@@ -101,8 +101,8 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
-  const formProps = useEditCoreChannelNodeForm({
-    defaultValues: {
+  const defaultValues = useMemo(() => {
+    return {
       hash: node?.hash,
       name: node?.name,
       picture: node?.picture,
@@ -114,8 +114,10 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
       registration_url: node?.registration_url,
       manager: node?.manager,
       multiaddress: node?.multiaddress,
-    },
-  })
+    }
+  }, [node])
+
+  const formProps = useEditCoreChannelNodeForm({ defaultValues })
 
   return {
     aggregateLatency,

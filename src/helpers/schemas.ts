@@ -69,7 +69,7 @@ export const updateBaseNodeSchema = z.object({
   reward: optionalString(ethereumAddressSchema),
   manager: optionalString(ethereumAddressSchema),
   authorized: optionalString(requiredStringSchema).or(
-    z.array(ethereumAddressSchema),
+    z.array(ethereumAddressSchema).optional(),
   ),
   locked: z.boolean().optional(),
   registration_url: optionalString(urlSchema),

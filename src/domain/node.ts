@@ -42,7 +42,7 @@ export type BaseNode = {
   owner: string
   reward: string
   locked: boolean
-  authorized: string[]
+  authorized?: string[]
   time: number
   score: number
   score_updated: boolean
@@ -171,7 +171,7 @@ export type BaseUpdateNode = {
   name?: string
   description?: string
   reward?: string
-  authorized?: string | string[]
+  authorized?: string[]
   locked?: boolean
   registration_url?: string
   manager?: string
@@ -346,13 +346,17 @@ export class NodeManager {
     return res.item_hash
   }
 
-  async updateCoreChannelNode(updateCCN: UpdateCCN): Promise<string> {
+  async updateCoreChannelNode(
+    updateCCN: UpdateCCN,
+  ): Promise<[string, Partial<CCN>]> {
     updateCCN = await NodeManager.updateCCNSchema.parseAsync(updateCCN)
 
     return this.updateNode(updateCCN, 'create-node')
   }
 
-  async updateComputeResourceNode(updateCRN: UpdateCRN): Promise<string> {
+  async updateComputeResourceNode(
+    updateCRN: UpdateCRN,
+  ): Promise<[string, Partial<CRN>]> {
     updateCRN = await NodeManager.updateCRNSchema.parseAsync(updateCRN)
 
     return this.updateNode(updateCRN, 'create-resource-node')
@@ -438,10 +442,10 @@ export class NodeManager {
     )
   }
 
-  protected async updateNode(
-    { hash, ...details }: UpdateAlephNode,
+  protected async updateNode<U extends UpdateAlephNode, N extends AlephNode>(
+    { hash, ...details }: U,
     action: 'create-node' | 'create-resource-node',
-  ): Promise<string> {
+  ): Promise<[string, Partial<N>]> {
     if (!this.account) throw new Error('Invalid account')
     if (!hash) throw new Error('Invalid node hash')
 
@@ -471,7 +475,15 @@ export class NodeManager {
       APIServer: apiServer,
     })
 
-    return res.item_hash
+    return [
+      res.item_hash,
+      {
+        hash,
+        ...details,
+        picture: details.picture as string,
+        banner: details.banner as string,
+      } as unknown as Partial<N>,
+    ]
   }
 
   isCRN(node: AlephNode): node is CRN {
@@ -484,7 +496,7 @@ export class NodeManager {
 
   isKYCCleared(node: CCN): boolean {
     if (!this.account) return false
-    return node.authorized?.includes(this.account.address)
+    return node.authorized?.includes(this.account.address) || false
   }
 
   isLocked(node: CCN): boolean {

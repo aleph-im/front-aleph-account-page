@@ -94,8 +94,8 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
-  const formProps = useEditComputeResourceNodeForm({
-    defaultValues: {
+  const defaultValues = useMemo(() => {
+    return {
       hash: node?.hash,
       name: node?.name,
       description: node?.description,
@@ -107,8 +107,10 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
       picture: node?.picture,
       banner: node?.banner,
       address: node?.address,
-    },
-  })
+    }
+  }, [node])
+
+  const formProps = useEditComputeResourceNodeForm({ defaultValues })
 
   return {
     nodes,
