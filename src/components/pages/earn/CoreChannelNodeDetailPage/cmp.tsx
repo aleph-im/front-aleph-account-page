@@ -1,20 +1,19 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import NodeDetailHeader from '@/components/common/NodeDetailHeader'
-import { useCoreChannelNodeDetailPage } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
-import Card2 from '@/components/common/Card2'
-import { Card2Field } from '@/components/common/Card2/cmp'
-import ColumnLayout from '@/components/common/ColumnLayout'
-import { Button, Icon, Logo } from '@aleph-front/aleph-core'
-import StyledProgressBar from '@/components/common/ColorProgressBar'
-import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
-import NodeName from '@/components/common/NodeName'
 import Link from 'next/link'
+import { useCoreChannelNodeDetailPage } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
+import { Button, Icon, Logo } from '@aleph-front/aleph-core'
 import {
   ellipseAddress,
   getETHExplorerURL,
   getMultiaddressUrl,
 } from '@/helpers/utils'
+import NodeDetailHeader from '@/components/common/NodeDetailHeader'
+import Card2, { Card2Field } from '@/components/common/Card2'
+import ColumnLayout from '@/components/common/ColumnLayout'
+import StyledProgressBar from '@/components/common/ColorProgressBar'
+import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
+import NodeName from '@/components/common/NodeName'
 import ButtonLink from '@/components/common/ButtonLink'
 import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'

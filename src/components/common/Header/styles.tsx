@@ -1,20 +1,32 @@
 import {
+  BreakpointId,
   Button,
   FloatPosition,
   Navbar,
   WalletPicker,
+  getResponsiveCss,
 } from '@aleph-front/aleph-core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
-export const StyledHeader = styled.header`
-  ${tw`sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 flex items-center justify-between`}
-  height: 6.5rem;
-  backdrop-filter: blur(50px);
-`
+export type StyledHeaderProps = {
+  $breakpoint?: BreakpointId
+}
 
-export const StyledNavbar = styled(Navbar)`
-  position: relative;
+export const StyledHeader = styled.header<StyledHeaderProps>`
+  ${({ $breakpoint }) => css`
+    ${tw`hidden sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 items-center justify-between`}
+    height: 6.5rem;
+    backdrop-filter: blur(50px);
+
+    /* MOBILE LAYOUT */
+    ${getResponsiveCss(
+      $breakpoint,
+      css`
+        ${tw`flex`}
+      `,
+    )}
+  `}
 `
 
 export const StyledButton = styled(Button).attrs((props) => {
@@ -46,4 +58,29 @@ export const StyledWalletPicker = styled(WalletPicker)<{
       transition: opacity ease-in-out 0.25s 0s;
     `
   }}
+`
+
+export type StyledNavbarProps = {
+  $breakpoint?: BreakpointId
+}
+
+export const StyledNavbar = styled(Navbar).attrs<StyledNavbarProps>(
+  ({ $breakpoint, ...rest }) => {
+    return {
+      ...rest,
+      breakpoint: $breakpoint,
+    }
+  },
+)<StyledNavbarProps>`
+  ${({ $breakpoint }) => css`
+    ${tw`block z-10`}
+
+    /* MOBILE LAYOUT */
+    ${getResponsiveCss(
+      $breakpoint,
+      css`
+        ${tw`hidden`}
+      `,
+    )}
+  `}
 `

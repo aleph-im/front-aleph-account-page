@@ -4,7 +4,7 @@ import { CCN } from '@/domain/node'
 import { StakeManager } from '@/domain/stake'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L586
-export const NodeAPY = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
+export const NodeAPY = ({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
   // @todo: Refactor this (use singleton)
   const rewardManager = new StakeManager()
 
@@ -18,7 +18,7 @@ export const NodeAPY = memo(({ node, nodes }: { node: CCN; nodes: CCN[] }) => {
       {Number(nodeAPY * 100).toFixed(2)}%
     </div>
   )
-})
+}
 NodeAPY.displayName = 'NodeAPY'
 
-export default NodeAPY
+export default memo(NodeAPY)

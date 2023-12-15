@@ -9,123 +9,126 @@ import ColorDot from '../ColorDot'
 import { SVGGradients } from '../charts'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L94
-export const EstimatedNodeRewardsChart = memo(
-  ({ nodes }: { nodes?: CCN[] }) => {
-    const stakeManager = useMemo(() => new StakeManager(), [])
+export const EstimatedNodeRewardsChart = ({
+  nodes,
+  ...rest
+}: {
+  nodes?: CCN[]
+}) => {
+  const stakeManager = useMemo(() => new StakeManager(), [])
 
-    const theme = useTheme()
+  const theme = useTheme()
 
-    const data = useMemo(() => {
-      const activeNodes = stakeManager.activeNodes(nodes || [])
+  const data = useMemo(() => {
+    const activeNodes = stakeManager.activeNodes(nodes || [])
 
-      const perDayRewards = 15000 / activeNodes.length
-      const perMonthRewards = perDayRewards * 30
-      const total = perMonthRewards + perDayRewards
+    const perDayRewards = 15000 / activeNodes.length
+    const perMonthRewards = perDayRewards * 30
+    const total = perMonthRewards + perDayRewards
 
-      return [
-        {
-          label: 'per month',
-          value: `${perMonthRewards.toFixed(2)}`,
-          percentage: perMonthRewards / total,
-          gradient: 'main1',
-          color: '',
-        },
-        {
-          label: 'per day',
-          value: `${perDayRewards.toFixed(2)}`,
-          percentage: perDayRewards / total,
-          gradient: 'main2',
-          color: '',
-        },
-      ]
-    }, [nodes, stakeManager])
+    return [
+      {
+        label: 'per month',
+        value: `${perMonthRewards.toFixed(2)}`,
+        percentage: perMonthRewards / total,
+        gradient: 'main1',
+        color: '',
+      },
+      {
+        label: 'per day',
+        value: `${perDayRewards.toFixed(2)}`,
+        percentage: perDayRewards / total,
+        gradient: 'main2',
+        color: '',
+      },
+    ]
+  }, [nodes, stakeManager])
 
-    const disabledColor = `${theme.color.base0}20`
+  const disabledColor = `${theme.color.base0}20`
 
-    return (
-      <Card1 loading={!nodes} tw="w-auto min-w-[9.5rem]">
-        <TextGradient
-          forwardedAs="h3"
-          type="info"
-          color="main0"
-          tw="m-0 min-h-[2rem]"
+  return (
+    <Card1 loading={!nodes} {...rest}>
+      <TextGradient
+        forwardedAs="h3"
+        type="info"
+        color="main0"
+        tw="m-0 min-h-[2rem]"
+      >
+        ESTIMATED REWARDS
+      </TextGradient>
+
+      <div tw="flex flex-col items-center">
+        <PieChart
+          data={data}
+          width={100}
+          height={100}
+          margin={{}}
+          tw="my-3 min-h-[6.25rem]"
         >
-          ESTIMATED REWARDS
-        </TextGradient>
-
-        <div tw="flex flex-col items-center">
-          <PieChart
+          <defs>
+            <SVGGradients data={data} />
+          </defs>
+          <Pie
+            data={[{ v: 1 }]}
+            dataKey="v"
+            stroke="transparent"
+            innerRadius="72%"
+            outerRadius="100%"
+            startAngle={360 + 90}
+            endAngle={0 + 90}
+            isAnimationActive={false}
+            fill={disabledColor}
+          />
+          <Pie
             data={data}
-            width={100}
-            height={100}
-            margin={{}}
-            tw="my-3 min-h-[6.25rem]"
+            dataKey="percentage"
+            stroke="transparent"
+            innerRadius="72%"
+            outerRadius="100%"
+            startAngle={360 + 90}
+            endAngle={0 + 90}
           >
-            <defs>
-              <SVGGradients data={data} />
-            </defs>
-            <Pie
-              data={[{ v: 1 }]}
-              dataKey="v"
-              stroke="transparent"
-              innerRadius="72%"
-              outerRadius="100%"
-              startAngle={360 + 90}
-              endAngle={0 + 90}
-              isAnimationActive={false}
-              fill={disabledColor}
-            />
-            <Pie
-              data={data}
-              dataKey="percentage"
-              stroke="transparent"
-              innerRadius="72%"
-              outerRadius="100%"
-              startAngle={360 + 90}
-              endAngle={0 + 90}
-            >
-              {data.map((entry) => {
-                const color = `gr-${entry.gradient}`
-                const fill = entry.gradient
-                  ? `url(#${color})`
-                  : entry.color
-                  ? theme.color[entry.color] || entry.color
-                  : undefined
+            {data.map((entry) => {
+              const color = `gr-${entry.gradient}`
+              const fill = entry.gradient
+                ? `url(#${color})`
+                : entry.color
+                ? theme.color[entry.color] || entry.color
+                : undefined
 
-                return <Cell key={entry.label} fill={fill} />
-              })}
-            </Pie>
-          </PieChart>
+              return <Cell key={entry.label} fill={fill} />
+            })}
+          </Pie>
+        </PieChart>
 
-          <div tw="mt-1 flex flex-col gap-4">
-            {data.map((entry) => (
-              <div key={entry.label} tw="flex items-center gap-3">
-                <ColorDot
-                  $color={
-                    entry.color === 'transparent' ? disabledColor : entry.color
-                  }
-                  $gradient={entry.gradient}
-                  $size="1.25rem"
-                />
-                <div
-                  tw="flex flex-col justify-between leading-4! gap-1 not-italic whitespace-nowrap"
-                  className="tp-body3"
-                >
-                  <div tw="flex items-center gap-1">
-                    {entry.value} <Logo text="" />
-                  </div>
-                  <div className="fs-10" tw="opacity-60">
-                    {entry.label}
-                  </div>
+        <div tw="mt-1 flex flex-col gap-4">
+          {data.map((entry) => (
+            <div key={entry.label} tw="flex items-center gap-3">
+              <ColorDot
+                $color={
+                  entry.color === 'transparent' ? disabledColor : entry.color
+                }
+                $gradient={entry.gradient}
+                $size="1.25rem"
+              />
+              <div
+                tw="flex flex-col justify-between leading-4! gap-1 not-italic whitespace-nowrap"
+                className="tp-body3"
+              >
+                <div tw="flex items-center gap-1">
+                  {entry.value} <Logo text="" />
+                </div>
+                <div className="fs-10" tw="opacity-60">
+                  {entry.label}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </Card1>
-    )
-  },
-)
+      </div>
+    </Card1>
+  )
+}
 EstimatedNodeRewardsChart.displayName = 'EstimatedNodeRewardsChart'
 
-export default EstimatedNodeRewardsChart
+export default memo(EstimatedNodeRewardsChart)

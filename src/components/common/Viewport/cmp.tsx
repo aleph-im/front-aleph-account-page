@@ -7,7 +7,7 @@ import { useRequestRewards } from '@/hooks/common/useRequestEntity/useRequestRew
 import { useRequestCCNsFeed } from '@/hooks/common/useRequestEntity/useRequestCCNsFeed'
 import { useRequestRewardsFeed } from '@/hooks/common/useRequestEntity/useRequestRewardsFeed'
 
-export const Viewport = memo(({ children }: ViewportProps) => {
+export const Viewport = ({ children }: ViewportProps) => {
   useRequestCCNs({})
   useRequestCRNs({})
   useRequestRewards({})
@@ -16,7 +16,7 @@ export const Viewport = memo(({ children }: ViewportProps) => {
   useRequestRewardsFeed()
 
   return <StyledViewport>{children}</StyledViewport>
-})
+}
 Viewport.displayName = 'Viewport'
 
-export default Viewport
+export default memo(Viewport)

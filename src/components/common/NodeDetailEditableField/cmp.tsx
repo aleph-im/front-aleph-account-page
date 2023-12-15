@@ -10,12 +10,14 @@ import {
   InputHTMLAttributes,
   ChangeEvent,
 } from 'react'
+import tw from 'twin.macro'
 import { Icon } from '@aleph-front/aleph-core'
 
 export type NodeDetailEditableFieldProps =
   InputHTMLAttributes<HTMLDivElement> & {
     children?: ReactNode
     isOwner?: boolean
+    wrap?: boolean
   }
 
 function moveCursorToEnd(el: Element) {
@@ -30,100 +32,107 @@ function moveCursorToEnd(el: Element) {
   selection?.addRange(range) //make the range you have just created the visible selection
 }
 
-export const NodeDetailEditableField = memo(
-  ({
-    children,
-    isOwner,
-    value,
-    onChange,
-    onBlur,
-    onKeyDown,
-    ...rest
-  }: NodeDetailEditableFieldProps) => {
-    const [isEditing, setIsEditing] = useState<boolean>()
+export const NodeDetailEditableField = ({
+  children,
+  isOwner,
+  value,
+  onChange,
+  onBlur,
+  onKeyDown,
+  wrap = false,
+  ...rest
+}: NodeDetailEditableFieldProps) => {
+  const [isEditing, setIsEditing] = useState<boolean>()
 
-    const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
 
-    const handleEditClick = useCallback(() => {
-      setIsEditing((prev) => (prev ? prev : !prev))
-    }, [])
+  const handleEditClick = useCallback(() => {
+    setIsEditing((prev) => (prev ? prev : !prev))
+  }, [])
 
-    const handleInputBlur = useCallback(
-      (e: FocusEvent<HTMLDivElement>) => {
-        setIsEditing(false)
-        onBlur && onBlur(e)
-      },
-      [onBlur],
-    )
+  const handleInputBlur = useCallback(
+    (e: FocusEvent<HTMLDivElement>) => {
+      setIsEditing(false)
+      onBlur && onBlur(e)
+    },
+    [onBlur],
+  )
 
-    const handleInputKeyDown = useCallback(
-      (e: KeyboardEvent<HTMLDivElement>) => {
-        if (!['Escape', 'Enter', 'NumpadEnter'].includes(e.code)) return
-        setIsEditing(false)
-        onKeyDown && onKeyDown(e)
-      },
-      [onKeyDown],
-    )
+  const handleInputKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (!['Escape', 'Enter', 'NumpadEnter'].includes(e.code)) return
+      setIsEditing(false)
+      onKeyDown && onKeyDown(e)
+    },
+    [onKeyDown],
+  )
 
-    const handleOnInput = useCallback(
-      (e: ChangeEvent<HTMLDivElement>) => {
-        const value = e.currentTarget?.textContent
-        onChange && onChange(value as any)
-      },
-      [onChange],
-    )
+  const handleOnInput = useCallback(
+    (e: ChangeEvent<HTMLDivElement>) => {
+      const value = e.currentTarget?.textContent
+      onChange && onChange(value as any)
+    },
+    [onChange],
+  )
 
-    useEffect(() => {
-      if (!ref.current) return
-      ref.current.textContent = value ? value + '' : null
-    }, [value, isEditing])
+  useEffect(() => {
+    if (!ref.current) return
+    ref.current.textContent = value ? value + '' : null
+  }, [value, isEditing])
 
-    useEffect(() => {
-      if (!ref.current) return
-      ref.current.focus()
-      moveCursorToEnd(ref.current)
-      ref.current.scrollLeft = ref.current.scrollWidth
-    }, [isEditing])
+  useEffect(() => {
+    if (!ref.current) return
+    ref.current.focus()
+    moveCursorToEnd(ref.current)
+    ref.current.scrollLeft = ref.current.scrollWidth
+  }, [isEditing])
 
-    return (
-      <div tw="flex items-baseline overflow-hidden" {...rest}>
-        {isEditing ? (
-          <div
-            ref={ref}
-            type="text"
-            tw="border-none outline-none overflow-hidden min-w-[1px]"
-            disabled={!isOwner}
-            contentEditable={true}
-            onInput={handleOnInput}
-            onBlur={handleInputBlur}
-            onKeyDown={handleInputKeyDown}
-            suppressContentEditableWarning={true}
-            {...rest}
+  return (
+    <div tw="flex items-baseline overflow-hidden" {...rest}>
+      {isEditing ? (
+        <div
+          ref={ref}
+          type="text"
+          disabled={!isOwner}
+          contentEditable={true}
+          onInput={handleOnInput}
+          onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
+          suppressContentEditableWarning={true}
+          css={[
+            tw`border-none outline-none min-w-[1px]`,
+            !wrap && tw`max-w-full overflow-hidden whitespace-nowrap`,
+          ]}
+          {...rest}
+        />
+      ) : (
+        <div
+          css={[
+            !wrap &&
+              tw`max-w-full text-ellipsis overflow-hidden whitespace-nowrap`,
+          ]}
+        >
+          {children ? children : value || 'NONE'}
+        </div>
+      )}
+      {isOwner && (
+        <div
+          tw="shrink-0 flex justify-end overflow-hidden"
+          css={{
+            maxWidth: isEditing ? '0' : '1.75rem',
+            transition: 'max-width ease-in-out 0.25s 0s',
+          }}
+        >
+          <Icon
+            name="edit"
+            tw="cursor-pointer ml-3 w-3.5 h-3.5"
+            onClick={handleEditClick}
           />
-        ) : (
-          <div tw="max-w-full text-ellipsis overflow-hidden whitespace-nowrap">
-            {children ? children : value || 'NONE'}
-          </div>
-        )}
-        {isOwner && (
-          <div
-            tw="shrink-0 flex justify-end overflow-hidden"
-            css={{
-              maxWidth: isEditing ? '0' : '1.75rem',
-              transition: 'max-width ease-in-out 0.25s 0s',
-            }}
-          >
-            <Icon
-              name="edit"
-              tw="cursor-pointer ml-3 w-3.5 h-3.5"
-              onClick={handleEditClick}
-            />
-          </div>
-        )}
-      </div>
-    )
-  },
-)
+        </div>
+      )}
+    </div>
+  )
+}
 NodeDetailEditableField.displayName = 'NodeDetailEditableField'
 
-export default NodeDetailEditableField
+export default memo(NodeDetailEditableField)

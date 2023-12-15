@@ -13,56 +13,60 @@ export type LinkCRNButtonProps = {
 }
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L298
-export const LinkCRNButton = memo(
-  ({ node, userNode, account, onLink, onUnlink }: LinkCRNButtonProps) => {
-    // @todo: Refactor this (use singleton)
-    const nodeManager = useMemo(() => new NodeManager(account), [account])
+export const LinkCRNButton = ({
+  node,
+  userNode,
+  account,
+  onLink,
+  onUnlink,
+}: LinkCRNButtonProps) => {
+  // @todo: Refactor this (use singleton)
+  const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-    const isLinkedNode = useMemo(() => {
-      return nodeManager.isUserLinked(node, userNode)
-    }, [node, nodeManager, userNode])
+  const isLinkedNode = useMemo(() => {
+    return nodeManager.isUserLinked(node, userNode)
+  }, [node, nodeManager, userNode])
 
-    const isDisabled = useMemo(() => {
-      const [canLink] = nodeManager.isLinkable(node, userNode)
-      return !canLink
-    }, [nodeManager, node, userNode])
+  const isDisabled = useMemo(() => {
+    const [canLink] = nodeManager.isLinkable(node, userNode)
+    return !canLink
+  }, [nodeManager, node, userNode])
 
-    const handleOnClick = useCallback(() => {
-      if (isLinkedNode) {
-        onUnlink(node.hash)
-      } else {
-        onLink(node.hash)
-      }
-    }, [isLinkedNode, onUnlink, node.hash, onLink])
+  const handleOnClick = useCallback(() => {
+    if (isLinkedNode) {
+      onUnlink(node.hash)
+    } else {
+      onLink(node.hash)
+    }
+  }, [isLinkedNode, onUnlink, node.hash, onLink])
 
-    return (
-      <>
-        {!isLinkedNode ? (
-          <Button
-            kind="neon"
-            size="regular"
-            variant="secondary"
-            color="main0"
-            onClick={handleOnClick}
-            disabled={isDisabled}
-          >
-            Link
-          </Button>
-        ) : (
-          <Button
-            kind="neon"
-            size="regular"
-            variant="secondary"
-            color="main2"
-            onClick={handleOnClick}
-          >
-            Unlink
-          </Button>
-        )}
-      </>
-    )
-  },
-)
+  return (
+    <>
+      {!isLinkedNode ? (
+        <Button
+          kind="neon"
+          size="regular"
+          variant="secondary"
+          color="main0"
+          onClick={handleOnClick}
+          disabled={isDisabled}
+        >
+          Link
+        </Button>
+      ) : (
+        <Button
+          kind="neon"
+          size="regular"
+          variant="secondary"
+          color="main2"
+          onClick={handleOnClick}
+        >
+          Unlink
+        </Button>
+      )}
+    </>
+  )
+}
 LinkCRNButton.displayName = 'LinkCRNButton'
 
-export default LinkCRNButton
+export default memo(LinkCRNButton)

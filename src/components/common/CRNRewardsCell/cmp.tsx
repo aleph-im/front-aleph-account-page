@@ -4,7 +4,7 @@ import { StakeManager } from '@/domain/stake'
 import { Logo } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L239
-export const CRNRewardsCell = memo(({ node }: { node: CRN }) => {
+export const CRNRewardsCell = ({ node }: { node: CRN }) => {
   // @todo: Refactor this (use singleton)
   const rewardManager = new StakeManager()
 
@@ -23,7 +23,7 @@ export const CRNRewardsCell = memo(({ node }: { node: CRN }) => {
       )}
     </>
   )
-})
+}
 CRNRewardsCell.displayName = 'CRNRewardsCell'
 
-export default CRNRewardsCell
+export default memo(CRNRewardsCell)

@@ -17,67 +17,32 @@ import {
   useBreadcrumbNames,
 } from '../common/useBreadcrumbNames'
 
-export type UseHeaderReturn = {
+export type UseAccountButtonProps = {
+  handleConnect: () => Promise<void>
+  provider: () => void
+}
+
+export type UseAccountButtonReturn = UseAccountButtonProps & {
   theme: DefaultTheme
   account: Account | undefined
   accountBalance?: number
-  hasBreadcrumb: boolean
   displayWalletPicker: boolean
   walletPickerOpen: boolean
   walletPickerRef: RefObject<HTMLDivElement>
   walletPickerTriggerRef: RefObject<HTMLButtonElement>
   walletPosition: { x: number; y: number }
-  breadcrumbNames: UseBreadcrumbNamesReturn['names']
-  handleConnect: () => void
   handleDisplayWalletPicker: () => void
-  provider: () => void
 }
 
-export function useHeader(): UseHeaderReturn {
-  const { connect, disconnect, isConnected, account } = useConnect()
+export function useAccountButton({
+  handleConnect: handleConnectProp,
+  ...rest
+}: UseAccountButtonProps): UseAccountButtonReturn {
+  const { account } = useConnect()
   const theme = useTheme()
   const [appState] = useAppState()
-  const router = useRouter()
-
-  const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
-    'keepAccountAlive',
-    false,
-  )
-
-  useEffect(() => {
-    ;(async () => {
-      if (!account && keepAccountAlive) {
-        enableConnection()
-      }
-    })()
-  }, [account, keepAccountAlive])
 
   const { balance: accountBalance } = appState.account
-
-  // @note: wait till account is connected and redirect
-  const handleConnect = useCallback(async () => {
-    if (!isConnected) {
-      setkeepAccountAlive(true)
-      const acc = await connect()
-      if (!acc) return
-      // router.push('/dashboard')
-    } else {
-      setkeepAccountAlive(false)
-      await disconnect()
-      router.push('/')
-    }
-
-    setDisplayWalletPicker(false)
-  }, [connect, disconnect, isConnected, router])
-
-  const enableConnection = useCallback(async () => {
-    if (!isConnected) {
-      const acc = await connect()
-      if (!acc) return
-    } else {
-      await disconnect()
-    }
-  }, [connect, disconnect, isConnected, account])
 
   const [displayWalletPicker, setDisplayWalletPicker] = useState(false)
 
@@ -93,6 +58,94 @@ export function useHeader(): UseHeaderReturn {
   const handleDisplayWalletPicker = () => {
     setDisplayWalletPicker(!displayWalletPicker)
   }
+
+  const windowSize = useWindowSize(0)
+  const windowScroll = useWindowScroll(0)
+
+  const { shouldMount, state } = useTransitionedEnterExit({
+    onOff: displayWalletPicker,
+    ref: walletPickerRef,
+  })
+
+  const { myRef, atRef, position } = useFloatPosition({
+    my: 'top-right',
+    at: 'bottom-right',
+    myRef: walletPickerRef,
+    atRef: walletPickerTriggerRef,
+    deps: [account, windowSize, windowScroll, shouldMount],
+  })
+
+  const walletPickerOpen = state === 'enter'
+
+  const handleConnect = useCallback(async () => {
+    handleConnectProp()
+    setDisplayWalletPicker(false)
+  }, [handleConnectProp])
+
+  return {
+    theme,
+    account,
+    accountBalance,
+    walletPickerOpen,
+    displayWalletPicker: shouldMount,
+    walletPickerRef: myRef,
+    walletPickerTriggerRef: atRef,
+    walletPosition: position,
+    handleDisplayWalletPicker,
+    handleConnect,
+    ...rest,
+  }
+}
+
+export type UseHeaderReturn = {
+  hasBreadcrumb: boolean
+  breadcrumbNames: UseBreadcrumbNamesReturn['names']
+  handleConnect: () => Promise<void>
+  provider: () => void
+}
+
+export function useHeader(): UseHeaderReturn {
+  const { connect, disconnect, isConnected, account } = useConnect()
+  const router = useRouter()
+
+  const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
+    'keepAccountAlive',
+    false,
+  )
+
+  const enableConnection = useCallback(async () => {
+    if (!isConnected) {
+      const acc = await connect()
+      if (!acc) return
+    } else {
+      await disconnect()
+    }
+  }, [connect, disconnect, isConnected])
+
+  // @note: wait till account is connected and redirect
+  const handleConnect = useCallback(async () => {
+    if (!isConnected) {
+      setkeepAccountAlive(true)
+      const acc = await connect()
+      if (!acc) return
+      // router.push('/dashboard')
+    } else {
+      setkeepAccountAlive(false)
+      await disconnect()
+      router.push('/')
+    }
+  }, [connect, disconnect, isConnected, router, setkeepAccountAlive])
+
+  useEffect(() => {
+    ;(async () => {
+      if (!account && keepAccountAlive) {
+        enableConnection()
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, keepAccountAlive])
+
+  // --------------------
 
   const provider = () => {
     window.ethereum?.on('accountsChanged', function () {
@@ -115,39 +168,12 @@ export function useHeader(): UseHeaderReturn {
 
   const hasBreadcrumb = router.pathname !== '/dashboard/manage'
 
-  const windowSize = useWindowSize(0)
-  const windowScroll = useWindowScroll(0)
-
-  const { shouldMount, state } = useTransitionedEnterExit({
-    onOff: displayWalletPicker,
-    ref: walletPickerRef,
-  })
-
-  const { myRef, atRef, position } = useFloatPosition({
-    my: 'top-right',
-    at: 'bottom-right',
-    myRef: walletPickerRef,
-    atRef: walletPickerTriggerRef,
-    deps: [account, windowSize, windowScroll, shouldMount],
-  })
-
-  const walletPickerOpen = state === 'enter'
-
   const { names: breadcrumbNames } = useBreadcrumbNames()
 
   return {
-    theme,
-    account,
-    accountBalance,
     hasBreadcrumb,
-    walletPickerOpen,
-    displayWalletPicker: shouldMount,
-    walletPickerRef: myRef,
-    walletPickerTriggerRef: atRef,
-    walletPosition: position,
     breadcrumbNames,
     handleConnect,
-    handleDisplayWalletPicker,
     provider,
   }
 }

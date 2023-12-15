@@ -7,16 +7,14 @@ export type Card1Props = HTMLAttributes<HTMLDivElement> & {
   loading?: boolean
 }
 
-export const Card1 = memo(
-  ({ children, disabled, loading, ...rest }: Card1Props) => {
-    return (
-      <StyledContainer {...rest}>
-        {/* <SpinnerOverlay show={loading} center /> */}
-        <StyledContent $disabled={disabled}>{children}</StyledContent>
-      </StyledContainer>
-    )
-  },
-)
+export const Card1 = ({ children, disabled, ...rest }: Card1Props) => {
+  return (
+    <StyledContainer {...rest}>
+      {/* <SpinnerOverlay show={loading} center /> */}
+      <StyledContent $disabled={disabled}>{children}</StyledContent>
+    </StyledContainer>
+  )
+}
 Card1.displayName = 'Card1'
 
-export default Card1
+export default memo(Card1)

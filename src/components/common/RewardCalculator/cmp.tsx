@@ -1,5 +1,5 @@
 import { ChangeEvent, memo, useCallback, useMemo, useState } from 'react'
-import { TextGradient, TextInput } from '@aleph-front/aleph-core'
+import { Logo, TextGradient, TextInput } from '@aleph-front/aleph-core'
 import SummaryTable from '../SummaryTable'
 import Card1 from '../Card1'
 import { StakeManager } from '@/domain/stake'
@@ -10,7 +10,7 @@ export type RewardCalculatorProps = {
 }
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L63C13-L63C13
-export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
+export const RewardCalculator = ({ nodes, ...rest }: RewardCalculatorProps) => {
   const [value, setValue] = useState<number | undefined>(1_000)
 
   const handleValueChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +29,11 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
     return [
       {
         name: 'Rewards per day',
-        value: `${rewards.toFixed(2)} ALEPH`,
+        value: (
+          <div tw="inline-flex items-center gap-2">
+            {rewards.toFixed(2)} <Logo text="" size="xs" />
+          </div>
+        ),
       },
       {
         name: 'Current APY',
@@ -39,35 +43,33 @@ export const RewardCalculator = memo(({ nodes }: RewardCalculatorProps) => {
   }, [nodes, value])
 
   return (
-    <Card1 loading={!nodes}>
-      <div tw="w-[20rem] overflow-auto">
-        <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
-          REWARD CALCULATOR
-        </TextGradient>
-        <div tw="mb-4">
-          <TextInput
-            value={value}
-            onChange={handleValueChange}
-            type="number"
-            name="staked-amount"
-            placeholder="0"
-            label="Amount staked"
-            buttonStyle="wrapped"
-          />
-        </div>
-        <SummaryTable
-          borderType="solid"
-          rowKey={(row) => row.name}
-          columns={[
-            { label: '', render: (row) => row.name },
-            { label: '', render: (row) => row.value },
-          ]}
-          data={data}
+    <Card1 loading={!nodes} {...rest}>
+      <TextGradient forwardedAs="h3" type="info" color="main0" tw="mb-6">
+        REWARD CALCULATOR
+      </TextGradient>
+      <div tw="mb-4">
+        <TextInput
+          value={value}
+          onChange={handleValueChange}
+          type="number"
+          name="staked-amount"
+          placeholder="0"
+          label="Amount staked"
+          buttonStyle="wrapped"
         />
       </div>
+      <SummaryTable
+        borderType="solid"
+        rowKey={(row) => row.name}
+        columns={[
+          { label: '', render: (row) => row.name },
+          { label: '', render: (row) => row.value },
+        ]}
+        data={data}
+      />
     </Card1>
   )
-})
+}
 RewardCalculator.displayName = 'RewardCalculator'
 
-export default RewardCalculator
+export default memo(RewardCalculator)

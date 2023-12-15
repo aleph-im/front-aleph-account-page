@@ -1,7 +1,10 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
-import { useStakingPage } from '@/hooks/pages/earn/useStakingPage'
+import {
+  UseStakingPageProps,
+  useStakingPage,
+} from '@/hooks/pages/earn/useStakingPage'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
@@ -9,7 +12,7 @@ import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import RewardChart from '@/components/common/RewardChart'
 import StakeChart from '@/components/common/StakeChart'
 
-export const StakingPage = memo((props) => {
+export const StakingPage = (props: UseStakingPageProps) => {
   const {
     account,
     accountBalance,
@@ -47,12 +50,12 @@ export const StakingPage = memo((props) => {
       </section>
       <section>
         <ToggleDashboard>
-          <div tw="flex items-start gap-6">
+          <div tw="flex items-start gap-6 flex-wrap 2xl:flex-nowrap">
             <div tw="flex-auto self-stretch">
               <h2 className="tp-h7" tw="mb-0">
                 What is staking with Aleph.im?
               </h2>
-              <p className="fs-12">
+              <p className="fs-16 xxl:fs-12">
                 What is staking with Aleph.im? Staking is the heartbeat of our
                 dynamic peer-to-peer network, driving security,
                 decentralization, and rewards. With a minimum of 10,000 Aleph
@@ -68,22 +71,30 @@ export const StakingPage = memo((props) => {
                 </strong>
               </p>
             </div>
-            <div tw="flex items-stretch gap-6">
-              <RewardCalculator nodes={nodes} />
-              <RewardChart
-                title="STAKING REWARDS"
-                calculatedRewards={userRewards}
-                distributionTimestamp={lastDistribution}
-                disabled={!account || !userStake}
-              />
-              <StakeChart nodes={nodes} />
+            <div tw="flex-auto 2xl:flex-none max-w-full flex items-stretch gap-6 flex-wrap 2xl:flex-nowrap">
+              <div tw="flex-auto 2xl:flex-none max-w-full">
+                <RewardCalculator nodes={nodes} />
+              </div>
+              <div tw="flex-auto 2xl:flex-none items-stretch flex gap-6 flex-wrap sm:flex-nowrap">
+                <div tw="flex-1">
+                  <RewardChart
+                    title="STAKING REWARDS"
+                    calculatedRewards={userRewards}
+                    distributionTimestamp={lastDistribution}
+                    disabled={!account || !userStake}
+                  />
+                </div>
+                <div tw="flex-1">
+                  <StakeChart nodes={nodes} />
+                </div>
+              </div>
             </div>
           </div>
         </ToggleDashboard>
       </section>
       <section tw="mt-14">
-        <div tw="flex items-end justify-between mb-8">
-          <div tw="flex items-center gap-4">
+        <div tw="flex mb-8 gap-10 justify-between flex-wrap flex-col md:flex-row items-stretch md:items-end">
+          <div tw="flex flex-wrap flex-col sm:flex-row items-start sm:items-center gap-10 sm:gap-4">
             <Tabs
               tabs={tabs}
               align="left"
@@ -160,7 +171,7 @@ export const StakingPage = memo((props) => {
       <SpinnerOverlay show={!nodes} center />
     </>
   )
-})
+}
 StakingPage.displayName = 'StakingPage'
 
-export default StakingPage
+export default memo(StakingPage)

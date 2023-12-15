@@ -6,7 +6,7 @@ export type NodeStatusProps = {
   status: AlephNode['status']
 }
 
-export const NodeStatus = memo(({ status, ...rest }: NodeStatusProps) => {
+export const NodeStatus = ({ status, ...rest }: NodeStatusProps) => {
   return (
     <div tw="flex items-center pt-1.5 gap-1.5" {...rest}>
       <StyledStatusIcon $status={status} />
@@ -15,7 +15,7 @@ export const NodeStatus = memo(({ status, ...rest }: NodeStatusProps) => {
       </span>
     </div>
   )
-})
+}
 NodeStatus.displayName = 'NodeStatus'
 
-export default NodeStatus
+export default memo(NodeStatus)

@@ -8,7 +8,10 @@ import {
   Tabs,
   TextInput,
 } from '@aleph-front/aleph-core'
-import { useComputeResourceNodesPage } from '@/hooks/pages/earn/useComputeResourceNodesPage'
+import {
+  UseComputeResourceNodesPageProps,
+  useComputeResourceNodesPage,
+} from '@/hooks/pages/earn/useComputeResourceNodesPage'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
@@ -17,7 +20,9 @@ import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
 import RewardChart from '@/components/common/RewardChart'
 
-export const ComputeResourceNodesPage = memo((props) => {
+export const ComputeResourceNodesPage = (
+  props: UseComputeResourceNodesPageProps,
+) => {
   const {
     account,
     nodes,
@@ -71,26 +76,34 @@ export const ComputeResourceNodesPage = memo((props) => {
       </section>
       <section>
         <ToggleDashboard buttons={CreateNode}>
-          <div tw="flex items-start gap-6">
-            <div tw="flex items-stretch gap-6">
-              <NetworkHealthChart nodes={nodes} title="CRN NETWORK HEALTH" />
-              <HostingProviderChart
-                nodes={nodes}
-                title="TOP HOSTING PROVIDER"
-              />
-              <RewardChart
-                title="CRN REWARDS"
-                calculatedRewards={userRewards}
-                distributionTimestamp={lastDistribution}
-                disabled={!account || !userNodes?.length}
-              />
+          <div tw="flex items-start gap-6 flex-wrap 2xl:flex-nowrap">
+            <div tw="flex-auto 2xl:flex-none max-w-full flex items-stretch gap-6 flex-wrap 2xl:flex-nowrap order-2 2xl:order-none">
+              <div tw="flex-auto 2xl:flex-none max-w-full">
+                <NetworkHealthChart nodes={nodes} title="CRN NETWORK HEALTH" />
+              </div>
+              <div tw="flex-auto 2xl:flex-none items-stretch flex gap-6 flex-wrap sm:flex-nowrap">
+                <div tw="flex-1">
+                  <HostingProviderChart
+                    nodes={nodes}
+                    title="TOP HOSTING PROVIDER"
+                  />
+                </div>
+                <div tw="flex-1">
+                  <RewardChart
+                    title="CRN REWARDS"
+                    calculatedRewards={userRewards}
+                    distributionTimestamp={lastDistribution}
+                    disabled={!account || !userNodes?.length}
+                  />
+                </div>
+              </div>
             </div>
             <div tw="flex-auto self-stretch flex flex-col justify-between">
               <div>
                 <h1 className="tp-h7" tw="mb-0">
                   What is a compute node?
                 </h1>
-                <p className="fs-12">
+                <p className="fs-16 xxl:fs-12">
                   Anyone can set up a Compute Resource Node (CRN) to contribute
                   to our decentralized network. These nodes play a crucial role
                   in our ecosystem, enabling various services. While no
@@ -106,14 +119,14 @@ export const ComputeResourceNodesPage = memo((props) => {
                   Node Setup Guide
                 </ExternalLinkButton>
               </div>
-              <div tw="mt-6">{CreateNode}</div>
+              <div tw="mt-6 mb-4 2xl:mb-0">{CreateNode}</div>
             </div>
           </div>
         </ToggleDashboard>
       </section>
       <section tw="mt-14">
-        <div tw="flex items-end justify-between mb-8">
-          <div tw="flex items-center gap-4">
+        <div tw="flex mb-8 gap-10 justify-between flex-wrap flex-col md:flex-row items-stretch md:items-end">
+          <div tw="flex flex-wrap flex-col sm:flex-row items-start sm:items-center gap-10 sm:gap-4">
             <Tabs
               tabs={tabs}
               align="left"
@@ -188,7 +201,7 @@ export const ComputeResourceNodesPage = memo((props) => {
       <SpinnerOverlay show={!nodes} center />
     </>
   )
-})
+}
 ComputeResourceNodesPage.displayName = 'ComputeResourceNodesPage'
 
-export default ComputeResourceNodesPage
+export default memo(ComputeResourceNodesPage)

@@ -3,6 +3,7 @@ import {
   Logo,
   NotificationBadge,
   addClasses,
+  getResponsiveCss,
 } from '@aleph-front/aleph-core'
 import Link from 'next/link'
 import styled, { css, keyframes } from 'styled-components'
@@ -193,7 +194,15 @@ export const StyledSidebar = styled.aside<{
   $isHover?: boolean
   $speed?: number
 }>`
-  ${tw`flex items-stretch justify-start`}
+  ${tw`hidden items-stretch justify-start`}
+
+  /* MOBILE LAYOUT */
+  ${getResponsiveCss(
+    'lg',
+    css`
+      ${tw`flex`}
+    `,
+  )}
 
   ${({ $isOpen, $isHover, $speed = 1 }) =>
     $isOpen || $isOpen === undefined

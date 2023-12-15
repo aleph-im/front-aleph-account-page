@@ -1,1 +1,1 @@
-export { default } from './cmp'
+export { default, default as NetworkHealthChart } from './cmp'

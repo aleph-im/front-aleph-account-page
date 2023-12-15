@@ -1,1 +1,1 @@
-export { default } from './cmp'
+export { default, default as NodeDecentralization } from './cmp'
