@@ -1,9 +1,10 @@
-import { Button, Icon } from '@aleph-front/aleph-core'
+import { Button, Icon, LinkComponent } from '@aleph-front/aleph-core'
 import {
-  StyledHeader,
+  StyledNavbarDesktop,
   StyledButton,
   StyledWalletPicker,
-  StyledNavbar,
+  StyledNavbarMobile,
+  StyledHeader,
 } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import {
@@ -14,6 +15,7 @@ import {
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
 import { memo } from 'react'
 import { createPortal } from 'react-dom'
+import Link from 'next/link'
 
 export type AccountButtonProps = UseAccountButtonProps & {
   isMobile?: boolean
@@ -101,24 +103,36 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
 AccountButton.displayName = 'AccountButton'
 
 export const Header = () => {
-  const { hasBreadcrumb, breadcrumbNames, ...accountProps } = useHeader()
-  const $breakpoint = 'lg'
+  const { pathname, routes, breadcrumbNames, ...accountProps } = useHeader()
+  const breakpoint = 'lg'
 
   return (
     <>
-      <StyledNavbar
-        $breakpoint={$breakpoint}
-        mobileTopContent={<AccountButtonMemo {...accountProps} isMobile />}
-      ></StyledNavbar>
-      <StyledHeader $breakpoint={$breakpoint}>
-        <div>{hasBreadcrumb && <AutoBreadcrumb names={breadcrumbNames} />}</div>
-        <div tw="relative flex items-center justify-center gap-7">
-          <StyledButton key="link" forwardedAs="button" disabled>
-            <Icon name="ethereum" />
-          </StyledButton>
-          <AccountButtonMemo {...accountProps} />
-        </div>
+      <StyledHeader>
+        <StyledNavbarMobile
+          {...{
+            routes,
+            pathname,
+            Link: Link as LinkComponent,
+            breakpoint: 'lg',
+            mobileTopContent: <AccountButtonMemo {...accountProps} isMobile />,
+          }}
+        ></StyledNavbarMobile>
+        <StyledNavbarDesktop $breakpoint={breakpoint}>
+          <div>
+            <AutoBreadcrumb names={breadcrumbNames} />
+          </div>
+          <div tw="relative flex items-center justify-center gap-7">
+            <StyledButton key="link" forwardedAs="button" disabled>
+              <Icon name="ethereum" />
+            </StyledButton>
+            <AccountButtonMemo {...accountProps} />
+          </div>
+        </StyledNavbarDesktop>
       </StyledHeader>
+      <div tw="block lg:hidden my-6 px-5 md:px-16">
+        <AutoBreadcrumb names={breadcrumbNames} />
+      </div>
     </>
   )
 }

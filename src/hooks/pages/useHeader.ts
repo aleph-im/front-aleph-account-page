@@ -16,6 +16,7 @@ import {
   UseBreadcrumbNamesReturn,
   useBreadcrumbNames,
 } from '../common/useBreadcrumbNames'
+import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 
 export type UseAccountButtonProps = {
   handleConnect: () => Promise<void>
@@ -97,8 +98,10 @@ export function useAccountButton({
   }
 }
 
-export type UseHeaderReturn = {
-  hasBreadcrumb: boolean
+// -----------------------------
+
+export type UseHeaderReturn = UseRoutesReturn & {
+  pathname: string
   breadcrumbNames: UseBreadcrumbNamesReturn['names']
   handleConnect: () => Promise<void>
   provider: () => void
@@ -106,6 +109,8 @@ export type UseHeaderReturn = {
 
 export function useHeader(): UseHeaderReturn {
   const { connect, disconnect, isConnected, account } = useConnect()
+  const { routes } = useRoutes()
+  const { pathname } = useRouter()
   const router = useRouter()
 
   const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
@@ -166,12 +171,11 @@ export function useHeader(): UseHeaderReturn {
     }
   }, [])
 
-  const hasBreadcrumb = router.pathname !== '/dashboard/manage'
-
   const { names: breadcrumbNames } = useBreadcrumbNames()
 
   return {
-    hasBreadcrumb,
+    pathname,
+    routes,
     breadcrumbNames,
     handleConnect,
     provider,

@@ -2,32 +2,12 @@ import {
   BreakpointId,
   Button,
   FloatPosition,
-  Navbar,
+  RouterNavbar,
   WalletPicker,
   getResponsiveCss,
 } from '@aleph-front/aleph-core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
-
-export type StyledHeaderProps = {
-  $breakpoint?: BreakpointId
-}
-
-export const StyledHeader = styled.header<StyledHeaderProps>`
-  ${({ $breakpoint }) => css`
-    ${tw`hidden sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 items-center justify-between`}
-    height: 6.5rem;
-    backdrop-filter: blur(50px);
-
-    /* MOBILE LAYOUT */
-    ${getResponsiveCss(
-      $breakpoint,
-      css`
-        ${tw`flex`}
-      `,
-    )}
-  `}
-`
 
 export const StyledButton = styled(Button).attrs((props) => {
   return {
@@ -60,27 +40,58 @@ export const StyledWalletPicker = styled(WalletPicker)<{
   }}
 `
 
-export type StyledNavbarProps = {
+// --------------------------------------------
+
+export type StyledNavbarDesktopProps = {
   $breakpoint?: BreakpointId
 }
 
-export const StyledNavbar = styled(Navbar).attrs<StyledNavbarProps>(
-  ({ $breakpoint, ...rest }) => {
-    return {
-      ...rest,
-      breakpoint: $breakpoint,
-    }
-  },
-)<StyledNavbarProps>`
+export const StyledNavbarDesktop = styled.div<StyledNavbarDesktopProps>`
   ${({ $breakpoint }) => css`
-    ${tw`block z-10`}
+    ${tw`hidden sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 items-center justify-between`}
+    height: 6.5rem;
+    backdrop-filter: blur(50px);
 
     /* MOBILE LAYOUT */
     ${getResponsiveCss(
       $breakpoint,
       css`
+        ${tw`flex`}
+      `,
+    )}
+  `}
+`
+
+// --------------------------------------------
+
+export type StyledNavbarMobileProps = {
+  $breakpoint?: BreakpointId
+}
+
+export const StyledNavbarMobile = styled(RouterNavbar)<StyledNavbarMobileProps>`
+  ${({ breakpoint }) => css`
+    ${tw`relative block z-10`}
+
+    /* MOBILE LAYOUT */
+    ${getResponsiveCss(
+      breakpoint,
+      css`
         ${tw`hidden`}
       `,
     )}
   `}
+`
+
+// --------------------------------------------
+
+export const StyledHeader = styled.header`
+  font-size: inherit;
+  line-height: inherit;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* background-color: #141327CC; */
 `

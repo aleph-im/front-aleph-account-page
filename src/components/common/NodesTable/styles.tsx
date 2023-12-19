@@ -8,7 +8,7 @@ export type StyledTableProps<T extends AlephNode> = Omit<
   'borderType' | 'oddRowNoise'
 >
 
-export const StyledTable = styled(Table<any>).attrs(
+export const StyledTable = styled(Table as any).attrs(
   (props: StyledTableProps<any>) => {
     return {
       borderType: 'solid',
