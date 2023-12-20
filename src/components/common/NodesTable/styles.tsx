@@ -5,7 +5,7 @@ import tw from 'twin.macro'
 
 export type StyledTableProps<T extends AlephNode> = Omit<
   TableProps<T>,
-  'borderType' | 'oddRowNoise'
+  'borderType' | 'oddRowNoise' | 'stickyHeader'
 >
 
 export const StyledTable = styled(Table as any).attrs(
@@ -13,6 +13,7 @@ export const StyledTable = styled(Table as any).attrs(
     return {
       borderType: 'solid',
       oddRowNoise: true,
+      stickyHeader: false,
       ...props,
     }
   },

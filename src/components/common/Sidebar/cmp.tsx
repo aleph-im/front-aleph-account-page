@@ -1,4 +1,4 @@
-import { AnchorHTMLAttributes, ReactNode, memo, useMemo } from 'react'
+import { AnchorHTMLAttributes, ReactNode, memo, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { IconName, LinkComponent, RouterSidebar } from '@aleph-front/aleph-core'
@@ -16,6 +16,7 @@ export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
 const Sidebar = memo(() => {
   const { routes } = useRoutes()
   const { pathname } = useRouter()
+  const [open, setOpen] = useState<boolean>()
 
   // --------------------------------------------
 
@@ -42,6 +43,8 @@ const Sidebar = memo(() => {
         pathname,
         Link: Link as LinkComponent,
         allowanceInfo,
+        open,
+        onToggle: setOpen,
       }}
     />
   )

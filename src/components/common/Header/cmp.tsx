@@ -1,4 +1,4 @@
-import { Button, Icon, LinkComponent } from '@aleph-front/aleph-core'
+import { Button, Icon } from '@aleph-front/aleph-core'
 import {
   StyledNavbarDesktop,
   StyledButton,
@@ -13,7 +13,7 @@ import {
   useHeader,
 } from '@/hooks/pages/useHeader'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
-import { memo } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 
@@ -106,6 +106,13 @@ export const Header = () => {
   const { pathname, routes, breadcrumbNames, ...accountProps } = useHeader()
   const breakpoint = 'lg'
 
+  const [isOpen, setIsOpen] = useState(false)
+  const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
+
+  const closeMenu = useCallback(() => {
+    setIsOpen(false)
+  }, [])
+
   return (
     <>
       <StyledHeader>
@@ -113,11 +120,14 @@ export const Header = () => {
           {...{
             routes,
             pathname,
-            Link: Link as LinkComponent,
+            open: isOpen,
+            onToggle: handleToggle,
+            Link: (props) => <Link {...props} onClick={closeMenu} />,
+            height: '6.5rem',
             breakpoint: 'lg',
             mobileTopContent: <AccountButtonMemo {...accountProps} isMobile />,
           }}
-        ></StyledNavbarMobile>
+        />
         <StyledNavbarDesktop $breakpoint={breakpoint}>
           <div>
             <AutoBreadcrumb names={breadcrumbNames} />

@@ -3,7 +3,15 @@ import { ReactNode } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
-export const StyledTable = styled(Table<{ name: string; value: ReactNode }>)`
+export const StyledTable = styled(
+  Table<{ name: string; value: ReactNode }>,
+).attrs((props) => {
+  return {
+    ...props,
+    borderType: 'solid',
+    stickyHeader: false,
+  }
+})`
   && {
     thead {
       ${tw`hidden`}

@@ -48,7 +48,7 @@ export type StyledNavbarDesktopProps = {
 
 export const StyledNavbarDesktop = styled.div<StyledNavbarDesktopProps>`
   ${({ $breakpoint }) => css`
-    ${tw`hidden sticky flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 items-center justify-between`}
+    ${tw`hidden relative flex-initial shrink-0 m-0 px-16 w-full top-0 z-10 items-center justify-between`}
     height: 6.5rem;
     backdrop-filter: blur(50px);
 

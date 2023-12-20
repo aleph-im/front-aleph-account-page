@@ -73,7 +73,7 @@ export const ToggleDashboard = ({
             open={openPanel}
             duration={500}
             css={[
-              tw`transition-all duration-500 rounded-[8rem]`,
+              tw`transition-all duration-500 md:rounded-[8rem]`,
               openPanel && tw`p-16 -m-16`,
             ]}
           >
