@@ -1,6 +1,6 @@
 import { Dispatch, useMemo } from 'react'
 import { useAppState } from '@/contexts/appState'
-import { EntityAction, EntityActionType, EntityState } from '@/store/entity'
+import { EntityAction, EntitySetAction, EntityState } from '@/store/entity'
 import { StoreState } from '@/store/store'
 import {
   UseRequestProps,
@@ -41,12 +41,8 @@ export function useStoreEntityRequest<T, S>({
 
   return useRequest({
     state,
-    setState: (newState) => {
-      return dispatch({
-        type: EntityActionType.ENTITY_SET,
-        payload: { name, state: newState },
-      })
-    },
+    setState: (newState) =>
+      dispatch(new EntitySetAction({ name, state: newState })),
     ...props,
   })
 }

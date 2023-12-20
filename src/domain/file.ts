@@ -106,11 +106,14 @@ export class FileManager {
   async uploadFile(fileObject: File): Promise<string> {
     if (!this.account) throw new Error('Invalid account')
 
+    // @note: Quick temporal fix to upload files
+    const buffer = Buffer.from(await fileObject.arrayBuffer())
+
     const message = await store.Publish({
       account: this.account,
       channel,
       APIServer: apiServer,
-      fileObject,
+      fileObject: buffer,
     })
 
     return message.content.item_hash

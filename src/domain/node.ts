@@ -203,10 +203,11 @@ export class NodeManager {
 
   async getCCNNodes(): Promise<CCN[]> {
     const res = await this.fetchAllNodes()
-    const { crns } = res
-    let { ccns } = res
+    let { ccns, crns } = res
 
-    ccns = this.parseResourceNodes(ccns, crns)
+    crns = this.parseResourceNodes(crns)
+
+    ccns = this.parseChildrenResourceNodes(ccns, crns)
     ccns = await this.parseScores(ccns, false)
     ccns = await this.parseMetrics(ccns, false)
 
@@ -217,6 +218,8 @@ export class NodeManager {
     const res = await this.fetchAllNodes()
     const { ccns } = res
     let { crns } = res
+
+    crns = this.parseResourceNodes(crns)
 
     crns = this.parseParentNodes(crns, ccns)
     crns = await this.parseScores(crns, true)
@@ -231,7 +234,9 @@ export class NodeManager {
     const { timestamp } = response
     let { ccns, crns } = response
 
-    ccns = this.parseResourceNodes(ccns, crns)
+    crns = this.parseResourceNodes(crns)
+
+    ccns = this.parseChildrenResourceNodes(ccns, crns)
     ccns = await this.parseScores(ccns, false)
     ccns = await this.parseMetrics(ccns, false)
 
@@ -265,7 +270,9 @@ export class NodeManager {
         let crns: CRN[] = resource_nodes
         let ccns: CCN[] = nodes
 
-        ccns = this.parseResourceNodes(ccns, crns)
+        crns = this.parseResourceNodes(crns)
+
+        ccns = this.parseChildrenResourceNodes(ccns, crns)
         ccns = await this.parseScores(ccns, false)
         ccns = await this.parseMetrics(ccns, false)
 
@@ -606,7 +613,15 @@ export class NodeManager {
     return lastVersion.outdated === node.metricsData?.version
   }
 
-  protected parseResourceNodes(ccns: CCN[], crns: CRN[]): CCN[] {
+  protected parseResourceNodes(crns: CRN[]): CRN[] {
+    return crns.map((crn) => {
+      // @note: some nodes has {locked: ""}
+      crn.locked = !!crn.locked
+      return crn
+    })
+  }
+
+  protected parseChildrenResourceNodes(ccns: CCN[], crns: CRN[]): CCN[] {
     const crnsMap = crns.reduce((ac, cu) => {
       if (!cu.parent) return ac
 
