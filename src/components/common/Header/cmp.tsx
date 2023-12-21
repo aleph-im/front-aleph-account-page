@@ -102,9 +102,13 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
 }
 AccountButton.displayName = 'AccountButton'
 
-export const CustomLink = (props: RenderLinkProps) => {
-  return props.children ? <span {...props} /> : <Link {...props} />
+// ----------------------------
+
+const CustomLink = (props: RenderLinkProps) => {
+  return props.route.children ? <span {...props} /> : <Link {...props} />
 }
+
+// ----------------------------
 
 export const Header = () => {
   const { pathname, routes, breadcrumbNames, ...accountProps } = useHeader()
@@ -122,7 +126,7 @@ export const Header = () => {
             pathname,
             open: isOpen,
             onToggle: handleToggle,
-            Link: CustomLink,
+            Link: CustomLinkMemo,
             height: '6.5rem',
             breakpoint: 'lg',
             mobileTopContent: <AccountButtonMemo {...accountProps} isMobile />,
@@ -149,5 +153,6 @@ export const Header = () => {
 }
 Header.displayName = 'Header'
 
+export const CustomLinkMemo = memo(CustomLink)
 export const AccountButtonMemo = memo(AccountButton)
 export default memo(Header)
