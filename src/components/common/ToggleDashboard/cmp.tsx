@@ -1,12 +1,12 @@
-import { ReactNode, memo, useState } from 'react'
+import { ReactNode, memo, useCallback, useState } from 'react'
 import tw from 'twin.macro'
 import {
   Button,
   Icon,
   useTransitionedEnterExit,
-  ToggleContainer,
   useBounds,
 } from '@aleph-front/aleph-core'
+import { StyledButtonsContainer, StyledToggleContainer } from './styles'
 
 export type ToggleDashboardProps = {
   buttons?: ReactNode
@@ -19,6 +19,9 @@ export const ToggleDashboard = ({
   ...rest
 }: ToggleDashboardProps) => {
   const [open, setOpen] = useState(true)
+  const handleToogle = useCallback(() => setOpen((prev) => !prev), [])
+
+  const duration = 700
 
   const {
     shouldMount: mount1,
@@ -26,6 +29,7 @@ export const ToggleDashboard = ({
     state: state1,
   } = useTransitionedEnterExit<HTMLDivElement>({
     onOff: !open,
+    duration,
   })
 
   const {
@@ -34,62 +38,48 @@ export const ToggleDashboard = ({
     state: state2,
   } = useTransitionedEnterExit<HTMLDivElement>({
     onOff: open,
+    duration,
   })
-
-  const { bounds } = useBounds({ ref: ref1, deps: [mount1] })
-
-  const minHeight = bounds?.height || 0
   const openButton = state1 === 'enter'
   const openPanel = state2 === 'enter'
+
+  const { bounds } = useBounds({ ref: ref1, deps: [openButton] })
+  const minHeight = bounds?.height || 0
 
   return (
     <div tw="relative mt-8 mb-14" style={{ minHeight }} {...rest}>
       <>
-        {mount1 && (
-          <div
-            ref={ref1}
-            css={[
-              tw`flex flex-col gap-5 !absolute top-0 transition duration-200`,
-              openButton ? tw`opacity-100 !delay-300` : tw`opacity-0`,
-            ]}
-          >
-            {buttons}
-            <Button
-              color="main0"
-              kind="neon"
-              variant="secondary"
-              size="regular"
-              onClick={() => setOpen((prev) => !prev)}
-              tw="gap-2.5"
-            >
-              <Icon name="gauge" />
-              open dashboard
-            </Button>
-          </div>
-        )}
         {mount2 && (
-          <ToggleContainer
-            ref={ref2}
-            open={openPanel}
-            duration={500}
-            css={[
-              tw`transition-all duration-500 md:rounded-[8rem]`,
-              openPanel && tw`p-16 -m-16`,
-            ]}
-          >
+          <StyledToggleContainer ref={ref2} open={openPanel} duration={700}>
             {children}
             <Button
               color="main0"
               kind="neon"
               variant="text-only"
               size="regular"
-              onClick={() => setOpen((prev) => !prev)}
+              onClick={handleToogle}
               css={[tw`gap-2.5 !mt-6 !flex !ml-auto`]}
             >
               <Icon name="sort-up" tw="h-3.5 w-3.5 pt-2" />
               collapse
             </Button>
-          </ToggleContainer>
+          </StyledToggleContainer>
+        )}
+        {mount1 && (
+          <StyledButtonsContainer ref={ref1} $open={openButton}>
+            {buttons}
+            <Button
+              color="main0"
+              kind="neon"
+              variant="secondary"
+              size="regular"
+              onClick={handleToogle}
+              tw="gap-2.5"
+            >
+              <Icon name="gauge" />
+              open dashboard
+            </Button>
+          </StyledButtonsContainer>
         )}
       </>
     </div>
