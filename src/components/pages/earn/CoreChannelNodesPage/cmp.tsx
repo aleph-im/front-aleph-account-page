@@ -13,6 +13,7 @@ import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import RewardChart from '@/components/common/RewardChart'
 import EstimatedNodeRewardsChart from '@/components/common/EstimatedNodeRewardsChart'
+import { useLazyRender } from '@/hooks/common/useLazyRender'
 
 export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
   const {
@@ -32,6 +33,8 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
+
+  const { render } = useLazyRender()
 
   const CreateNode = (
     <Link href="/earn/ccn/new" passHref legacyBehavior>
@@ -128,47 +131,48 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
           />
         </div>
         <div tw="relative">
-          <SpinnerOverlay show={!nodes} />
-          <>
-            {selectedTab === 'user' ? (
-              <>
-                {nodes && filteredUserNodes && (
-                  <>
+          <SpinnerOverlay show={!render || !nodes} />
+          {render && (
+            <>
+              {selectedTab === 'user' ? (
+                <>
+                  {nodes && filteredUserNodes && (
+                    <>
+                      <CoreChannelNodesTable
+                        {...{
+                          nodes,
+                          filteredNodes: filteredUserNodes,
+                          nodesIssues: userNodesIssues,
+                          lastVersion,
+                        }}
+                      />
+                      <div tw="my-10 mx-4 text-center opacity-60">
+                        {!account
+                          ? 'Connect your wallet to see your core node running.'
+                          : !userNodes?.length
+                          ? 'You have no core node running.'
+                          : ''}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {nodes && filteredNodes && (
                     <CoreChannelNodesTable
                       {...{
                         nodes,
-                        filteredNodes: filteredUserNodes,
-                        nodesIssues: userNodesIssues,
+                        filteredNodes,
                         lastVersion,
                       }}
                     />
-                    <div tw="my-10 mx-4 text-center opacity-60">
-                      {!account
-                        ? 'Connect your wallet to see your core node running.'
-                        : !userNodes?.length
-                        ? 'You have no core node running.'
-                        : ''}
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                {nodes && filteredNodes && (
-                  <CoreChannelNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes,
-                      lastVersion,
-                    }}
-                  />
-                )}
-              </>
-            )}
-          </>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       </section>
-      <SpinnerOverlay show={!nodes} center />
     </>
   )
 }

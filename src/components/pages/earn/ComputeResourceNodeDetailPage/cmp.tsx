@@ -10,7 +10,6 @@ import ColumnLayout from '@/components/common/ColumnLayout'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeName from '@/components/common/NodeName'
 import NodeDecentralization from '@/components/common/NodeDecentralization'
-import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
 import NodeDetailLink from '@/components/common/NodeDetailLink'
 
@@ -255,7 +254,6 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
         </ColumnLayout>
       </section>
-      <SpinnerOverlay show={!node} center />
     </>
   )
 }

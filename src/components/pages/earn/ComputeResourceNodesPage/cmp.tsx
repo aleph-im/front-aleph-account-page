@@ -19,6 +19,7 @@ import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
 import RewardChart from '@/components/common/RewardChart'
+import { useLazyRender } from '@/hooks/common/useLazyRender'
 
 export const ComputeResourceNodesPage = (
   props: UseComputeResourceNodesPageProps,
@@ -45,6 +46,8 @@ export const ComputeResourceNodesPage = (
     handleFilterChange,
     handleLinkableOnlyChange,
   } = useComputeResourceNodesPage(props)
+
+  const { render } = useLazyRender()
 
   const CreateNode = (
     <Link href="/earn/crn/new" passHref legacyBehavior>
@@ -150,17 +153,42 @@ export const ComputeResourceNodesPage = (
           />
         </div>
         <div tw="relative">
-          <SpinnerOverlay show={!nodes} />
-          <>
-            {selectedTab === 'user' ? (
-              <>
-                {nodes && filteredUserNodes && (
-                  <>
+          <SpinnerOverlay show={!render || !nodes} />
+          {render && (
+            <>
+              {selectedTab === 'user' ? (
+                <>
+                  {nodes && filteredUserNodes && (
+                    <>
+                      <ComputeResourceNodesTable
+                        {...{
+                          nodes,
+                          filteredNodes: filteredUserNodes,
+                          nodesIssues: userNodesIssues,
+                          userNode,
+                          account,
+                          lastVersion,
+                          handleLink,
+                          handleUnlink,
+                        }}
+                      />
+                      <div tw="my-10 mx-4 text-center opacity-60">
+                        {!account
+                          ? 'Connect your wallet to see your compute node running.'
+                          : !userNodes?.length
+                          ? 'You have no compute node running.'
+                          : ''}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {nodes && filteredNodes && (
                     <ComputeResourceNodesTable
                       {...{
                         nodes,
-                        filteredNodes: filteredUserNodes,
-                        nodesIssues: userNodesIssues,
+                        filteredNodes,
                         userNode,
                         account,
                         lastVersion,
@@ -168,37 +196,13 @@ export const ComputeResourceNodesPage = (
                         handleUnlink,
                       }}
                     />
-                    <div tw="my-10 mx-4 text-center opacity-60">
-                      {!account
-                        ? 'Connect your wallet to see your compute node running.'
-                        : !userNodes?.length
-                        ? 'You have no compute node running.'
-                        : ''}
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                {nodes && filteredNodes && (
-                  <ComputeResourceNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes,
-                      userNode,
-                      account,
-                      lastVersion,
-                      handleLink,
-                      handleUnlink,
-                    }}
-                  />
-                )}
-              </>
-            )}
-          </>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       </section>
-      <SpinnerOverlay show={!nodes} center />
     </>
   )
 }

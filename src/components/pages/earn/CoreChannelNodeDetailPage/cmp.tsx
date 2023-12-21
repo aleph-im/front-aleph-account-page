@@ -18,7 +18,6 @@ import ButtonLink from '@/components/common/ButtonLink'
 import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
-import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NodeDetailLink from '@/components/common/NodeDetailLink'
 
 export const CoreChannelNodeDetailPage = () => {
@@ -330,7 +329,6 @@ export const CoreChannelNodeDetailPage = () => {
           </div>
         </ColumnLayout>
       </section>
-      <SpinnerOverlay show={!node} center />
     </>
   )
 }

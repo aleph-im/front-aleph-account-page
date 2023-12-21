@@ -11,6 +11,7 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import RewardChart from '@/components/common/RewardChart'
 import StakeChart from '@/components/common/StakeChart'
+import { useLazyRender } from '@/hooks/common/useLazyRender'
 
 export const StakingPage = (props: UseStakingPageProps) => {
   const {
@@ -35,6 +36,8 @@ export const StakingPage = (props: UseStakingPageProps) => {
     handleUnstake,
     handleStakeableOnlyChange: handleChangeStakeableOnly,
   } = useStakingPage(props)
+
+  const { render } = useLazyRender()
 
   return (
     <>
@@ -118,57 +121,58 @@ export const StakingPage = (props: UseStakingPageProps) => {
           />
         </div>
         <div tw="relative">
-          <SpinnerOverlay show={!nodes} />
-          <>
-            {selectedTab === 'user' ? (
-              <>
-                {nodes && filteredStakeNodes ? (
-                  <>
+          <SpinnerOverlay show={!render || !nodes} />
+          {render && (
+            <>
+              {selectedTab === 'user' ? (
+                <>
+                  {nodes && filteredStakeNodes ? (
+                    <>
+                      <StakingNodesTable
+                        {...{
+                          nodes,
+                          filteredNodes: filteredStakeNodes,
+                          accountBalance,
+                          account,
+                          handleStake,
+                          handleUnstake,
+                          showStakedAmount: true,
+                          nodesIssues,
+                        }}
+                      />
+                      <div tw="my-10 mx-4 text-center opacity-60">
+                        {!account
+                          ? 'Connect your wallet to see your stakes.'
+                          : !stakeNodes?.length
+                          ? 'You are not staking.'
+                          : ''}
+                      </div>
+                    </>
+                  ) : (
+                    <>No data</>
+                  )}
+                </>
+              ) : (
+                <>
+                  {nodes && filteredNodes && (
                     <StakingNodesTable
                       {...{
                         nodes,
-                        filteredNodes: filteredStakeNodes,
+                        filteredNodes,
                         accountBalance,
                         account,
                         handleStake,
                         handleUnstake,
-                        showStakedAmount: true,
                         nodesIssues,
                       }}
                     />
-                    <div tw="my-10 mx-4 text-center opacity-60">
-                      {!account
-                        ? 'Connect your wallet to see your stakes.'
-                        : !stakeNodes?.length
-                        ? 'You are not staking.'
-                        : ''}
-                    </div>
-                  </>
-                ) : (
-                  <>No data</>
-                )}
-              </>
-            ) : (
-              <>
-                {nodes && filteredNodes && (
-                  <StakingNodesTable
-                    {...{
-                      nodes,
-                      filteredNodes,
-                      accountBalance,
-                      account,
-                      handleStake,
-                      handleUnstake,
-                      nodesIssues,
-                    }}
-                  />
-                )}
-              </>
-            )}
-          </>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       </section>
-      <SpinnerOverlay show={!nodes} center />
     </>
   )
 }
