@@ -19,7 +19,7 @@ export const StyledContainer = styled.div<{
 `
 
 export const StyledToggleContainer = styled(ToggleContainer)`
-  ${tw`relative p-0 m-0 -top-4`}
+  ${tw`relative p-0 m-0 -top-5`}
   transition-property: opacity, visibility, top;
 
   ${({ open }) =>
@@ -37,7 +37,7 @@ export const StyledButtonsContainer = styled.div<StyledButtonsContainerProps>`
   ${({ $open }) => css`
     ${tw`flex flex-col gap-5 !absolute top-0`}
     opacity: ${$open ? 1 : 0};
-    transition: opacity ease-in-out 300ms ${$open ? 400 : 0}ms,
-      visibility linear 0ms ${$open ? 400 : 0}ms;
+    transition: opacity ease-in-out 400ms ${$open ? 600 : 0}ms,
+      visibility linear 0ms ${$open ? 600 : 0}ms;
   `}
 `

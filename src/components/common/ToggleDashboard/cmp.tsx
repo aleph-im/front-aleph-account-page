@@ -21,7 +21,7 @@ export const ToggleDashboard = ({
   const [open, setOpen] = useState(true)
   const handleToogle = useCallback(() => setOpen((prev) => !prev), [])
 
-  const duration = 700
+  const duration = 1000
 
   const {
     shouldMount: mount1,
@@ -50,7 +50,11 @@ export const ToggleDashboard = ({
     <div tw="relative mt-8 mb-14" style={{ minHeight }} {...rest}>
       <>
         {mount2 && (
-          <StyledToggleContainer ref={ref2} open={openPanel} duration={700}>
+          <StyledToggleContainer
+            ref={ref2}
+            open={openPanel}
+            duration={duration}
+          >
             {children}
             <Button
               color="main0"
