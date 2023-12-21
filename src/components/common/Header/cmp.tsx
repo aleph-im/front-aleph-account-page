@@ -1,4 +1,4 @@
-import { Button, Icon } from '@aleph-front/aleph-core'
+import { Button, Icon, RenderLinkProps } from '@aleph-front/aleph-core'
 import {
   StyledNavbarDesktop,
   StyledButton,
@@ -102,16 +102,16 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
 }
 AccountButton.displayName = 'AccountButton'
 
+export const CustomLink = (props: RenderLinkProps) => {
+  return props.children ? <span {...props} /> : <Link {...props} />
+}
+
 export const Header = () => {
   const { pathname, routes, breadcrumbNames, ...accountProps } = useHeader()
   const breakpoint = 'lg'
 
   const [isOpen, setIsOpen] = useState(false)
   const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
-
-  const closeMenu = useCallback(() => {
-    setIsOpen(false)
-  }, [])
 
   return (
     <>
@@ -122,7 +122,7 @@ export const Header = () => {
             pathname,
             open: isOpen,
             onToggle: handleToggle,
-            Link: (props) => <Link {...props} onClick={closeMenu} />,
+            Link: CustomLink,
             height: '6.5rem',
             breakpoint: 'lg',
             mobileTopContent: <AccountButtonMemo {...accountProps} isMobile />,
