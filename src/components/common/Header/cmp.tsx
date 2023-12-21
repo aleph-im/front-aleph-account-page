@@ -115,7 +115,7 @@ export const Header = () => {
 
   return (
     <>
-      <StyledHeader>
+      <StyledHeader $breakpoint={breakpoint}>
         <StyledNavbarMobile
           {...{
             routes,
@@ -140,6 +140,7 @@ export const Header = () => {
           </div>
         </StyledNavbarDesktop>
       </StyledHeader>
+      <div tw="block flex-auto grow-0 shrink-0 h-[6.5rem] lg:hidden"></div>
       <div tw="block lg:hidden my-6 px-5 md:px-16">
         <AutoBreadcrumb names={breadcrumbNames} />
       </div>

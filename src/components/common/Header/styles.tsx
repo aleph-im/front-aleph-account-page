@@ -84,14 +84,24 @@ export const StyledNavbarMobile = styled(RouterNavbar)<StyledNavbarMobileProps>`
 
 // --------------------------------------------
 
-export const StyledHeader = styled.header`
-  font-size: inherit;
-  line-height: inherit;
-  box-sizing: border-box;
-  width: 100%;
-  margin: 0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  /* background-color: #141327CC; */
+export type StyledHeaderProps = {
+  $breakpoint?: BreakpointId
+}
+
+export const StyledHeader = styled.header<StyledHeaderProps>`
+  ${({ $breakpoint }) => css`
+    ${tw`fixed top-0 left-0 m-0 z-10 w-full`}
+    font-size: inherit;
+    line-height: inherit;
+    box-sizing: border-box;
+    /* background-color: #141327CC; */
+
+    /* MOBILE LAYOUT */
+    ${getResponsiveCss(
+      $breakpoint,
+      css`
+        ${tw`sticky`}
+      `,
+    )};
+  `}
 `
