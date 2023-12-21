@@ -14,6 +14,10 @@ import {
   useEditComputeResourceNodeForm,
 } from '@/hooks/form/useEditComputeResourceNodeForm'
 import { useLinking } from '@/hooks/common/useLinking'
+import {
+  UseHostingProviderTopItem,
+  useHostingProviderTop,
+} from '@/hooks/common/useHostingProviderTop'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
@@ -27,6 +31,7 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
     calculatedRewards?: number
     isUserLinked?: boolean
     isLinkable?: boolean
+    asnTier?: UseHostingProviderTopItem
     handleRemove: () => void
     handleLink: () => void
     handleUnlink: () => void
@@ -94,6 +99,13 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
+  const { top } = useHostingProviderTop({ nodes })
+  const asnTier = top.find(
+    (topAsn) => topAsn.name === node?.metricsData?.as_name,
+  )
+
+  // -----------------------------
+
   const defaultValues = useMemo(() => {
     return {
       hash: node?.hash,
@@ -119,6 +131,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     calculatedRewards,
     isUserLinked,
     isLinkable,
+    asnTier,
     handleLink,
     handleUnlink,
     ...formProps,

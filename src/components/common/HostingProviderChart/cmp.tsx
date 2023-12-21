@@ -1,8 +1,9 @@
 import { memo, useMemo } from 'react'
 import { TextGradient } from '@aleph-front/aleph-core'
-import { AlephNode, CCN } from '@/domain/node'
+import { AlephNode } from '@/domain/node'
 import Card1 from '../Card1'
 import ColorDot from '../ColorDot'
+import { useHostingProviderTop } from '@/hooks/common/useHostingProviderTop'
 
 export const HostingProviderChart = ({
   title,
@@ -12,56 +13,18 @@ export const HostingProviderChart = ({
   title: string
   nodes?: AlephNode[]
 }) => {
+  const { top } = useHostingProviderTop({ nodes })
+
   const data = useMemo(() => {
-    const safeNodes =
-      nodes ||
-      Array.from(
-        { length: 4 },
-        (_, i) => ({ metricsData: { as_name: `Provider ${i}` } } as CCN),
-      )
-
-    const buckets = safeNodes.reduce(
-      (ac, node) => {
-        const asnName = node.metricsData?.as_name || 'others'
-        ac[asnName] = (ac[asnName] || 0) + 1
-        return ac
-      },
-      { others: 0 } as Record<string, number>,
-    )
-
-    const total = Object.values(buckets).reduce((ac, cv) => ac + cv, 0)
-
-    const sortedBuckets = Object.entries(buckets)
-      .filter(([name]) => name !== 'others')
-      .sort(([, a], [, b]) => b - a)
-
-    const top3Buckets = sortedBuckets.slice(0, 3)
-    const restBuckets = sortedBuckets.slice(3)
-
-    const othersBucket: [string, number] = [
-      'others',
-      buckets['others'] + restBuckets.reduce((ac, [, cv]) => ac + cv, 0),
-    ]
-
-    return [...top3Buckets, othersBucket].map(([name, value], i) => {
-      const percentage = value / total
-      const color =
-        name === 'others'
-          ? 'main1'
-          : i === 0
-          ? 'error'
-          : i === 1
-          ? 'main2'
-          : 'main0'
-
+    return top.map(({ name, count, percentage, color }) => {
       return {
-        label: `${value} nodes (${(percentage * 100).toFixed(0)}%)`,
+        label: `${count} nodes (${(percentage * 100).toFixed(0)}%)`,
         value: name,
         percentage,
         color,
       }
     })
-  }, [nodes])
+  }, [top])
 
   return (
     <Card1 loading={!nodes} {...rest}>

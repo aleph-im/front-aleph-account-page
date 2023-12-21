@@ -32,6 +32,7 @@ export const ComputeResourceNodeDetailPage = () => {
     isDirty,
     rewardCtrl,
     addressCtrl,
+    asnTier,
     handleRemove,
     handleSubmit,
     handleLink,
@@ -87,6 +88,7 @@ export const ComputeResourceNodeDetailPage = () => {
             <Card2 title="GENERAL INFO">
               <NodeDetailStatus status={node?.status} />
               <Card2Field name="NAME" value={node?.name} />
+              <Card2Field name="ASN" value={node?.metricsData?.as_name} />
               <Card2Field
                 name="OWNER"
                 value={
@@ -141,8 +143,20 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
           <div>
             <Card2 title="REWARD INDICATORS">
-              <Card2Field name="ASN" value={node?.metricsData?.as_name} />
-              <Card2Field name="NODES ON ASN" value={nodesOnSameASN} />
+              <Card2Field
+                name="NODES ON ASN"
+                value={
+                  <div
+                    tw="flex gap-3 items-center"
+                    className={asnTier && `text-${asnTier.color}`}
+                  >
+                    {nodesOnSameASN}
+                    {!!asnTier && (
+                      <Icon name="hexagon-exclamation" color={asnTier.color} />
+                    )}
+                  </div>
+                }
+              />
               <Card2Field name="VERSION" value={node?.metricsData?.version} />
               <Card2Field name="BASE LATENCY" value={baseLatency} />
               <Card2Field name="LAST CHECK" value={lastMetricsCheck} />
@@ -211,9 +225,23 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
           <div>
             <Card2 title="DECENTRALIZED SCORE">
-              <NodeDecentralization
-                decentralization={node?.scoreData?.decentralization || 0}
-              />
+              <div
+                tw="flex gap-3 items-center"
+                className={asnTier && `text-${asnTier.color}`}
+              >
+                <NodeDecentralization
+                  decentralization={node?.scoreData?.decentralization || 0}
+                />
+                {!!asnTier && (
+                  <Icon name="hexagon-exclamation" color={asnTier.color} />
+                )}
+              </div>
+              {!!asnTier && (
+                <p className="tp-body3 fs-10">
+                  There are {nodesOnSameASN} nodes on this ASN. Please consider
+                  to migrate your node to a different ASN.
+                </p>
+              )}
             </Card2>
           </div>
           <div>

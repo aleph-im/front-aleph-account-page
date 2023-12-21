@@ -24,7 +24,7 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 export const CoreChannelNodeDetailPage = () => {
   const {
     node,
-    nodesOnSameASN,
+    // nodesOnSameASN,
     baseLatency,
     aggregateLatency,
     fileDownloadLatency,
@@ -99,6 +99,7 @@ export const CoreChannelNodeDetailPage = () => {
             <Card2 title="GENERAL INFO">
               <NodeDetailStatus status={node?.status} />
               <Card2Field name="NAME" value={node?.name} />
+              <Card2Field name="ASN" value={node?.metricsData?.as_name} />
               <Card2Field
                 name="OWNER"
                 value={
@@ -215,8 +216,7 @@ export const CoreChannelNodeDetailPage = () => {
           </div>
           <div>
             <Card2 title="REWARD INDICATORS">
-              <Card2Field name="ASN" value={node?.metricsData?.as_name} />
-              <Card2Field name="NODES ON ASN" value={nodesOnSameASN} />
+              {/* <Card2Field name="NODES ON ASN" value={nodesOnSameASN} /> */}
               <Card2Field name="VERSION" value={node?.metricsData?.version} />
               <Card2Field name="BASE LATENCY" value={baseLatency} />
               <Card2Field name="AGGREGATE LATENCY" value={aggregateLatency} />
