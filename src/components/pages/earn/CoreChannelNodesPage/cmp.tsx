@@ -17,6 +17,7 @@ import EstimatedNodeRewardsChart from '@/components/common/EstimatedNodeRewardsC
 export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
   const {
     account,
+    accountBalance,
     nodes,
     filteredNodes,
     userNodes,
@@ -40,7 +41,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
         variant="secondary"
         size="regular"
         tw="gap-2.5"
-        disabled={!account}
+        disabled={!account || (accountBalance || 0) <= 200_000}
       >
         <Icon name="key" />
         Create core node
