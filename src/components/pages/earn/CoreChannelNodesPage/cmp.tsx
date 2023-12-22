@@ -90,7 +90,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                 <h1 className="tp-h7" tw="mb-0">
                   What is a core node?
                 </h1>
-                <p className="fs-16 xxl:fs-12">
+                <p className="fs-16">
                   CCNs are the cornerstone of Aleph.im, responsible for the
                   security and functionality of our peer-to-peer network. These
                   dedicated nodes, backed by a commitment of 200,000 Aleph

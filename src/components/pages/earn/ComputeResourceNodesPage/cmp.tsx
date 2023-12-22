@@ -106,7 +106,7 @@ export const ComputeResourceNodesPage = (
                 <h1 className="tp-h7" tw="mb-0">
                   What is a compute node?
                 </h1>
-                <p className="fs-16 xxl:fs-12">
+                <p className="fs-16">
                   Anyone can set up a Compute Resource Node (CRN) to contribute
                   to our decentralized network. These nodes play a crucial role
                   in our ecosystem, enabling various services. While no

@@ -58,7 +58,7 @@ export const StakingPage = (props: UseStakingPageProps) => {
               <h2 className="tp-h7" tw="mb-0">
                 What is staking with Aleph.im?
               </h2>
-              <p className="fs-16 xxl:fs-12">
+              <p className="fs-16">
                 What is staking with Aleph.im? Staking is the heartbeat of our
                 dynamic peer-to-peer network, driving security,
                 decentralization, and rewards. With a minimum of 10,000 Aleph
