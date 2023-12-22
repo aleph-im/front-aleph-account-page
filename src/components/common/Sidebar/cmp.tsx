@@ -1,4 +1,4 @@
-import { AnchorHTMLAttributes, ReactNode, memo, useMemo, useState } from 'react'
+import { AnchorHTMLAttributes, ReactNode, memo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { IconName, LinkComponent, RouterSidebar } from '@aleph-front/aleph-core'
@@ -20,19 +20,8 @@ const Sidebar = memo(() => {
 
   // --------------------------------------------
 
-  const userStoreAllowance = useUserStoreAllowance()
-
-  const allowanceInfo = useMemo(() => {
-    if (!userStoreAllowance) return
-    const consumedSize = (userStoreAllowance.consumedSize || 0) / 1024
-    const allowedSize = (userStoreAllowance.allowedSize || 0) / 1024
-
-    return {
-      consumedSize,
-      allowedSize,
-    }
-  }, [userStoreAllowance])
-
+  // @todo: fix types in core and install new version
+  const allowanceInfo: any = useUserStoreAllowance()
   const breakpoint = 'lg'
 
   return (
