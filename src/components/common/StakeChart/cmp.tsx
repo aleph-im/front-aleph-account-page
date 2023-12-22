@@ -28,7 +28,7 @@ export const StakeChart = ({ nodes, ...rest }: { nodes?: CCN[] }) => {
       },
       {
         label: 'Node operators',
-        value: `${(usersStake / 10 ** 6).toFixed(2)}M`,
+        value: `${(operatorsStake / 10 ** 6).toFixed(2)}M`,
         percentage: operatorsStake / totalStake,
         color: 'main1',
       },
