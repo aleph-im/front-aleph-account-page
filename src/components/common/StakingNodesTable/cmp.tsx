@@ -4,7 +4,7 @@ import { CCN } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeName from '@/components/common/NodeName'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
-import ScoreCell from '@/components/common/ScoreCell'
+import NodeScore from '@/components/common/NodeScore'
 import APYCell from '@/components/common/NodeAPY'
 import NodeStaked from '@/components/common/NodeStaked'
 import StakeButton from '@/components/common/StakeButton'
@@ -82,7 +82,7 @@ export const StakingNodesTable = ({
         label: 'SCORE',
         sortable: true,
         sortBy: (node) => node.score,
-        render: (node) => <ScoreCell score={node.score} />,
+        render: (node) => <NodeScore score={node.score} />,
       },
       {
         label: '',

@@ -1,1 +1,1 @@
-export { default, default as ScoreCell } from './cmp'
+export { default, default as NodeScore } from './cmp'

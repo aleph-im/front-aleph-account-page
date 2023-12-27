@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { StyledScoreIcon } from './styles'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L586
-export const ScoreCell = ({
+export const NodeScore = ({
   score,
   showPercentage = true,
 }: {
@@ -18,6 +18,6 @@ export const ScoreCell = ({
     </div>
   )
 }
-ScoreCell.displayName = 'ScoreCell'
+NodeScore.displayName = 'NodeScore'
 
-export default memo(ScoreCell)
+export default memo(NodeScore)

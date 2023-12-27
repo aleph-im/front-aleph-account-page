@@ -1,3 +1,6 @@
+import { memo } from 'react'
+import { createPortal } from 'react-dom'
+import Link from 'next/link'
 import { Button, Icon, RenderLinkProps } from '@aleph-front/aleph-core'
 import {
   StyledNavbarDesktop,
@@ -13,9 +16,6 @@ import {
   useHeader,
 } from '@/hooks/pages/useHeader'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
-import { memo, useCallback, useState } from 'react'
-import { createPortal } from 'react-dom'
-import Link from 'next/link'
 
 export type AccountButtonProps = UseAccountButtonProps & {
   isMobile?: boolean
@@ -111,11 +111,15 @@ const CustomLink = (props: RenderLinkProps) => {
 // ----------------------------
 
 export const Header = () => {
-  const { pathname, routes, breadcrumbNames, ...accountProps } = useHeader()
-  const breakpoint = 'lg'
-
-  const [isOpen, setIsOpen] = useState(false)
-  const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
+  const {
+    pathname,
+    routes,
+    breadcrumbNames,
+    isOpen,
+    breakpoint,
+    handleToggle,
+    ...accountProps
+  } = useHeader()
 
   return (
     <>

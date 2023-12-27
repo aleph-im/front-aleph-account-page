@@ -5,10 +5,10 @@ import { CCN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeName from '@/components/common/NodeName'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
-import ScoreCell from '@/components/common/ScoreCell'
+import NodeScore from '@/components/common/NodeScore'
 import APYCell from '@/components/common/NodeAPY'
 import NodeStaked from '@/components/common/NodeStaked'
-import VersionCell from '../VersionCell'
+import NodeVersion from '../NodeVersion'
 import ButtonLink from '../ButtonLink'
 
 export type CoreChannelNodesTableProps = {
@@ -41,7 +41,7 @@ export const CoreChannelNodesTable = ({
         label: 'SCORE',
         sortable: true,
         sortBy: (node) => node.score,
-        render: (node) => <ScoreCell score={node.score} />,
+        render: (node) => <NodeScore score={node.score} />,
       },
       {
         label: 'LINKED',
@@ -79,7 +79,7 @@ export const CoreChannelNodesTable = ({
         sortable: true,
         sortBy: (node) => node.metricsData?.version,
         render: (node) => (
-          <VersionCell node={node} nodes={nodes} lastVersion={lastVersion} />
+          <NodeVersion node={node} nodes={nodes} lastVersion={lastVersion} />
         ),
       },
       {

@@ -1,1 +1,1 @@
-export { default, default as VersionCell } from './cmp'
+export { default, default as NodeVersion } from './cmp'

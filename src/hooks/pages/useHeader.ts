@@ -6,6 +6,7 @@ import { useAppState } from '@/contexts/appState'
 import { useConnect } from '../common/useConnect'
 import { useSessionStorage } from 'usehooks-ts'
 import {
+  BreakpointId,
   useClickOutside,
   useFloatPosition,
   useTransitionedEnterExit,
@@ -103,6 +104,9 @@ export function useAccountButton({
 export type UseHeaderReturn = UseRoutesReturn & {
   pathname: string
   breadcrumbNames: UseBreadcrumbNamesReturn['names']
+  breakpoint: BreakpointId
+  isOpen: boolean
+  handleToggle: (isOpen: boolean) => void
   handleConnect: () => Promise<void>
   provider: () => void
 }
@@ -110,8 +114,8 @@ export type UseHeaderReturn = UseRoutesReturn & {
 export function useHeader(): UseHeaderReturn {
   const { connect, disconnect, isConnected, account } = useConnect()
   const { routes } = useRoutes()
-  const { pathname } = useRouter()
   const router = useRouter()
+  const { pathname } = router
 
   const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
     'keepAccountAlive',
@@ -171,12 +175,26 @@ export function useHeader(): UseHeaderReturn {
     }
   }, [])
 
+  // --------------------
+
   const { names: breadcrumbNames } = useBreadcrumbNames()
+
+  // --------------------
+
+  const breakpoint = 'lg'
+
+  // --------------------
+
+  const [isOpen, setIsOpen] = useState(false)
+  const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
 
   return {
     pathname,
     routes,
     breadcrumbNames,
+    breakpoint,
+    isOpen,
+    handleToggle,
     handleConnect,
     provider,
   }

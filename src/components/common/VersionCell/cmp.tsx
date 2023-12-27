@@ -4,7 +4,7 @@ import { AlephNode, NodeLastVersions, NodeManager } from '@/domain/node'
 import { Icon, Tooltip } from '@aleph-front/aleph-core'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L200
-export const VersionCell = ({
+export const NodeVersion = ({
   node,
   lastVersion,
 }: {
@@ -66,6 +66,6 @@ export const VersionCell = ({
     </>
   )
 }
-VersionCell.displayName = 'VersionCell'
+NodeVersion.displayName = 'NodeVersion'
 
-export default memo(VersionCell)
+export default memo(NodeVersion)

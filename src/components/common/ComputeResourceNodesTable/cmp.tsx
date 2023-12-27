@@ -4,8 +4,8 @@ import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeName from '@/components/common/NodeName'
-import ScoreCell from '@/components/common/ScoreCell'
-import VersionCell from '../VersionCell'
+import NodeScore from '@/components/common/NodeScore'
+import NodeVersion from '../NodeVersion'
 import NodeDecentralization from '../NodeDecentralization'
 import CRNRewardsCell from '../CRNRewardsCell'
 import LinkCRNButton from '../LinkCRNButton'
@@ -50,7 +50,7 @@ export const ComputeResourceNodesTable = ({
         label: 'SCORE',
         sortable: true,
         sortBy: (node) => node.score,
-        render: (node) => <ScoreCell score={node.score} />,
+        render: (node) => <NodeScore score={node.score} />,
       },
       {
         label: 'LINKED',
@@ -98,7 +98,7 @@ export const ComputeResourceNodesTable = ({
         width: '100%',
         sortBy: (node) => node.metricsData?.version,
         render: (node) => (
-          <VersionCell node={node} nodes={nodes} lastVersion={lastVersion} />
+          <NodeVersion node={node} nodes={nodes} lastVersion={lastVersion} />
         ),
       },
       {
