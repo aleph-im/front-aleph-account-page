@@ -1,15 +1,15 @@
 import { memo, useMemo } from 'react'
 import tw from 'twin.macro'
 import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeName from '@/components/common/NodeName'
 import NodeScore from '@/components/common/NodeScore'
-import NodeVersion from '../NodeVersion'
+import NodeVersion from '@/components/common/NodeVersion'
 import NodeDecentralization from '../NodeDecentralization'
 import CRNRewardsCell from '../CRNRewardsCell'
 import LinkCRNButton from '../LinkCRNButton'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import ButtonLink from '../ButtonLink'
 
 export type ComputeResourceNodesTableProps = {
