@@ -1,12 +1,12 @@
 import { memo } from 'react'
 import { StyledExternalLinkButton } from './styles'
 import { ExternalLinkButtonProps } from './types'
-import { Icon } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/core'
 
 export const ExternalLinkButton = ({
   children,
   href,
-  size = 'big',
+  size = 'lg',
   ...rest
 }: ExternalLinkButtonProps) => {
   return (

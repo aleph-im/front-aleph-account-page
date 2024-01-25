@@ -2,7 +2,7 @@ import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useCoreChannelNodeDetailPage } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
-import { Button, Icon, Logo } from '@aleph-front/aleph-core'
+import { Button, Icon, Logo, NodeName } from '@aleph-front/core'
 import {
   ellipseAddress,
   getETHExplorerURL,
@@ -18,6 +18,9 @@ import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
 import NodeDetailLink from '@/components/common/NodeDetailLink'
+import { apiServer } from '@/helpers/constants'
+import Image from 'next/image'
+import Price from '@/components/common/Price'
 
 export const CoreChannelNodeDetailPage = () => {
   const {
@@ -71,8 +74,8 @@ export const CoreChannelNodeDetailPage = () => {
         <section tw="my-8 flex items-center justify-end gap-7">
           <Button
             kind="flat"
-            variant="text-only"
-            size="regular"
+            variant="textOnly"
+            size="md"
             color="error"
             onClick={handleRemove}
           >
@@ -82,7 +85,7 @@ export const CoreChannelNodeDetailPage = () => {
           <Button
             kind="neon"
             variant="primary"
-            size="regular"
+            size="md"
             color="main2"
             onClick={handleSubmit}
             disabled={!isDirty}
@@ -244,14 +247,7 @@ export const CoreChannelNodeDetailPage = () => {
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
                 name="TOTAL REWARDS"
-                value={
-                  <div tw="inline-flex gap-2 items-center">
-                    <div tw="whitespace-nowrap">
-                      {calculatedRewards?.toFixed(5)}
-                    </div>
-                    <Logo text="" color="main0" />
-                  </div>
-                }
+                value={<Price value={calculatedRewards} />}
               />
             </Card2>
           </div>
@@ -270,9 +266,9 @@ export const CoreChannelNodeDetailPage = () => {
                           <ButtonLink
                             href="/earn/crn"
                             color="main0"
-                            size="regular"
+                            size="md"
                             kind="neon"
-                            variant="text-only"
+                            variant="textOnly"
                           >
                             <div>
                               <Icon name="link" tw="w-3.5 h-3.5" /> link now
@@ -291,6 +287,8 @@ export const CoreChannelNodeDetailPage = () => {
                           name={crn.name}
                           picture={crn.picture}
                           tw="mr-auto w-auto cursor-pointer"
+                          apiServer={apiServer}
+                          ImageCmp={Image}
                         />
                       </Link>
                       {isOwner ? (
@@ -312,14 +310,7 @@ export const CoreChannelNodeDetailPage = () => {
               <Card2Field name="RESPONSIVENESS" value="?????" /> */}
               <Card2Field
                 name="TOTAL STAKED"
-                value={
-                  <div tw="inline-flex gap-2 items-center">
-                    <div tw="whitespace-nowrap">
-                      {node?.total_staked?.toFixed(5)}
-                    </div>
-                    <Logo text="" color="main0" />
-                  </div>
-                }
+                value={<Price value={node?.total_staked} />}
               />
               {/* <Card2Field name="TIME LEFT" value="?????" />
               <Card2Field name="UPTIME" value="?????" /> */}

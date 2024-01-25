@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button, ButtonProps } from '@aleph-front/aleph-core'
+import { Button, ButtonProps } from '@aleph-front/core'
 import { ButtonLinkProps } from './types'
 import { memo } from 'react'
 
@@ -23,7 +23,7 @@ export const ButtonLink = ({
         variant={variant || 'secondary'}
         color={color || 'main0'}
         kind={kind || 'neon'}
-        size={size || 'regular'}
+        size={size || 'md'}
       >
         {children}
       </Button>

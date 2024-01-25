@@ -1,10 +1,10 @@
 import { memo, useMemo } from 'react'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
-import { Logo, TextGradient } from '@aleph-front/aleph-core'
+import { ColorDot, Logo, TextGradient } from '@aleph-front/core'
 import Card1 from '../Card1'
-import ColorDot from '../ColorDot'
 import { SVGGradients } from '../charts'
+import Price from '../Price'
 
 export type RewardChartProps = {
   title: string
@@ -137,10 +137,7 @@ export const RewardChart = ({
               className="tp-body3"
             >
               <div>
-                <div tw="inline-flex gap-1 items-center">
-                  {(calculatedRewards || 0).toFixed(2)}
-                  <Logo text="" size="0.75rem" />
-                </div>
+                <Price value={calculatedRewards || 0} />
               </div>
               <div className="fs-10" tw="opacity-60">
                 Est. Rewards

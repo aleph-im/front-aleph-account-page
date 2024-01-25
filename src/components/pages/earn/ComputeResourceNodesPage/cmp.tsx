@@ -1,13 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import {
-  Button,
-  Checkbox,
-  Icon,
-  Tabs,
-  TextInput,
-} from '@aleph-front/aleph-core'
+import { Button, Checkbox, Icon, Tabs, TextInput } from '@aleph-front/core'
 import {
   UseComputeResourceNodesPageProps,
   useComputeResourceNodesPage,
@@ -55,7 +49,7 @@ export const ComputeResourceNodesPage = (
         color="main0"
         kind="neon"
         variant="secondary"
-        size="regular"
+        size="md"
         tw="gap-2.5"
         disabled={!account}
       >
@@ -117,7 +111,7 @@ export const ComputeResourceNodesPage = (
                 </p>
                 <ExternalLinkButton
                   href="https://docs.aleph.im/nodes/compute/"
-                  size="regular"
+                  size="md"
                 >
                   Node Setup Guide
                 </ExternalLinkButton>

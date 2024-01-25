@@ -3,8 +3,7 @@ import { AlephNode } from '@/domain/node'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
 import Card1 from '../Card1'
-import { TextGradient } from '@aleph-front/aleph-core'
-import ColorDot from '../ColorDot'
+import { ColorDot, TextGradient } from '@aleph-front/core'
 import { SVGGradients } from '../charts'
 
 export const NetworkHealthChart = ({

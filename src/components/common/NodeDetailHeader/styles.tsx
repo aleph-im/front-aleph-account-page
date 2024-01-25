@@ -1,7 +1,6 @@
-import { addClasses } from '@aleph-front/aleph-core'
+import { NodeAvatar, addClasses } from '@aleph-front/core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
-import NodeAvatar from '../NodeAvatar'
 import HiddenFileInput from '../HiddenFileInput'
 
 export type StyledContainerProps = {

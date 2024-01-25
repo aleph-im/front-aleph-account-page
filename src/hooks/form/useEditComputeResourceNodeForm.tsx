@@ -10,7 +10,7 @@ import {
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CRN, NodeManager, UpdateCRN } from '@/domain/node'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useNotification } from '@aleph-front/core'
 import { EntityAddAction } from '@/store/entity'
 
 export type UseEditComputeResourceNodeFormState = UpdateCRN
@@ -37,6 +37,10 @@ export type UseEditComputeResourceNodeFormReturn = {
   >
   bannerCtrl: UseControllerReturn<UseEditComputeResourceNodeFormState, 'banner'>
   rewardCtrl: UseControllerReturn<UseEditComputeResourceNodeFormState, 'reward'>
+  streamRewardCtrl: UseControllerReturn<
+    UseEditComputeResourceNodeFormState,
+    'stream_reward'
+  >
   managerCtrl: UseControllerReturn<
     UseEditComputeResourceNodeFormState,
     'manager'
@@ -120,7 +124,7 @@ export function useEditComputeResourceNodeForm({
     defaultValues,
     onSubmit,
     onSuccess,
-    resolver: zodResolver(NodeManager.updateCCNSchema),
+    resolver: zodResolver(NodeManager.updateCRNSchema),
     readyDeps: [defaultValues],
   })
   // @note: dont use watch, use useWatch instead: https://github.com/react-hook-form/react-hook-form/issues/10753
@@ -156,6 +160,11 @@ export function useEditComputeResourceNodeForm({
     name: 'reward',
   })
 
+  const streamRewardCtrl = useController({
+    control,
+    name: 'stream_reward',
+  })
+
   const managerCtrl = useController({
     control,
     name: 'manager',
@@ -185,6 +194,7 @@ export function useEditComputeResourceNodeForm({
     pictureCtrl,
     bannerCtrl,
     rewardCtrl,
+    streamRewardCtrl,
     managerCtrl,
     authorizedCtrl,
     lockedCtrl,

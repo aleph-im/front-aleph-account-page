@@ -12,7 +12,7 @@ import {
   useTransitionedEnterExit,
   useWindowScroll,
   useWindowSize,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import {
   UseBreadcrumbNamesReturn,
   useBreadcrumbNames,

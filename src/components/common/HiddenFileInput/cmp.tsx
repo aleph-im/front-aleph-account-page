@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react'
-import { FormError, FormLabel } from '@aleph-front/aleph-core'
+import { FormError, FormLabel } from '@aleph-front/core'
 import { HiddenFileInputProps } from './types'
 import { StyledHiddenFileInput } from './styles'
 

@@ -210,6 +210,23 @@ export const getETHExplorerURL = ({
     ? `https://etherscan.io/token/0x27702a26126e0B3702af63Ee09aC4d1A084EF628?a=${tokenAddress}`
     : undefined
 
+export const getAVAXExplorerURL = ({
+  hash,
+  address,
+  tokenAddress,
+}: {
+  hash?: string
+  address?: string
+  tokenAddress?: string
+}): string | undefined =>
+  hash
+    ? `https://subnets.avax.network/c-chain/tx/${hash}`
+    : address
+    ? `https://subnets.avax.network/c-chain/address/${address}`
+    : tokenAddress
+    ? `https://subnets.avax.network/c-chain/address/${tokenAddress}?tab=erc20`
+    : undefined
+
 export const getMultiaddressUrl = ({
   multiaddress,
 }: {

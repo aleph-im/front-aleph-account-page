@@ -1,8 +1,12 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import { useComputeResourceNodeDetailPage } from '@/hooks/pages/earn/useComputeResourceNodeDetailPage'
-import { Button, Icon, Logo } from '@aleph-front/aleph-core'
-import { ellipseAddress, getETHExplorerURL } from '@/helpers/utils'
+import { Button, Icon, NodeName } from '@aleph-front/core'
+import {
+  ellipseAddress,
+  getAVAXExplorerURL,
+  getETHExplorerURL,
+} from '@/helpers/utils'
 import Link from 'next/link'
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
 import Card2, { Card2Field } from '@/components/common/Card2'
@@ -11,6 +15,9 @@ import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeDecentralization from '@/components/common/NodeDecentralization'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
 import NodeDetailLink from '@/components/common/NodeDetailLink'
+import { apiServer } from '@/helpers/constants'
+import Image from 'next/image'
+import Price from '@/components/common/Price'
 
 export const ComputeResourceNodeDetailPage = () => {
   const {
@@ -26,9 +33,11 @@ export const ComputeResourceNodeDetailPage = () => {
     descriptionCtrl,
     bannerCtrl,
     pictureCtrl,
+    managerCtrl,
     isOwner,
     isDirty,
     rewardCtrl,
+    streamRewardCtrl,
     addressCtrl,
     asnTier,
     handleRemove,
@@ -60,8 +69,8 @@ export const ComputeResourceNodeDetailPage = () => {
         <section tw="my-8 flex items-center justify-end gap-7">
           <Button
             kind="flat"
-            variant="text-only"
-            size="regular"
+            variant="textOnly"
+            size="md"
             color="error"
             onClick={handleRemove}
           >
@@ -71,7 +80,7 @@ export const ComputeResourceNodeDetailPage = () => {
           <Button
             kind="neon"
             variant="primary"
-            size="regular"
+            size="md"
             color="main2"
             onClick={handleSubmit}
             disabled={!isDirty}
@@ -105,7 +114,7 @@ export const ComputeResourceNodeDetailPage = () => {
                   <NodeDetailEditableField
                     {...rewardCtrl.field}
                     {...rewardCtrl.fieldState}
-                    placeholder="address"
+                    placeholder="reward address"
                     isOwner={isOwner}
                   >
                     <NodeDetailLink
@@ -122,6 +131,28 @@ export const ComputeResourceNodeDetailPage = () => {
                 big
               />
               <Card2Field
+                name="STREAM REWARD ADDRESS"
+                value={
+                  <NodeDetailEditableField
+                    {...streamRewardCtrl.field}
+                    {...streamRewardCtrl.fieldState}
+                    placeholder="PAYG reward address"
+                    isOwner={isOwner}
+                  >
+                    <NodeDetailLink
+                      href={getAVAXExplorerURL({
+                        tokenAddress: streamRewardCtrl.field.value,
+                      })}
+                      isOwner={isOwner}
+                    >
+                      {streamRewardCtrl.field.value &&
+                        ellipseAddress(streamRewardCtrl.field.value)}
+                    </NodeDetailLink>
+                  </NodeDetailEditableField>
+                }
+                big
+              />
+              <Card2Field
                 name="ADDRESS"
                 value={
                   <NodeDetailEditableField
@@ -132,6 +163,32 @@ export const ComputeResourceNodeDetailPage = () => {
                   >
                     <NodeDetailLink href={node?.address} isOwner={isOwner}>
                       {node?.address}
+                    </NodeDetailLink>
+                  </NodeDetailEditableField>
+                }
+                big
+              />
+            </Card2>
+          </div>
+          <div>
+            <Card2 title="ADDITIONAL SETTINGS">
+              <Card2Field
+                name="MANAGER"
+                value={
+                  <NodeDetailEditableField
+                    {...managerCtrl.field}
+                    {...managerCtrl.fieldState}
+                    placeholder="manager address"
+                    isOwner={isOwner}
+                  >
+                    <NodeDetailLink
+                      href={getETHExplorerURL({
+                        address: managerCtrl.field.value,
+                      })}
+                      isOwner={isOwner}
+                    >
+                      {managerCtrl.field.value &&
+                        ellipseAddress(managerCtrl.field.value)}
                     </NodeDetailLink>
                   </NodeDetailEditableField>
                 }
@@ -163,14 +220,7 @@ export const ComputeResourceNodeDetailPage = () => {
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
                 name="ESTIMATED MONTHLY REWARD"
-                value={
-                  <div tw="inline-flex gap-2 items-center">
-                    <div tw="whitespace-nowrap">
-                      {calculatedRewards?.toFixed(5)}
-                    </div>
-                    <Logo text="" color="main0" />
-                  </div>
-                }
+                value={<Price value={calculatedRewards} />}
               />
             </Card2>
           </div>
@@ -183,9 +233,9 @@ export const ComputeResourceNodeDetailPage = () => {
                     {!isUserLinked && isLinkable ? (
                       <Button
                         color="main2"
-                        size="regular"
+                        size="md"
                         kind="neon"
-                        variant="text-only"
+                        variant="textOnly"
                         onClick={handleLink}
                       >
                         <div>
@@ -208,6 +258,8 @@ export const ComputeResourceNodeDetailPage = () => {
                       name={node.parentData.name}
                       picture={node.parentData.picture}
                       tw="mr-auto w-auto cursor-pointer"
+                      apiServer={apiServer}
+                      ImageCmp={Image}
                     />
                   </Link>
                   {isUserLinked ? (

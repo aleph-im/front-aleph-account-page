@@ -1,4 +1,4 @@
-import { Button } from '@aleph-front/aleph-core'
+import { Button } from '@aleph-front/core'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
@@ -6,7 +6,7 @@ export const StyledH1Button = styled(Button).attrs((props) => {
   return {
     ...props,
     variant: 'secondary',
-    size: 'big',
+    size: 'lg',
     kind: 'neon',
     color: 'main0',
   }
@@ -23,8 +23,8 @@ export const StyledLink = styled(Button).attrs((props) => {
     ...props,
     forwardedAs: 'a',
     kind: 'neon',
-    variant: 'text-only',
-    size: 'regular',
+    variant: 'textOnly',
+    size: 'md',
     color: 'main0',
   }
 })``

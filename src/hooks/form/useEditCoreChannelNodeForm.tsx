@@ -10,7 +10,7 @@ import {
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CCN, NodeManager, UpdateCCN } from '@/domain/node'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useNotification } from '@aleph-front/core'
 import { EntityAddAction } from '@/store/entity'
 
 export type UseEditCoreChannelNodeFormState = UpdateCCN

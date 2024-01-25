@@ -4,9 +4,9 @@ import { StakeManager } from '@/domain/stake'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
 import Card1 from '../Card1'
-import { Logo, TextGradient } from '@aleph-front/aleph-core'
-import ColorDot from '../ColorDot'
+import { ColorDot, Logo, TextGradient } from '@aleph-front/core'
 import { SVGGradients } from '../charts'
+import Price from '../Price'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L94
 export const EstimatedNodeRewardsChart = ({
@@ -115,9 +115,7 @@ export const EstimatedNodeRewardsChart = ({
                 tw="flex flex-col justify-between leading-4! gap-1 not-italic whitespace-nowrap"
                 className="tp-body3"
               >
-                <div tw="flex items-center gap-1">
-                  {entry.value} <Logo text="" />
-                </div>
+                <Price value={Number(entry.value)} />
                 <div className="fs-10" tw="opacity-60">
                   {entry.label}
                 </div>

@@ -1,6 +1,6 @@
 import { ReactNode, memo } from 'react'
 import Link from 'next/link'
-import { Icon } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/core'
 
 export type NodeDetailLinkProps = {
   href?: string

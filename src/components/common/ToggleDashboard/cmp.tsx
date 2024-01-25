@@ -5,7 +5,7 @@ import {
   Icon,
   useTransitionedEnterExit,
   useBounds,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import { StyledButtonsContainer, StyledToggleContainer } from './styles'
 
 export type ToggleDashboardProps = {
@@ -59,8 +59,8 @@ export const ToggleDashboard = ({
             <Button
               color="main0"
               kind="neon"
-              variant="text-only"
-              size="regular"
+              variant="textOnly"
+              size="md"
               onClick={handleToogle}
               css={[tw`gap-2.5 !mt-6 !flex !ml-auto`]}
             >
@@ -76,7 +76,7 @@ export const ToggleDashboard = ({
               color="main0"
               kind="neon"
               variant="secondary"
-              size="regular"
+              size="md"
               onClick={handleToogle}
               tw="gap-2.5"
             >

@@ -1,11 +1,14 @@
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'styled-components'
-import { themes, GlobalStyles, Footer } from '@aleph-front/aleph-core'
+import {
+  themes,
+  GlobalStyles,
+  Notification as NotificationProvider,
+} from '@aleph-front/core'
 import { GlobalStylesOverride } from '@/styles/global'
 import { AppStateProvider } from '@/contexts/appState'
-
 import Header from '@/components/common/Header'
-import NotificationProvider from '@/components/common/NotificationProvider'
+import Footer from '@/components/common/Footer'
 import Main from '@/components/common/Main'
 import Sidebar from '@/components/common/Sidebar'
 import Viewport from '@/components/common/Viewport'
@@ -17,11 +20,11 @@ export default function App({ Component, pageProps }: AppProps) {
   const { loading } = useRouterLoadState()
 
   return (
-    <ThemeProvider theme={themes.dark}>
+    <ThemeProvider theme={themes.aleph}>
       <GlobalStyles />
       <GlobalStylesOverride />
       <AppStateProvider>
-        <NotificationProvider>
+        <NotificationProvider max={10} timeout={2000}>
           <Viewport>
             <Sidebar />
             <Main>
@@ -30,7 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
                 {loading && <Loading />}
               </Content>
-              <Footer small />
+              <Footer />
             </Main>
           </Viewport>
         </NotificationProvider>

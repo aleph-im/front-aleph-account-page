@@ -1,4 +1,4 @@
-import { Button } from '@aleph-front/aleph-core'
+import { Button } from '@aleph-front/core'
 import styled from 'styled-components'
 
 export const StyledExternalLinkButton = styled(Button).attrs((props) => {
@@ -6,7 +6,7 @@ export const StyledExternalLinkButton = styled(Button).attrs((props) => {
     ...props,
     forwardedAs: 'a',
     kind: 'neon',
-    variant: 'text-only',
+    variant: 'textOnly',
     color: 'main0',
   }
 })``

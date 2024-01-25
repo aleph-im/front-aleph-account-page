@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
-import { Button, Icon, RenderLinkProps } from '@aleph-front/aleph-core'
+import { Button, Icon, RenderLinkProps } from '@aleph-front/core'
 import {
   StyledNavbarDesktop,
   StyledButton,
@@ -45,7 +45,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
           variant="secondary"
           color="main1"
           kind="neon"
-          size="regular"
+          size="md"
           onClick={handleDisplayWalletPicker}
         >
           <div tw="flex items-center gap-2.5">
@@ -60,7 +60,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
           variant="tertiary"
           color="main0"
           kind="neon"
-          size="regular"
+          size="md"
           onClick={handleDisplayWalletPicker}
         >
           <div tw="flex items-center gap-2.5">

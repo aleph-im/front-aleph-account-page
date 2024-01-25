@@ -6,7 +6,7 @@ import {
   CompositeTitle,
   NoisyContainer,
   TextInput,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import { useNewComputeResourceNodePage } from '@/hooks/pages/earn/useNewComputeResourceNodePage'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ButtonLink from '@/components/common/ButtonLink'
@@ -71,7 +71,7 @@ export const NewComputeResourceNodePage = () => {
             <div tw="mt-2">
               <ExternalLinkButton
                 href="https://docs.aleph.im/nodes/compute/"
-                size="regular"
+                size="md"
               >
                 How to install your node and retrieve your address
               </ExternalLinkButton>
@@ -83,12 +83,12 @@ export const NewComputeResourceNodePage = () => {
             color="main0"
             kind="neon"
             variant="primary"
-            size="regular"
+            size="md"
             type="submit"
           >
             Register compute node
           </Button>
-          <ButtonLink size="regular" variant="text-only" href="/earn/crn">
+          <ButtonLink size="md" variant="textOnly" href="/earn/crn">
             Cancel
           </ButtonLink>
         </section>

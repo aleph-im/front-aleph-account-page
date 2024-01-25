@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Icon } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/core'
 import StyledProgressBar from '../ColorProgressBar'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L137

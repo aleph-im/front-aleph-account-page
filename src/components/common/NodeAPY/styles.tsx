@@ -1,5 +1,5 @@
+import { ColorDot } from '@aleph-front/core'
 import styled from 'styled-components'
-import ColorDot from '../ColorDot'
 
 export type StyledAPYIconProps = { $performance: number }
 

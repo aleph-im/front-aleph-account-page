@@ -1,6 +1,12 @@
 import { memo, useMemo } from 'react'
 import tw from 'twin.macro'
-import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import {
+  NodeName,
+  NodeScore,
+  NodeVersion,
+  NotificationBadge,
+  TableColumn,
+} from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
@@ -8,6 +14,8 @@ import NodeDecentralization from '../NodeDecentralization'
 import CRNRewardsCell from '../CRNRewardsCell'
 import LinkCRNButton from '../LinkCRNButton'
 import ButtonLink from '../ButtonLink'
+import Image from 'next/image'
+import { apiServer } from '@/helpers/constants'
 
 export type ComputeResourceNodesTableProps = {
   nodes: CRN[]
@@ -60,6 +68,8 @@ export const ComputeResourceNodesTable = ({
                 hash={node.parentData.hash}
                 name={node.parentData.name}
                 picture={node.parentData.picture}
+                apiServer={apiServer}
+                ImageCmp={Image}
               />
             ) : (
               '-'
@@ -72,7 +82,13 @@ export const ComputeResourceNodesTable = ({
         sortable: true,
         sortBy: (node) => node.name,
         render: (node) => (
-          <NodeName hash={node.hash} name={node.name} picture={node.picture} />
+          <NodeName
+            hash={node.hash}
+            name={node.name}
+            picture={node.picture}
+            apiServer={apiServer}
+            ImageCmp={Image}
+          />
         ),
       },
       {
@@ -95,7 +111,10 @@ export const ComputeResourceNodesTable = ({
         width: '100%',
         sortBy: (node) => node.metricsData?.version,
         render: (node) => (
-          <NodeVersion node={node} nodes={nodes} lastVersion={lastVersion} />
+          <NodeVersion
+            version={node.metricsData?.version || ''}
+            lastVersion={lastVersion}
+          />
         ),
       },
       {
@@ -114,7 +133,7 @@ export const ComputeResourceNodesTable = ({
             />
             <ButtonLink
               kind="neon"
-              size="regular"
+              size="md"
               variant="secondary"
               color="main0"
               href={`/earn/crn/${node.hash}`}

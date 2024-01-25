@@ -3,7 +3,7 @@ import {
   Spinner,
   SpinnerProps,
   useTransitionedEnterExit,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import { StyledSpinnerContainer } from './styles'
 import { createPortal } from 'react-dom'
 

@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react'
-import { Button } from '@aleph-front/aleph-core'
+import { Button } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { CCN, NodeManager } from '@/domain/node'
 
@@ -44,7 +44,7 @@ export const StakeButton = ({
       {!isStakeNode ? (
         <Button
           kind="neon"
-          size="regular"
+          size="md"
           variant="secondary"
           color="main0"
           onClick={handleOnClick}
@@ -55,7 +55,7 @@ export const StakeButton = ({
       ) : (
         <Button
           kind="neon"
-          size="regular"
+          size="md"
           variant="secondary"
           color="main2"
           onClick={handleOnClick}

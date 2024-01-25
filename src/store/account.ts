@@ -58,6 +58,8 @@ export function getAccountReducer(): AccountReducer {
         // Not fully linked node
         // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
 
+        // ;(account as any).address = '0xf379B2F8c29EeDc1fC7d189240d0aD7c9164aF64'
+
         return {
           ...state,
           account,

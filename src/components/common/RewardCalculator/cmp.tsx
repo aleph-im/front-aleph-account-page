@@ -1,9 +1,10 @@
 import { ChangeEvent, memo, useCallback, useMemo, useState } from 'react'
-import { Logo, TextGradient, TextInput } from '@aleph-front/aleph-core'
+import { TextGradient, TextInput } from '@aleph-front/core'
 import SummaryTable from '../SummaryTable'
 import Card1 from '../Card1'
 import { StakeManager } from '@/domain/stake'
 import { CCN } from '@/domain/node'
+import Price from '../Price'
 
 export type RewardCalculatorProps = {
   nodes?: CCN[]
@@ -29,11 +30,7 @@ export const RewardCalculator = ({ nodes, ...rest }: RewardCalculatorProps) => {
     return [
       {
         name: 'Rewards per day',
-        value: (
-          <div tw="inline-flex items-center gap-2">
-            {rewards.toFixed(2)} <Logo text="" size="xs" />
-          </div>
-        ),
+        value: <Price value={rewards} />,
       },
       {
         name: 'Current APY',

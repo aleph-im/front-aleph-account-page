@@ -2,7 +2,7 @@ import { useAppState } from '@/contexts/appState'
 import { CCN, NodeManager } from '@/domain/node'
 import { StakeManager } from '@/domain/stake'
 import { EntityAddAction } from '@/store/entity'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useNotification } from '@aleph-front/core'
 import { useCallback, useMemo } from 'react'
 
 export type UseStakingReturn = {

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Button, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Button, Icon, Tabs, TextInput } from '@aleph-front/core'
 import {
   UseCoreChannelNodesPageProps,
   useCoreChannelNodesPage,
@@ -42,7 +42,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
         color="main0"
         kind="neon"
         variant="secondary"
-        size="regular"
+        size="md"
         tw="gap-2.5"
         disabled={!account || (accountBalance || 0) <= 200_000}
       >
@@ -102,7 +102,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                 </p>
                 <ExternalLinkButton
                   href="https://docs.aleph.im/nodes/core/"
-                  size="regular"
+                  size="md"
                 >
                   Node Setup Guide
                 </ExternalLinkButton>

@@ -112,6 +112,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
       name: node?.name,
       description: node?.description,
       reward: node?.reward,
+      stream_reward: node?.stream_reward,
       authorized: node?.authorized,
       locked: node?.locked,
       registration_url: node?.registration_url,

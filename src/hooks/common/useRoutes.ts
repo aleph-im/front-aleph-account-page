@@ -1,5 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { Route } from '@aleph-front/aleph-core'
+import { Route } from '@aleph-front/core'
 import { useMemo } from 'react'
 import { useFilterUserStakeNodes } from './useFilterUserStakeNodes'
 import { useFilterUserNodes } from './useFilterUserNodes'
@@ -35,27 +35,34 @@ export function useRoutes(): UseRoutesReturn {
   const routes: Route[] = useMemo(() => {
     return [
       {
-        name: 'Earn',
-        href: '/earn',
+        name: 'Account',
+        href: '/',
         icon: 'earn',
         children: [
           {
-            name: 'Staking',
-            href: '/earn/staking',
+            name: 'Earn',
+            href: '/',
             icon: 'earn',
-            flag: stakeNodesWarningFlag,
-          },
-          {
-            name: 'Core nodes',
-            href: '/earn/ccn',
-            icon: 'ccn',
-            flag: userCCNsWarningFlag,
-          },
-          {
-            name: 'Compute nodes',
-            href: '/earn/crn',
-            icon: 'crn',
-            flag: userCRNsWarningFlag,
+            children: [
+              {
+                name: 'Staking',
+                href: '/earn/staking',
+                icon: 'earn',
+                flag: stakeNodesWarningFlag,
+              },
+              {
+                name: 'Core nodes',
+                href: '/earn/ccn',
+                icon: 'ccn',
+                flag: userCCNsWarningFlag,
+              },
+              {
+                name: 'Compute nodes',
+                href: '/earn/crn',
+                icon: 'crn',
+                flag: userCRNsWarningFlag,
+              },
+            ],
           },
         ],
       },

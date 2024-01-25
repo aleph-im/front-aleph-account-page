@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react'
 import { CRN } from '@/domain/node'
 import { StakeManager } from '@/domain/stake'
-import { Logo } from '@aleph-front/aleph-core'
+import { Price } from '../Price/cmp'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L239
 export const CRNRewardsCell = ({ node }: { node: CRN }) => {
@@ -17,8 +17,7 @@ export const CRNRewardsCell = ({ node }: { node: CRN }) => {
         <>-</>
       ) : (
         <div tw="inline-flex gap-2 items-center">
-          <div tw="whitespace-nowrap">~ {rewards.toFixed(2)}</div>
-          <Logo text="" color="main0" />
+          ~ <Price value={rewards} />
         </div>
       )}
     </>

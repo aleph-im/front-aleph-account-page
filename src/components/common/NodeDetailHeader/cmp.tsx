@@ -11,7 +11,7 @@ import {
 import { AlephNode } from '@/domain/node'
 import { UseCoreChannelNodeDetailPageReturn } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
 import NodeDetailEditableField from '../NodeDetailEditableField'
-import { Icon } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/core'
 import { useFileToImg } from '@/hooks/common/useFileToImg'
 
 export type NodeDetailHeaderProps = HTMLAttributes<HTMLDivElement> & {

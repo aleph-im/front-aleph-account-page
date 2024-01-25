@@ -1,4 +1,4 @@
-import { RequestState } from '@aleph-front/aleph-core'
+import { RequestState } from '@aleph-front/core'
 import { StoreReducer } from './store'
 
 export type EntityState<T> = {

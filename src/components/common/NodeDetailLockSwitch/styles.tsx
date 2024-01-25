@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Switch } from '@aleph-front/aleph-core'
+import { Switch } from '@aleph-front/core'
 
 export const StyledSwitch = styled(Switch)`
   & span {

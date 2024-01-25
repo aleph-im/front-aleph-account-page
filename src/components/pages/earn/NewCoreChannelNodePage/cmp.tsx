@@ -6,7 +6,7 @@ import {
   CompositeTitle,
   NoisyContainer,
   TextInput,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import { useNewCoreChannelNodePage } from '@/hooks/pages/earn/useNewCoreChannelNodePage'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ButtonLink from '@/components/common/ButtonLink'
@@ -69,7 +69,7 @@ export const NewCoreChannelNodePage = () => {
             <div tw="mt-2">
               <ExternalLinkButton
                 href="https://docs.aleph.im/nodes/core/"
-                size="regular"
+                size="md"
               >
                 How to create a node
               </ExternalLinkButton>
@@ -81,12 +81,12 @@ export const NewCoreChannelNodePage = () => {
             color="main0"
             kind="neon"
             variant="primary"
-            size="regular"
+            size="md"
             type="submit"
           >
             Create core node
           </Button>
-          <ButtonLink size="regular" variant="text-only" href="/earn/ccn">
+          <ButtonLink size="md" variant="textOnly" href="/earn/ccn">
             Cancel
           </ButtonLink>
         </section>

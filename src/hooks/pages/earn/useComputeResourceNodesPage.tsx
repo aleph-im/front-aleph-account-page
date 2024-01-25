@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/core'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,

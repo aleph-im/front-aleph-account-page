@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/aleph-core'
+import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/core'
 import {
   UseStakingPageProps,
   useStakingPage,

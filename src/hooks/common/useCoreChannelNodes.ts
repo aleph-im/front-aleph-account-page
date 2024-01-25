@@ -1,6 +1,6 @@
 import { useAppState } from '@/contexts/appState'
 import { CCN, NodeLastVersions } from '@/domain/node'
-import { useDebounceState } from '@aleph-front/aleph-core'
+import { useDebounceState } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 

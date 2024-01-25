@@ -1,5 +1,10 @@
 import { memo, useMemo } from 'react'
-import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import {
+  NodeName,
+  NodeScore,
+  NotificationBadge,
+  TableColumn,
+} from '@aleph-front/core'
 import { CCN } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
@@ -10,6 +15,8 @@ import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import NodeAmount from '@/components/common/NodeAmount'
 import tw from 'twin.macro'
 import ButtonLink from '../ButtonLink'
+import { apiServer } from '@/helpers/constants'
+import Image from 'next/image'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]
@@ -54,7 +61,13 @@ export const StakingNodesTable = ({
         sortable: true,
         sortBy: (node) => node.name,
         render: (node) => (
-          <NodeName hash={node.hash} name={node.name} picture={node.picture} />
+          <NodeName
+            hash={node.hash}
+            name={node.name}
+            picture={node.picture}
+            apiServer={apiServer}
+            ImageCmp={Image}
+          />
         ),
       },
       {
@@ -98,7 +111,7 @@ export const StakingNodesTable = ({
             />
             <ButtonLink
               kind="neon"
-              size="regular"
+              size="md"
               variant="secondary"
               color="main0"
               href={`/earn/ccn/${node.hash}`}

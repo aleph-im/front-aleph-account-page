@@ -1,8 +1,7 @@
 import { memo, useMemo } from 'react'
-import { TextGradient } from '@aleph-front/aleph-core'
+import { ColorDot, TextGradient } from '@aleph-front/core'
 import { AlephNode } from '@/domain/node'
 import Card1 from '../Card1'
-import ColorDot from '../ColorDot'
 import { useHostingProviderTop } from '@/hooks/common/useHostingProviderTop'
 
 export const HostingProviderChart = ({

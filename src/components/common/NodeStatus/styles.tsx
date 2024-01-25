@@ -1,6 +1,6 @@
 import styled from 'styled-components'
-import ColorDot from '../ColorDot'
 import { AlephNode } from '@/domain/node'
+import { ColorDot } from '@aleph-front/core'
 
 export type StyledStatusIconProps = { $status: AlephNode['status'] }
 

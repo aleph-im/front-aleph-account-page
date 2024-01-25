@@ -81,4 +81,5 @@ export const updateCCNSchema = updateBaseNodeSchema.extend({
 
 export const updateCRNSchema = updateBaseNodeSchema.extend({
   address: optionalString(urlSchema),
+  stream_reward: optionalString(ethereumAddressSchema),
 })

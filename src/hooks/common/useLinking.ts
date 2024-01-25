@@ -1,7 +1,7 @@
 import { useAppState } from '@/contexts/appState'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import { EntityAddAction } from '@/store/entity'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useNotification } from '@aleph-front/core'
 import { useCallback, useMemo } from 'react'
 import { useUserCoreChannelNode } from './useUserCoreChannelNode'
 

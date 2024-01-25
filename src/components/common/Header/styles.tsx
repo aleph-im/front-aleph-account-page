@@ -5,7 +5,7 @@ import {
   RouterNavbar,
   WalletPicker,
   getResponsiveCss,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
@@ -14,7 +14,7 @@ export const StyledButton = styled(Button).attrs((props) => {
     ...props,
     color: 'main0',
     kind: 'neon',
-    size: 'regular',
+    size: 'md',
     variant: 'tertiary',
   }
 })`

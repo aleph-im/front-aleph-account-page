@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { CCN, CRN, NodeLastVersions, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 import { useAppStoreRequest } from '../useStoreRequest'
-import { useRequest } from '@aleph-front/aleph-core'
+import { useRequest } from '@aleph-front/core'
 import { EntitySetAction } from '@/store/entity'
 
 export type UseRequestAlephNodesProps = {

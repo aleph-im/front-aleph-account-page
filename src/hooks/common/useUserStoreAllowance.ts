@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useAppState } from '@/contexts/appState'
 import { FileManager } from '@/domain/file'
 import { mbPerAleph } from '@/helpers/constants'
-import { useLocalRequest } from '@aleph-front/aleph-core'
+import { useLocalRequest } from '@aleph-front/core'
 
 export type UseUserStoreAllowanceReturn = {
   consumedSize?: number

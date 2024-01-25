@@ -77,6 +77,7 @@ export type CRN = BaseNode & {
   scoreData?: CRNScore
   metricsData?: CRNMetrics
   parentData?: CCN
+  stream_reward?: string
 }
 
 export type AlephNode = CCN | CRN
@@ -178,6 +179,7 @@ export type UpdateCCN = BaseUpdateNode & {
 
 export type UpdateCRN = BaseUpdateNode & {
   address?: string
+  stream_reward?: string
 }
 
 export type UpdateAlephNode = UpdateCCN | UpdateCRN

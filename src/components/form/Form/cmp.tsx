@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { FormProps } from './types'
 import { StyledForm } from './styles'
-import { FormError, FormErrorProps } from '@aleph-front/aleph-core'
+import { FormError, FormErrorProps } from '@aleph-front/core'
 
 export const Form = ({ children, onSubmit, errors, ...rest }: FormProps) => {
   return (

@@ -7,7 +7,7 @@ import {
   UseRequestProps,
   UseRequestReturn,
   useRequest,
-} from '@aleph-front/aleph-core'
+} from '@aleph-front/core'
 
 export type StoreRequest<T> = {
   data: T | undefined

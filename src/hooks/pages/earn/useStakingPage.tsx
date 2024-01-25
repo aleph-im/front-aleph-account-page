@@ -8,7 +8,7 @@ import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
-import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useStaking } from '@/hooks/common/useStaking'
 

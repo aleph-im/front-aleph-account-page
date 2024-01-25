@@ -1,4 +1,4 @@
-import { ToggleContainer } from '@aleph-front/aleph-core'
+import { ToggleContainer } from '@aleph-front/core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 

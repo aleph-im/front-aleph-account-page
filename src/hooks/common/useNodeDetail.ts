@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { useNotification } from '@aleph-front/aleph-core'
+import { useNotification } from '@aleph-front/core'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 import { EntityDelAction } from '@/store/entity'

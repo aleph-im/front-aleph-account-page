@@ -1,4 +1,4 @@
-import { Table } from '@aleph-front/aleph-core'
+import { Table } from '@aleph-front/core'
 import { ReactNode } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
@@ -23,7 +23,7 @@ export const StyledTable = styled(
       border-bottom: 1px solid #ffffff22;
 
       &:first-child {
-        ${tw`w-2/3 max-w-0 text-xs uppercase`}
+        ${tw`w-2/3 max-w-0 text-12 uppercase`}
       }
 
       &:last-child {

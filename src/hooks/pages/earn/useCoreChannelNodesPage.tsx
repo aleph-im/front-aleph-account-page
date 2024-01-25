@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/aleph-core'
+import { NotificationBadge, TabsProps } from '@aleph-front/core'
 import { useAppState } from '@/contexts/appState'
 import { CCN } from '@/domain/node'
 import {

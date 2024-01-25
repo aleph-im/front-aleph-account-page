@@ -1,12 +1,20 @@
 import { memo, useMemo } from 'react'
 import tw from 'twin.macro'
-import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
+import {
+  NodeName,
+  NodeScore,
+  NodeVersion,
+  NotificationBadge,
+  TableColumn,
+} from '@aleph-front/core'
 import { CCN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
 import APYCell from '@/components/common/NodeAPY'
 import NodeStaked from '@/components/common/NodeStaked'
 import ButtonLink from '../ButtonLink'
+import { apiServer } from '@/helpers/constants'
+import Image from 'next/image'
 
 export type CoreChannelNodesTableProps = {
   nodes: CCN[]
@@ -51,7 +59,13 @@ export const CoreChannelNodesTable = ({
         sortable: true,
         sortBy: (node) => node.name,
         render: (node) => (
-          <NodeName hash={node.hash} name={node.name} picture={node.picture} />
+          <NodeName
+            hash={node.hash}
+            name={node.name}
+            picture={node.picture}
+            apiServer={apiServer}
+            ImageCmp={Image}
+          />
         ),
       },
       {
@@ -76,7 +90,10 @@ export const CoreChannelNodesTable = ({
         sortable: true,
         sortBy: (node) => node.metricsData?.version,
         render: (node) => (
-          <NodeVersion node={node} nodes={nodes} lastVersion={lastVersion} />
+          <NodeVersion
+            version={node.metricsData?.version || ''}
+            lastVersion={lastVersion}
+          />
         ),
       },
       {
@@ -86,7 +103,7 @@ export const CoreChannelNodesTable = ({
           <div tw="inline-flex gap-3 justify-end">
             <ButtonLink
               kind="neon"
-              size="regular"
+              size="md"
               variant="secondary"
               color="main0"
               href={`/earn/ccn/${node.hash}`}

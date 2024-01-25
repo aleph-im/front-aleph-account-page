@@ -11,7 +11,7 @@ import {
   ChangeEvent,
 } from 'react'
 import tw from 'twin.macro'
-import { Icon } from '@aleph-front/aleph-core'
+import { Icon } from '@aleph-front/core'
 
 export type NodeDetailEditableFieldProps =
   InputHTMLAttributes<HTMLDivElement> & {

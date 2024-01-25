@@ -1,7 +1,7 @@
 import { AnchorHTMLAttributes, ReactNode, memo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { IconName, LinkComponent, RouterSidebar } from '@aleph-front/aleph-core'
+import { IconName, LinkComponent, RouterSidebar } from '@aleph-front/core'
 import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
 import { useRoutes } from '@/hooks/common/useRoutes'
 
