@@ -428,7 +428,7 @@ export async function fetchAndCache<T = unknown, P = unknown>(
   url: string,
   cacheKey: string,
   cacheTime: number,
-  parse?: (data: T) => P,
+  parse?: (data: T) => P | Promise<P>,
 ): Promise<P> {
   const cached = localStorage.getItem(cacheKey)
   const now = Date.now()
@@ -446,7 +446,7 @@ export async function fetchAndCache<T = unknown, P = unknown>(
     let value = await data.json()
 
     if (parse) {
-      value = parse(value)
+      value = await parse(value)
     }
 
     const toCache = JSON.stringify({
@@ -503,16 +503,6 @@ export function getLatestReleases(
   }
 
   return versions
-}
-
-/**
- * Strips away the extra commit number and hash from the "git describe --tags" output
- *
- * @param {String} gitTag The output of a "git describe --tags" command
- * @returns The tag name without the extra commit number and hash
- */
-export function stripExtraTagDescription(gitTag: string) {
-  return gitTag.replace(/-\d+-g\w{7}$/gi, '')
 }
 
 /**

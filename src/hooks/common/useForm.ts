@@ -57,7 +57,7 @@ export function useForm<FormState extends Record<string, any>, Response>({
     if (typeof props.defaultValues !== 'object') return
     form.reset(props.defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, readyDeps)
+  }, [...readyDeps])
 
   const [state, setState] = useState<RequestState<Response>>({
     data: undefined,

@@ -1,7 +1,6 @@
 import {
   apiServer,
   channel,
-  defaultAccountChannel,
   monitorAddress,
   postType,
   scoringAddress,
@@ -10,11 +9,7 @@ import {
 } from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
-import {
-  fetchAndCache,
-  getLatestReleases,
-  stripExtraTagDescription,
-} from '@/helpers/utils'
+import { fetchAndCache, getLatestReleases } from '@/helpers/utils'
 import { AggregateMessage, ItemType } from 'aleph-sdk-ts/dist/messages/types'
 import {
   newCCNSchema,
@@ -197,7 +192,6 @@ export class NodeManager {
 
   constructor(
     protected account?: Account,
-    protected channel = defaultAccountChannel,
     protected fileManager: FileManager = new FileManager(account, channel),
   ) {}
 
@@ -582,35 +576,6 @@ export class NodeManager {
       if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
         return 'One of the linked CRN is underperforming'
     }
-  }
-
-  isNodeExperimental(node: AlephNode, lastVersion: NodeLastVersions): boolean {
-    const closestTag = stripExtraTagDescription(node.metricsData?.version || '')
-
-    return (
-      closestTag !== node.metricsData?.version &&
-      closestTag === lastVersion.prerelease
-    )
-  }
-
-  isNodeLatest(node: AlephNode, lastVersion: NodeLastVersions) {
-    return node.metricsData?.version === lastVersion.latest
-  }
-
-  isNodePrerelease(node: AlephNode, lastVersion: NodeLastVersions) {
-    return node.metricsData?.version === lastVersion.prerelease
-  }
-
-  isNodeUptodate(node: AlephNode, lastVersion: NodeLastVersions) {
-    return (
-      this.isNodeLatest(node, lastVersion) ||
-      this.isNodePrerelease(node, lastVersion) ||
-      this.isNodeExperimental(node, lastVersion)
-    )
-  }
-
-  isNodeOutdated(node: AlephNode, lastVersion: NodeLastVersions) {
-    return lastVersion.outdated === node.metricsData?.version
   }
 
   protected parseResourceNodes(crns: CRN[]): CRN[] {

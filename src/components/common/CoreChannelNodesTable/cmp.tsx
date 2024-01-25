@@ -3,12 +3,9 @@ import tw from 'twin.macro'
 import { NotificationBadge, TableColumn } from '@aleph-front/aleph-core'
 import { CCN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
-import NodeName from '@/components/common/NodeName'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
-import NodeScore from '@/components/common/NodeScore'
 import APYCell from '@/components/common/NodeAPY'
 import NodeStaked from '@/components/common/NodeStaked'
-import NodeVersion from '../NodeVersion'
 import ButtonLink from '../ButtonLink'
 
 export type CoreChannelNodesTableProps = {
