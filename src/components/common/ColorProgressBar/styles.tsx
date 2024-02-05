@@ -11,7 +11,7 @@ export const StyledProgressBar = styled.div<StyledProgressBarProps>(
   ({ theme, $color = 'main0', $gradient, $percent }) => {
     const gradient = $gradient ? theme.gradient[$gradient]?.fn : undefined
     const color = gradient || theme.color[$color] || $color
-    const bgColor = `${theme.color.base0}20`
+    const bgColor = theme.color.disabled2
 
     return [
       tw`relative h-0.5 w-full`,

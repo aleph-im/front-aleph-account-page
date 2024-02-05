@@ -5,11 +5,11 @@ export const StyledDotIcon = styled.div<{ $score?: number }>(
   ({ theme, $score }) => {
     const color =
       $score === undefined
-        ? `${theme.color.base0}20`
+        ? theme.color.disabled2
         : $score >= 0.8
-        ? theme.color.main1
+        ? theme.color.success
         : $score >= 0.5
-        ? theme.color.main0
+        ? theme.color.info
         : theme.color.error
 
     return [

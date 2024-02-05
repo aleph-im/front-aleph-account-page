@@ -62,7 +62,7 @@ export const NetworkHealthChart = ({
     ]
   }, [nodes])
 
-  const disabledColor = `${theme.color.base0}20`
+  const disabledColor = theme.color.disabled2
   const cols = 2
   const reverseData = [...data].reverse()
 

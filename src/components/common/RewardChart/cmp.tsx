@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
-import { ColorDot, Logo, TextGradient } from '@aleph-front/core'
+import { ColorDot, TextGradient } from '@aleph-front/core'
 import Card1 from '../Card1'
 import { SVGGradients } from '../charts'
 import Price from '../Price'
@@ -66,7 +66,7 @@ export const RewardChart = ({
     ]
   }, [disabled, calculatedRewards, distributionInterval, pendingTime])
 
-  const disabledColor = `${theme.color.base0}20`
+  const disabledColor = theme.color.disabled2
 
   return (
     <Card1 disabled={disabled} loading={loading} {...rest}>

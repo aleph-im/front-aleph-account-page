@@ -44,7 +44,7 @@ export const EstimatedNodeRewardsChart = ({
     ]
   }, [nodes, stakeManager])
 
-  const disabledColor = `${theme.color.base0}20`
+  const disabledColor = theme.color.disabled2
 
   return (
     <Card1 loading={!nodes} {...rest}>

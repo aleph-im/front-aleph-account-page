@@ -1,6 +1,6 @@
 import { apiServer } from './constants'
 import E_ from './errors'
-import { ProgramMessage, StoreMessage } from 'aleph-sdk-ts/dist/messages/types'
+import { BaseMessage, MessageType } from 'aleph-sdk-ts/dist/messages/types'
 
 /**
  * Takes a string and returns a shortened version of it, with the first 6 and last 4 characters separated by '...'
@@ -175,6 +175,8 @@ export const humanReadableCurrency = (value?: number) => {
   else return (value / 10 ** 9).toFixed(1) + 'B'
 }
 
+const messageTypeWhitelist = new Set(...Object.values(MessageType))
+
 /**
  * Returns a link to the Aleph explorer for a given message
  */
@@ -183,8 +185,10 @@ export const getExplorerURL = ({
   chain,
   sender,
   type,
-}: ProgramMessage | StoreMessage) =>
-  `https://explorer.aleph.im/address/${chain}/${sender}/message/${type}/${item_hash}`
+}: BaseMessage) => {
+  type = messageTypeWhitelist.has(type) ? type : MessageType.post
+  return `https://explorer.aleph.im/address/${chain}/${sender}/message/${type}/${item_hash}`
+}
 
 export const getDate = (time: number): string => {
   const [date, hour] = new Date(time * 1000).toISOString().split('T')
