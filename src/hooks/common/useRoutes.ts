@@ -20,6 +20,7 @@ export function useRoutes(): UseRoutesReturn {
 
   const { warningFlag: stakeNodesWarningFlag } = useFilterNodeIssues({
     nodes: stakeNodes,
+    isStaking: true,
   })
 
   const { warningFlag: userCCNsWarningFlag } = useFilterNodeIssues({
