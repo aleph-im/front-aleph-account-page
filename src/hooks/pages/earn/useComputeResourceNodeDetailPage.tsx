@@ -116,7 +116,6 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
       authorized: node?.authorized,
       locked: node?.locked,
       registration_url: node?.registration_url,
-      manager: node?.manager,
       picture: node?.picture,
       banner: node?.banner,
       address: node?.address,

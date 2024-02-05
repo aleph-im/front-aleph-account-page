@@ -47,7 +47,7 @@ export type BaseNode = {
   picture?: string
   banner?: string
   description?: string
-  manager?: string
+  manager?: string // not needed in CRN & optional in CCN
 
   // --------- CCN fields ?
   registration_url?: string

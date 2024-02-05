@@ -67,7 +67,6 @@ export const updateBaseNodeSchema = z.object({
   banner: optionalString(requiredStringSchema).or(imgFileSchema),
   description: optionalString(requiredStringSchema),
   reward: optionalString(ethereumAddressSchema),
-  manager: optionalString(ethereumAddressSchema),
   authorized: optionalString(requiredStringSchema).or(
     z.array(ethereumAddressSchema).optional(),
   ),
@@ -77,6 +76,7 @@ export const updateBaseNodeSchema = z.object({
 
 export const updateCCNSchema = updateBaseNodeSchema.extend({
   multiaddress: optionalString(multiaddressSchema),
+  manager: optionalString(ethereumAddressSchema),
 })
 
 export const updateCRNSchema = updateBaseNodeSchema.extend({

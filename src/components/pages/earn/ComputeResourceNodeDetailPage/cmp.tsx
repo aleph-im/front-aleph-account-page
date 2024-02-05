@@ -33,7 +33,6 @@ export const ComputeResourceNodeDetailPage = () => {
     descriptionCtrl,
     bannerCtrl,
     pictureCtrl,
-    managerCtrl,
     isOwner,
     isDirty,
     rewardCtrl,
@@ -163,32 +162,6 @@ export const ComputeResourceNodeDetailPage = () => {
                   >
                     <NodeDetailLink href={node?.address} isOwner={isOwner}>
                       {node?.address}
-                    </NodeDetailLink>
-                  </NodeDetailEditableField>
-                }
-                big
-              />
-            </Card2>
-          </div>
-          <div>
-            <Card2 title="ADDITIONAL SETTINGS">
-              <Card2Field
-                name="MANAGER"
-                value={
-                  <NodeDetailEditableField
-                    {...managerCtrl.field}
-                    {...managerCtrl.fieldState}
-                    placeholder="manager address"
-                    isOwner={isOwner}
-                  >
-                    <NodeDetailLink
-                      href={getETHExplorerURL({
-                        address: managerCtrl.field.value,
-                      })}
-                      isOwner={isOwner}
-                    >
-                      {managerCtrl.field.value &&
-                        ellipseAddress(managerCtrl.field.value)}
                     </NodeDetailLink>
                   </NodeDetailEditableField>
                 }

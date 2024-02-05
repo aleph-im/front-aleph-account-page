@@ -41,10 +41,6 @@ export type UseEditComputeResourceNodeFormReturn = {
     UseEditComputeResourceNodeFormState,
     'stream_reward'
   >
-  managerCtrl: UseControllerReturn<
-    UseEditComputeResourceNodeFormState,
-    'manager'
-  >
   authorizedCtrl: UseControllerReturn<
     UseEditComputeResourceNodeFormState,
     'authorized'
@@ -165,11 +161,6 @@ export function useEditComputeResourceNodeForm({
     name: 'stream_reward',
   })
 
-  const managerCtrl = useController({
-    control,
-    name: 'manager',
-  })
-
   const authorizedCtrl = useController({
     control,
     name: 'authorized',
@@ -195,7 +186,6 @@ export function useEditComputeResourceNodeForm({
     bannerCtrl,
     rewardCtrl,
     streamRewardCtrl,
-    managerCtrl,
     authorizedCtrl,
     lockedCtrl,
     registrationUrlCtrl,
