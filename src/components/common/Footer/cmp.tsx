@@ -1,10 +1,12 @@
-import { Footer as BaseFooter } from '@aleph-front/core'
+import { Footer as BaseFooter, LinkComponent } from '@aleph-front/core'
+import Link from 'next/link'
 
 export const Footer = () => {
   return (
     <BaseFooter
       {...{
         small: true,
+        Link: Link as LinkComponent,
         buttons: [],
         media: [
           {

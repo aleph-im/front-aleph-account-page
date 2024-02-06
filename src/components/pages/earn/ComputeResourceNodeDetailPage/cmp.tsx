@@ -6,6 +6,7 @@ import {
   ellipseAddress,
   getAVAXExplorerURL,
   getETHExplorerURL,
+  humanReadableSize,
 } from '@/helpers/utils'
 import Link from 'next/link'
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
@@ -18,6 +19,8 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
+import ButtonLink from '@/components/common/ButtonLink'
+import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 
 export const ComputeResourceNodeDetailPage = () => {
   const {
@@ -39,6 +42,9 @@ export const ComputeResourceNodeDetailPage = () => {
     streamRewardCtrl,
     addressCtrl,
     asnTier,
+    nodeSpecs,
+    createInstanceUrl,
+    nodeBenchmark,
     handleRemove,
     handleSubmit,
     handleLink,
@@ -167,6 +173,82 @@ export const ComputeResourceNodeDetailPage = () => {
                 }
                 big
               />
+            </Card2>
+          </div>
+          <div>
+            <Card2 title="HARDWARE">
+              <Card2Field name="CPU" value={nodeSpecs?.properties.cpu.vendor} />
+              <Card2Field
+                name="CPU ARCHITECTURE"
+                value={nodeSpecs?.properties.cpu.architecture}
+              />
+              <Card2Field name="CPU COUNT" value={nodeSpecs?.cpu.count} />
+              <Card2Field
+                name="CPU FREQUENCY"
+                value={`${(
+                  (nodeSpecs?.cpu.core_frequencies.max || 0) / 1024
+                ).toFixed(2)} GHz`}
+              />
+              <Card2Field
+                name="CPU SPEED"
+                value={
+                  nodeBenchmark?.cpu.benchmark.average && (
+                    <InfoTooltipButton
+                      plain
+                      my="top-left"
+                      at="top-right"
+                      tooltipContent={
+                        <div className="text-left tp-body1 fs-18">
+                          <div>CPU SPEED</div>
+                        </div>
+                      }
+                    >
+                      {nodeBenchmark?.cpu.benchmark.average.toFixed(1)}s
+                    </InfoTooltipButton>
+                  )
+                }
+              />
+              <Card2Field
+                name="RAM"
+                value={humanReadableSize(nodeSpecs?.mem.total_kB, 'KiB')}
+              />
+              <Card2Field
+                name="RAM SPEED"
+                value={
+                  nodeBenchmark?.ram.speed && (
+                    <InfoTooltipButton
+                      plain
+                      my="top-left"
+                      at="top-right"
+                      tooltipContent={
+                        <div className="text-left tp-body1 fs-18">
+                          <div>RAM SPEED</div>
+                        </div>
+                      }
+                    >
+                      {humanReadableSize(nodeBenchmark?.ram.speed || 0, 'MiB')}
+                      /s
+                    </InfoTooltipButton>
+                  )
+                }
+              />
+              <Card2Field
+                name="HDD"
+                value={humanReadableSize(nodeSpecs?.disk.total_kB, 'KiB')}
+              />
+              {createInstanceUrl && (
+                <div tw="text-center pt-6">
+                  <ButtonLink
+                    href={createInstanceUrl}
+                    target="_blank"
+                    kind="neon"
+                    variant="primary"
+                    size="md"
+                  >
+                    Create Instance
+                  </ButtonLink>
+                </div>
+              )}
             </Card2>
           </div>
           <div>

@@ -9,13 +9,19 @@ import {
 } from '@/helpers/constants'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { messages } from 'aleph-sdk-ts'
-import { fetchAndCache, getLatestReleases } from '@/helpers/utils'
+import {
+  fetchAndCache,
+  getLatestReleases,
+  getVersionNumber,
+  sleep,
+} from '@/helpers/utils'
 import { AggregateMessage, ItemType } from 'aleph-sdk-ts/dist/messages/types'
 import {
   newCCNSchema,
   newCRNSchema,
   updateCCNSchema,
   updateCRNSchema,
+  urlSchema,
 } from '@/helpers/schemas'
 import { FileManager } from './file'
 import { subscribeSocketFeed } from '@/helpers/socket'
@@ -185,6 +191,62 @@ export type UpdateCRN = BaseUpdateNode & {
 export type UpdateAlephNode = UpdateCCN | UpdateCRN
 
 export type NodesResponse = { ccns: CCN[]; crns: CRN[]; timestamp: number }
+
+// ---------- @todo: refactor into npm package
+
+export type CRNSpecs = {
+  hash: string
+  name?: string
+  cpu: {
+    count: number
+    load_average: {
+      load1: number
+      load5: number
+      load15: number
+    }
+    core_frequencies: {
+      min: number
+      max: number
+    }
+  }
+  mem: {
+    total_kB: number
+    available_kB: number
+  }
+  disk: {
+    total_kB: number
+    available_kB: number
+  }
+  period: {
+    start_timestamp: string
+    duration_seconds: number
+  }
+  properties: {
+    cpu: {
+      architecture: string
+      vendor: string
+    }
+  }
+  active: boolean
+}
+
+export type CRNBenchmark = {
+  hash: string
+  name?: string
+  cpu: {
+    benchmark: {
+      series: number[]
+      average: number
+      average_str: string
+      total: number
+    }
+  }
+  ram: {
+    duration: number
+    speed: number
+    speed_str: string
+  }
+}
 
 export class NodeManager {
   static newCCNSchema = newCCNSchema
@@ -577,6 +639,109 @@ export class NodeManager {
         return 'The CCN has less than three linked CRNs'
       if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
         return 'One of the linked CRN is underperforming'
+    }
+  }
+
+  getNodeVersionNumber(node: CRN): number {
+    if (!node.metricsData?.version) return 0
+    return getVersionNumber(node.metricsData?.version)
+  }
+
+  isStreamPaymentSupported(node: CRN): boolean {
+    return (
+      !!node.stream_reward &&
+      this.getNodeVersionNumber(node) >= getVersionNumber('v0.4.0')
+    )
+  }
+
+  // @todo: move this to domain package
+  async getCRNsSpecs(nodes: CRN[]): Promise<CRNSpecs[]> {
+    const specs = await Promise.all(nodes.map((node) => this.getCRNspecs(node)))
+    console.log('specs', specs)
+    const filtered = specs.filter((spec) => spec !== undefined) as CRNSpecs[]
+    console.log('filtered', filtered)
+    return filtered
+  }
+
+  async getCRNspecs(node: CRN, retries = 2): Promise<CRNSpecs | undefined> {
+    if (!node.address) return
+
+    const address = node.address.toLowerCase().replace(/\/$/, '')
+    const url = `${address}/vm/78451e20da3c19a3e2cd8e97526e09244631fba12f451b9b60cdb2915ab0e414/about/usage/system`
+
+    const { success } = urlSchema.safeParse(url)
+    if (!success) return
+
+    try {
+      return await fetchAndCache(
+        url,
+        `3crn_specs_${node.hash}`,
+        3_600,
+        (res: CRNSpecs) => {
+          if (res.cpu === undefined) throw new Error('invalid response')
+
+          return {
+            ...res,
+            hash: node.hash,
+            name: node.name,
+          }
+        },
+      )
+    } catch (e) {
+      if (!retries) return
+      await sleep(100 * 2)
+      return this.getCRNspecs(node, retries - 1)
+    }
+  }
+
+  async getCRNBenchmark(
+    node: CRN,
+    retries = 4,
+  ): Promise<CRNBenchmark | undefined> {
+    if (!node.address) return
+    const { hash, name } = node
+
+    const address = node.address.toLowerCase().replace(/\/$/, '')
+    const url1 = `${address}/vm/873889eb4ce554385e7263724bd0745130099c24fd9c535f0a648100138a2514/benchmark`
+    const url2 = `${address}/vm/873889eb4ce554385e7263724bd0745130099c24fd9c535f0a648100138a2514/memory_speed`
+
+    const { success: success1 } = urlSchema.safeParse(url1)
+    const { success: success2 } = urlSchema.safeParse(url2)
+
+    if (!success1 || !success2) return
+
+    try {
+      const [cpu, ram] = await Promise.all([
+        fetchAndCache(
+          url1,
+          `4crn_benchmark_cpu_${node.hash}`,
+          3_600,
+          (res: CRNBenchmark['cpu']) => {
+            if (res.benchmark === undefined) throw new Error('invalid response')
+            return res
+          },
+        ),
+        fetchAndCache(
+          url2,
+          `4crn_benchmark_ram_${node.hash}`,
+          3_600,
+          (res: CRNBenchmark['ram']) => {
+            if (res.speed_str === undefined) throw new Error('invalid response')
+            return res
+          },
+        ),
+      ])
+
+      return {
+        hash,
+        name,
+        cpu,
+        ram,
+      }
+    } catch (e) {
+      if (!retries) return
+      await sleep(100 * 2)
+      return this.getCRNBenchmark(node, retries - 1)
     }
   }
 

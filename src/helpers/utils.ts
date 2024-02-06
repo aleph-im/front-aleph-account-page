@@ -589,3 +589,18 @@ export function fileToImg(file: File): Promise<HTMLImageElement> {
     })
   })
 }
+
+export function getVersionNumber(version: string): number {
+  if (!version) return 0
+
+  try {
+    const parts = version
+      .replace(/[a-zA-Z-]/g, '')
+      .split('.')
+      .map(Number)
+
+    return parts.reduce((ac, cv) => ac * 1000 + cv, 0)
+  } catch (e) {
+    return 0
+  }
+}

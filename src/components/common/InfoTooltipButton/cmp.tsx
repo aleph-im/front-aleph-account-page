@@ -62,4 +62,4 @@ export const InfoTooltipButton = ({
 }
 InfoTooltipButton.displayName = 'InfoTooltipButton'
 
-export default memo(InfoTooltipButton)
+export default memo(InfoTooltipButton) as typeof InfoTooltipButton

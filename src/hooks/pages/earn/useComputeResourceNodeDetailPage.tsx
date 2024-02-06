@@ -1,5 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, CRN, NodeManager } from '@/domain/node'
+import { CCN, CRN, CRNBenchmark, CRNSpecs, NodeManager } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
 import { useAccountRewards } from '@/hooks/common/useRewards'
@@ -18,6 +18,9 @@ import {
   UseHostingProviderTopItem,
   useHostingProviderTop,
 } from '@/hooks/common/useHostingProviderTop'
+import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCRNSpecs'
+import { consoleNewInstanceUrl } from '@/helpers/constants'
+import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
@@ -32,6 +35,9 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
     isUserLinked?: boolean
     isLinkable?: boolean
     asnTier?: UseHostingProviderTopItem
+    nodeSpecs?: CRNSpecs
+    createInstanceUrl?: string
+    nodeBenchmark?: CRNBenchmark
     handleRemove: () => void
     handleLink: () => void
     handleUnlink: () => void
@@ -106,6 +112,36 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
+  const nodeArray = useMemo(() => {
+    if (!node) return
+    return [node]
+  }, [node])
+
+  const { specs } = useRequestCRNSpecs({ nodes: nodeArray })
+
+  const nodeSpecs = useMemo(() => {
+    if (!node) return
+    return specs[node.hash]?.data
+  }, [specs, node])
+
+  const createInstanceUrl = useMemo(() => {
+    if (!node) return
+    if (!nodeManager.isStreamPaymentSupported(node)) return
+
+    return `${consoleNewInstanceUrl}/${node.hash}`
+  }, [node, nodeManager])
+
+  // -----------------------------
+
+  const { benchmark } = useRequestCRNBenchmark({ nodes: nodeArray })
+
+  const nodeBenchmark = useMemo(() => {
+    if (!node) return
+    return benchmark[node.hash]?.data
+  }, [benchmark, node])
+
+  // -----------------------------
+
   const defaultValues = useMemo(() => {
     return {
       hash: node?.hash,
@@ -132,6 +168,9 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     isUserLinked,
     isLinkable,
     asnTier,
+    nodeSpecs,
+    createInstanceUrl,
+    nodeBenchmark,
     handleLink,
     handleUnlink,
     ...formProps,

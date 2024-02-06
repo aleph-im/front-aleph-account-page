@@ -1,5 +1,7 @@
 import { HTMLAttributes, ReactNode, memo } from 'react'
 import { StyledContainer, StyledTitle } from './styles'
+import { ThreeDots } from 'react-loader-spinner'
+import { useTheme } from 'styled-components'
 
 export type Card2FieldProps = {
   name: string
@@ -13,6 +15,8 @@ export const Card2Field = ({
   big = false,
   ...rest
 }: Card2FieldProps) => {
+  const theme = useTheme()
+
   return (
     <div tw="flex items-center" {...rest}>
       <div
@@ -25,7 +29,9 @@ export const Card2Field = ({
         tw="ml-auto overflow-hidden whitespace-nowrap text-ellipsis max-w-full"
         className={`${!big ? 'tp-body fs-12' : 'tp-body3 fs-16'}`}
       >
-        {value}
+        {value || (
+          <ThreeDots width="1em" height="1em" color={theme.color.info} />
+        )}
       </div>
     </div>
   )
