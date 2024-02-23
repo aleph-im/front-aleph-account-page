@@ -594,7 +594,7 @@ export class NodeManager {
     if (balance < 10_000)
       return [false, 'You need at least 10000 ALEPH to stake']
 
-    if (node.total_staked >= 750_000)
+    if (node.total_staked >= 1_000_000)
       return [false, 'Too many ALEPH staked on that node']
 
     if (this.isLocked(node)) return [false, 'This node is locked']
