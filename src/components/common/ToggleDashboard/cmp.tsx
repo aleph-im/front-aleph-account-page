@@ -16,8 +16,7 @@ export const ToggleDashboard = ({
   const [open, setOpen] = useState(true)
   const handleToogle = useCallback(() => setOpen((prev) => !prev), [])
 
-  const ref1 = useRef<HTMLDivElement>(null)
-  const ref2 = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
 
   const duration = 1000
   const { shouldMount: mount1, stage: state1 } = useTransition(!open, duration)
@@ -26,18 +25,14 @@ export const ToggleDashboard = ({
   const openButton = state1 === 'enter'
   const openPanel = state2 === 'enter'
 
-  const { bounds } = useBounds({ ref: ref1, deps: [openButton] })
+  const { bounds } = useBounds({ ref, deps: [openButton] })
   const minHeight = bounds?.height || 0
 
   return (
     <div tw="relative mt-8 mb-14" style={{ minHeight }} {...rest}>
       <>
         {mount2 && (
-          <StyledToggleContainer
-            ref={ref2}
-            open={openPanel}
-            duration={duration}
-          >
+          <StyledToggleContainer open={openPanel} duration={duration}>
             {children}
             <Button
               color="main0"
@@ -53,7 +48,7 @@ export const ToggleDashboard = ({
           </StyledToggleContainer>
         )}
         {mount1 && (
-          <StyledButtonsContainer ref={ref1} $open={openButton}>
+          <StyledButtonsContainer ref={ref} $open={openButton}>
             {buttons}
             <Button
               color="main0"

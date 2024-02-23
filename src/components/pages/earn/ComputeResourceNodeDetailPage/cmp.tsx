@@ -20,7 +20,7 @@ import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
 import ButtonLink from '@/components/common/ButtonLink'
-import InfoTooltipButton from '@/components/common/InfoTooltipButton'
+// import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 
 export const ComputeResourceNodeDetailPage = () => {
   const {
@@ -44,7 +44,7 @@ export const ComputeResourceNodeDetailPage = () => {
     asnTier,
     nodeSpecs,
     createInstanceUrl,
-    nodeBenchmark,
+    // nodeBenchmark,
     handleRemove,
     handleSubmit,
     handleLink,
@@ -189,7 +189,7 @@ export const ComputeResourceNodeDetailPage = () => {
                   (nodeSpecs?.cpu.core_frequencies.max || 0) / 1024
                 ).toFixed(2)} GHz`}
               />
-              <Card2Field
+              {/* <Card2Field
                 name="CPU SPEED"
                 value={
                   nodeBenchmark?.cpu.benchmark.average && (
@@ -207,12 +207,12 @@ export const ComputeResourceNodeDetailPage = () => {
                     </InfoTooltipButton>
                   )
                 }
-              />
+              /> */}
               <Card2Field
                 name="RAM"
                 value={humanReadableSize(nodeSpecs?.mem.total_kB, 'KiB')}
               />
-              <Card2Field
+              {/* <Card2Field
                 name="RAM SPEED"
                 value={
                   nodeBenchmark?.ram.speed && (
@@ -231,12 +231,12 @@ export const ComputeResourceNodeDetailPage = () => {
                     </InfoTooltipButton>
                   )
                 }
-              />
+              /> */}
               <Card2Field
                 name="HDD"
                 value={humanReadableSize(nodeSpecs?.disk.total_kB, 'KiB')}
               />
-              {createInstanceUrl && (
+              {/* {createInstanceUrl && (
                 <div tw="text-center pt-6">
                   <ButtonLink
                     href={createInstanceUrl}
@@ -248,7 +248,7 @@ export const ComputeResourceNodeDetailPage = () => {
                     Create Instance
                   </ButtonLink>
                 </div>
-              )}
+              )} */}
             </Card2>
           </div>
           <div>

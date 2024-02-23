@@ -20,7 +20,7 @@ export const StyledContainer = styled.div<{
 
 export const StyledToggleContainer = styled(ToggleContainer)`
   ${tw`relative p-0 m-0 -top-5`}
-  transition-property: opacity, visibility, top;
+  transition-property: all !important;
 
   ${({ open }) =>
     open &&

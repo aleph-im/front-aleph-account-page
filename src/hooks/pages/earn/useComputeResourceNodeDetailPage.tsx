@@ -20,7 +20,7 @@ import {
 } from '@/hooks/common/useHostingProviderTop'
 import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCRNSpecs'
 import { consoleNewInstanceUrl } from '@/helpers/constants'
-import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
+// import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
   nodes?: CRN[]
@@ -133,12 +133,12 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
-  const { benchmark } = useRequestCRNBenchmark({ nodes: nodeArray })
+  // const { benchmark } = useRequestCRNBenchmark({ nodes: nodeArray })
 
-  const nodeBenchmark = useMemo(() => {
-    if (!node) return
-    return benchmark[node.hash]?.data
-  }, [benchmark, node])
+  // const nodeBenchmark = useMemo(() => {
+  //   if (!node) return
+  //   return benchmark[node.hash]?.data
+  // }, [benchmark, node])
 
   // -----------------------------
 
@@ -170,7 +170,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     asnTier,
     nodeSpecs,
     createInstanceUrl,
-    nodeBenchmark,
+    // nodeBenchmark,
     handleLink,
     handleUnlink,
     ...formProps,
