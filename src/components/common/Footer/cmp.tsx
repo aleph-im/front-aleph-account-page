@@ -7,6 +7,7 @@ export const Footer = () => {
       {...{
         small: true,
         Link: Link as LinkComponent,
+        breakpoint: 'lg',
         buttons: [],
         media: [
           {

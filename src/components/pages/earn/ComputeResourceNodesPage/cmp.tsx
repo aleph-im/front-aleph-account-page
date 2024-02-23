@@ -86,6 +86,7 @@ export const ComputeResourceNodesPage = (
                   />
                 </div>
                 <div tw="flex-1">
+                  {userRewards}
                   <RewardChart
                     title="CRN REWARDS"
                     calculatedRewards={userRewards}

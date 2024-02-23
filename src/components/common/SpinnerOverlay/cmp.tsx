@@ -1,9 +1,5 @@
 import { memo } from 'react'
-import {
-  Spinner,
-  SpinnerProps,
-  useTransitionedEnterExit,
-} from '@aleph-front/core'
+import { Spinner, SpinnerProps, useTransition } from '@aleph-front/core'
 import { StyledSpinnerContainer } from './styles'
 import { createPortal } from 'react-dom'
 
@@ -19,16 +15,13 @@ export const SpinnerOverlay = ({
   fullScreen = false,
   ...rest
 }: SpinnerOverlayProps) => {
-  const { shouldMount, state, ref } = useTransitionedEnterExit<HTMLDivElement>({
-    onOff: show,
-  })
+  const { shouldMount, stage } = useTransition(show, 500)
 
   const cmp = (
     <>
       {shouldMount && (
         <StyledSpinnerContainer
-          ref={ref}
-          $show={state === 'enter'}
+          $show={stage === 'enter'}
           $center={center}
           $fullScreen={fullScreen}
         >

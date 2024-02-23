@@ -1,11 +1,6 @@
-import { ReactNode, memo, useCallback, useState } from 'react'
+import { ReactNode, memo, useCallback, useRef, useState } from 'react'
 import tw from 'twin.macro'
-import {
-  Button,
-  Icon,
-  useTransitionedEnterExit,
-  useBounds,
-} from '@aleph-front/core'
+import { Button, Icon, useTransition, useBounds } from '@aleph-front/core'
 import { StyledButtonsContainer, StyledToggleContainer } from './styles'
 
 export type ToggleDashboardProps = {
@@ -21,25 +16,13 @@ export const ToggleDashboard = ({
   const [open, setOpen] = useState(true)
   const handleToogle = useCallback(() => setOpen((prev) => !prev), [])
 
+  const ref1 = useRef<HTMLDivElement>(null)
+  const ref2 = useRef<HTMLDivElement>(null)
+
   const duration = 1000
+  const { shouldMount: mount1, stage: state1 } = useTransition(!open, duration)
+  const { shouldMount: mount2, stage: state2 } = useTransition(open, duration)
 
-  const {
-    shouldMount: mount1,
-    ref: ref1,
-    state: state1,
-  } = useTransitionedEnterExit<HTMLDivElement>({
-    onOff: !open,
-    duration,
-  })
-
-  const {
-    shouldMount: mount2,
-    ref: ref2,
-    state: state2,
-  } = useTransitionedEnterExit<HTMLDivElement>({
-    onOff: open,
-    duration,
-  })
   const openButton = state1 === 'enter'
   const openPanel = state2 === 'enter'
 

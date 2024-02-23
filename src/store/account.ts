@@ -47,18 +47,18 @@ export function getAccountReducer(): AccountReducer {
 
         // @note: avoid performance issues
         // @todo: Fix it on the wallet picker component / header which is firing multiple connect events
-        if (state.account?.address === account.address) return state
+        if (state.account?.address === account.address)
+          return state
 
-        // Mock CCN owner
-        // ;(account as any).address = '0xc4CBB0672b2FEbE0D3eC2fD48Be3809078e6593b'
+          // Mock CCN owner
+          // ;(account as any).address = '0xc4CBB0672b2FEbE0D3eC2fD48Be3809078e6593b'
 
-        // Mock CRN owner
-        // ;(account as any).address = '0xD20212929FDe829C57f93dbfF9332f3FC8703BCD'
+          // Mock CRN owner
+          // ;(account as any).address = '0xD20212929FDe829C57f93dbfF9332f3FC8703BCD'
 
-        // Not fully linked node
-        // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
-
-        // ;(account as any).address = '0xf379B2F8c29EeDc1fC7d189240d0aD7c9164aF64'
+          // Not fully linked node
+          // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
+        ;(account as any).address = '0xf379B2F8c29EeDc1fC7d189240d0aD7c9164aF64'
 
         // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
 
