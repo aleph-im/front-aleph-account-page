@@ -1,5 +1,12 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, CRN, CRNBenchmark, CRNSpecs, NodeManager } from '@/domain/node'
+import {
+  CCN,
+  CRN,
+  CRNBenchmark,
+  CRNSpecs,
+  NodeManager,
+  StreamNotSupportedIssue,
+} from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
 import { useAccountRewards } from '@/hooks/common/useRewards'
@@ -20,6 +27,8 @@ import {
 } from '@/hooks/common/useHostingProviderTop'
 import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCRNSpecs'
 import { consoleNewInstanceUrl } from '@/helpers/constants'
+import { convertByteUnits } from '@/helpers/utils'
+import { useRequestCRNIps } from '@/hooks/common/useRequestEntity/useRequestCRNIps'
 // import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
@@ -36,6 +45,7 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
     isLinkable?: boolean
     asnTier?: UseHostingProviderTopItem
     nodeSpecs?: CRNSpecs
+    nodeIssue?: StreamNotSupportedIssue
     createInstanceUrl?: string
     nodeBenchmark?: CRNBenchmark
     handleRemove: () => void
@@ -118,18 +128,76 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
   }, [node])
 
   const { specs } = useRequestCRNSpecs({ nodes: nodeArray })
+  const { ips } = useRequestCRNIps({ nodes: nodeArray })
+
+  // @note: hardcoded here, find a way to share them between console / account pages (new npm lib domain package maybe or API)
+  const minSpecs = useMemo(() => {
+    return {
+      cpu: 1,
+      ram: convertByteUnits(2, { from: 'GiB', to: 'MiB' }),
+      storage: convertByteUnits(2 * 10, { from: 'GiB', to: 'MiB' }),
+    }
+  }, [])
+
+  const nodesIssues = useMemo(() => {
+    if (!nodeArray) return
+
+    return nodeArray.reduce((ac, node) => {
+      const issue = nodeManager.isStreamPaymentNotSupported(node)
+
+      if (issue) {
+        ac[node.hash] = issue
+        return ac
+      }
+
+      const nodeSpecs = specs[node.hash]?.data
+
+      if (nodeSpecs) {
+        const validSpecs = nodeManager.validateMinNodeSpecs(minSpecs, nodeSpecs)
+
+        if (!validSpecs) {
+          ac[node.hash] = StreamNotSupportedIssue.MinSpecs
+          return ac
+        }
+      }
+
+      const nodeIps = ips[node.hash]?.data
+
+      if (nodeIps) {
+        const validIp = !!nodeIps.vm
+
+        if (!validIp) {
+          ac[node.hash] = StreamNotSupportedIssue.IPV6
+          return ac
+        }
+      }
+
+      if (nodeSpecs && nodeIps) {
+        ac[node.hash] = StreamNotSupportedIssue.Valid
+      }
+
+      return ac
+    }, {} as Record<string, StreamNotSupportedIssue>)
+  }, [nodeArray, nodeManager, specs, ips, minSpecs])
 
   const nodeSpecs = useMemo(() => {
     if (!node) return
     return specs[node.hash]?.data
   }, [specs, node])
 
+  const nodeIssue = useMemo(() => {
+    if (!node) return
+    return nodesIssues?.[node.hash]
+  }, [nodesIssues, node])
+
   const createInstanceUrl = useMemo(() => {
     if (!node) return
-    if (nodeManager.isStreamPaymentNotSupported(node)) return
 
-    return `${consoleNewInstanceUrl}/${node.hash}`
-  }, [node, nodeManager])
+    const isLoading = nodeIssue === undefined
+    return !isLoading && !nodeIssue
+      ? `${consoleNewInstanceUrl}/${node.hash}`
+      : undefined
+  }, [node, nodeIssue])
 
   // -----------------------------
 
@@ -169,6 +237,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     isLinkable,
     asnTier,
     nodeSpecs,
+    nodeIssue,
     createInstanceUrl,
     // nodeBenchmark,
     handleLink,

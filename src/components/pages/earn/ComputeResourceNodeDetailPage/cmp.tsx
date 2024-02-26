@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import { useComputeResourceNodeDetailPage } from '@/hooks/pages/earn/useComputeResourceNodeDetailPage'
-import { Button, Icon, NodeName } from '@aleph-front/core'
+import { Button, Icon, NodeName, Tooltip } from '@aleph-front/core'
 import {
   ellipseAddress,
   getAVAXExplorerURL,
@@ -19,7 +19,10 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
-// import ButtonLink from '@/components/common/ButtonLink'
+import ButtonLink from '@/components/common/ButtonLink'
+import { StreamNotSupportedIssue } from '@/domain/node'
+import { ThreeDots } from 'react-loader-spinner'
+import { useTheme } from 'styled-components'
 // import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 
 export const ComputeResourceNodeDetailPage = () => {
@@ -43,13 +46,16 @@ export const ComputeResourceNodeDetailPage = () => {
     addressCtrl,
     asnTier,
     nodeSpecs,
-    // createInstanceUrl,
+    nodeIssue,
+    createInstanceUrl,
     // nodeBenchmark,
     handleRemove,
     handleSubmit,
     handleLink,
     handleUnlink,
   } = useComputeResourceNodeDetailPage()
+
+  const theme = useTheme()
 
   return (
     <>
@@ -236,19 +242,91 @@ export const ComputeResourceNodeDetailPage = () => {
                 name="HDD"
                 value={humanReadableSize(nodeSpecs?.disk.total_kB, 'KiB')}
               />
-              {/* {createInstanceUrl && (
-                <div tw="text-center pt-6">
-                  <ButtonLink
-                    href={createInstanceUrl}
-                    target="_blank"
-                    kind="neon"
-                    variant="primary"
-                    size="md"
-                  >
+
+              <div tw="text-center pt-6">
+                <ButtonLink
+                  href={createInstanceUrl || '#'}
+                  target="_blank"
+                  kind="neon"
+                  variant="primary"
+                  size="md"
+                  disabled={!createInstanceUrl}
+                >
+                  <>
                     Create Instance
-                  </ButtonLink>
-                </div>
-              )} */}
+                    {nodeIssue === undefined && (
+                      <ThreeDots
+                        width="1em"
+                        height="1em"
+                        color={theme.color.background}
+                      />
+                    )}
+                  </>
+                </ButtonLink>
+                {!createInstanceUrl && (
+                  <div className="fs-10" tw=" mt-4">
+                    {nodeIssue ? (
+                      <Tooltip
+                        my="top-center"
+                        at="bottom-center"
+                        content={
+                          <div className="tp-body1 fs-12">
+                            <div className="tp-body3 fs-16">
+                              Why is my node unavailable?
+                            </div>
+                            <div>
+                              A node may be not eligible for PAYG for the
+                              following reasons:
+                            </div>
+                            <ul tw="my-4 pl-6 list-disc">
+                              {nodeIssue === StreamNotSupportedIssue.IPV6 && (
+                                <li>
+                                  <strong>IPv6 Egress Issue:</strong> The
+                                  node&apos;s compute resource (CRN) is unable
+                                  to establish an IPv6 egress connection.
+                                </li>
+                              )}
+                              {nodeIssue ===
+                                StreamNotSupportedIssue.MinSpecs && (
+                                <li>
+                                  <strong>Minimum Specifications:</strong> The
+                                  node does not meet the required minimum
+                                  hardware or software specifications.
+                                </li>
+                              )}
+                              {nodeIssue ===
+                                StreamNotSupportedIssue.Version && (
+                                <li>
+                                  <strong>Version Compatibility:</strong> Only
+                                  nodes with version 0.4.0 or higher are
+                                  eligible for selection.
+                                </li>
+                              )}
+                              {nodeIssue ===
+                                StreamNotSupportedIssue.RewardAddress && (
+                                <li>
+                                  <strong>Stream Reward Configuration:</strong>{' '}
+                                  The node lacks a configured stream reward
+                                  address, which is necessary for operation.
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        }
+                      >
+                        <div tw="cursor-help flex items-center justify-center">
+                          Not eligible for pay-as-you-go (PAYG)
+                          <Icon name="exclamation-circle" tw="ml-2 " />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <div tw="text-center">
+                        Not eligible for pay-as-you-go (PAYG)
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </Card2>
           </div>
           <div>
