@@ -1,8 +1,8 @@
 import { memo } from 'react'
-import { useRedirect } from '@/hooks/common/useRedirect'
+import { useSPARedirect } from '@/hooks/common/useSPARedirect'
 
 export const HomePage = () => {
-  useRedirect('/earn/staking')
+  useSPARedirect('/earn/staking')
   return null
 }
 

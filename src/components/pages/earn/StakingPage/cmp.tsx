@@ -64,7 +64,7 @@ export const StakingPage = (props: UseStakingPageProps) => {
                 linked Compute Resource Nodes (CRNs) and node scoring, ensuring
                 a fair and dynamic experience. Aleph.im staking empowers you to
                 control the controllers, shaping decentralized connectivity
-                while earning rewards. Plus, it&apos;s non-custodial.
+                while earning rewards. Plus, it&apos;s non-custodial.{' '}
                 <strong className="text-main1" tw="font-bold">
                   Join us today!
                 </strong>
