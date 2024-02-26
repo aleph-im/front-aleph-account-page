@@ -1,5 +1,12 @@
 import { useRouter } from 'next/router'
-import { useCallback, useState, useEffect, useRef, RefObject } from 'react'
+import {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  RefObject,
+  useMemo,
+} from 'react'
 import { DefaultTheme, useTheme } from 'styled-components'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
@@ -12,14 +19,17 @@ import {
   useTransition,
   useWindowScroll,
   useWindowSize,
+  WalletPickerProps,
 } from '@aleph-front/core'
 import {
   UseBreadcrumbNamesReturn,
   useBreadcrumbNames,
 } from '../common/useBreadcrumbNames'
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
+import { useAccountRewards } from '../common/useRewards'
 
 export type UseAccountButtonProps = {
+  rewards?: WalletPickerProps['rewards']
   handleConnect: () => Promise<void>
   provider: () => void
 }
@@ -103,6 +113,7 @@ export type UseHeaderReturn = UseRoutesReturn & {
   breadcrumbNames: UseBreadcrumbNamesReturn['names']
   breakpoint: BreakpointId
   isOpen: boolean
+  rewards?: WalletPickerProps['rewards']
   handleToggle: (isOpen: boolean) => void
   handleConnect: () => Promise<void>
   provider: () => void
@@ -185,12 +196,45 @@ export function useHeader(): UseHeaderReturn {
   const [isOpen, setIsOpen] = useState(false)
   const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
 
+  // -----------------------
+
+  const {
+    calculatedRewards: userRewards,
+    distributionTimestamp: lastDistribution,
+  } = useAccountRewards({
+    address: account?.address || '',
+  })
+
+  const distributionInterval = 10 * 24 * 60 * 60 * 1000 // 10 days
+
+  const pendingDays = useMemo(() => {
+    if (lastDistribution === undefined) return distributionInterval
+
+    const elapsedFromLast = Date.now() - lastDistribution
+    const timeTillNext = distributionInterval - elapsedFromLast
+
+    const pendingTime = Math.max(Math.ceil(timeTillNext), 0)
+    const pendingDays = Math.ceil(pendingTime / (1000 * 60 * 60 * 24))
+
+    return pendingDays
+  }, [lastDistribution, distributionInterval])
+
+  const rewards = useMemo(() => {
+    if (!userRewards) return
+
+    return {
+      amount: userRewards,
+      days: pendingDays,
+    }
+  }, [pendingDays, userRewards])
+
   return {
     pathname,
     routes,
     breadcrumbNames,
     breakpoint,
     isOpen,
+    rewards,
     handleToggle,
     handleConnect,
     provider,

@@ -11,9 +11,9 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import Link from 'next/link'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
-import RewardChart from '@/components/common/RewardChart'
 import EstimatedNodeRewardsChart from '@/components/common/EstimatedNodeRewardsChart'
 import { useLazyRender } from '@/hooks/common/useLazyRender'
+import AvailableCRNSpotChart from '@/components/common/AvailableCRNSpotChart'
 
 export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
   const {
@@ -28,8 +28,6 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     selectedTab,
     filter,
     lastVersion,
-    userRewards,
-    lastDistribution,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -76,11 +74,9 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                   <EstimatedNodeRewardsChart nodes={nodes} />
                 </div>
                 <div tw="flex-1">
-                  <RewardChart
-                    title="CCN REWARDS"
-                    calculatedRewards={userRewards}
-                    distributionTimestamp={lastDistribution}
-                    disabled={!account || !userNodes?.length}
+                  <AvailableCRNSpotChart
+                    title="AVAILABLE CRN SPOTS"
+                    nodes={nodes}
                   />
                 </div>
               </div>

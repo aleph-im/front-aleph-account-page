@@ -31,6 +31,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
     walletPickerRef,
     walletPickerTriggerRef,
     walletPosition,
+    rewards,
     provider,
     handleConnect,
     handleDisplayWalletPicker,
@@ -73,6 +74,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
         createPortal(
           <StyledWalletPicker
             ref={walletPickerRef}
+            rewards={rewards}
             networks={[
               {
                 icon: 'ethereum',

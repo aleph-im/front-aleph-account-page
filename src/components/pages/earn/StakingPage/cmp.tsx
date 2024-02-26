@@ -9,7 +9,6 @@ import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
-import RewardChart from '@/components/common/RewardChart'
 import StakeChart from '@/components/common/StakeChart'
 import { useLazyRender } from '@/hooks/common/useLazyRender'
 
@@ -26,9 +25,6 @@ export const StakingPage = (props: UseStakingPageProps) => {
     filter,
     isStakeableOnly,
     isStakeableOnlyDisabled,
-    userStake,
-    userRewards,
-    lastDistribution,
     nodesIssues,
     handleTabChange,
     handleFilterChange,
@@ -79,14 +75,6 @@ export const StakingPage = (props: UseStakingPageProps) => {
                 <RewardCalculator nodes={nodes} />
               </div>
               <div tw="flex-auto 2xl:flex-none items-stretch flex gap-6 flex-wrap sm:flex-nowrap">
-                <div tw="flex-1">
-                  <RewardChart
-                    title="STAKING REWARDS"
-                    calculatedRewards={userRewards}
-                    distributionTimestamp={lastDistribution}
-                    disabled={!account || !userStake}
-                  />
-                </div>
                 <div tw="flex-1">
                   <StakeChart nodes={nodes} />
                 </div>

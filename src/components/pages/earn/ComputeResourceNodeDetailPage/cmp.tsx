@@ -19,7 +19,7 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
-import ButtonLink from '@/components/common/ButtonLink'
+// import ButtonLink from '@/components/common/ButtonLink'
 // import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 
 export const ComputeResourceNodeDetailPage = () => {
@@ -43,7 +43,7 @@ export const ComputeResourceNodeDetailPage = () => {
     addressCtrl,
     asnTier,
     nodeSpecs,
-    createInstanceUrl,
+    // createInstanceUrl,
     // nodeBenchmark,
     handleRemove,
     handleSubmit,

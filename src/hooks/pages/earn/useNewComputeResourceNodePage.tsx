@@ -1,4 +1,3 @@
-import useConnectedWard from '@/hooks/common/useConnectedWard'
 import {
   UseNewComputeResourceNodeFormReturn,
   useNewComputeResourceNodeForm,
@@ -7,7 +6,5 @@ import {
 export type UseNewComputeResourceNodePage = UseNewComputeResourceNodeFormReturn
 
 export function useNewComputeResourceNodePage(): UseNewComputeResourceNodePage {
-  useConnectedWard()
-
   return useNewComputeResourceNodeForm()
 }

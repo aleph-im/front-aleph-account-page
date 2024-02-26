@@ -5,7 +5,6 @@ import {
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
 import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
-import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/core'
@@ -23,9 +22,6 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   tabs: TabsProps['tabs']
   isStakeableOnly: boolean
   isStakeableOnlyDisabled: boolean
-  userStake: number
-  userRewards?: number
-  lastDistribution?: number
   nodesIssues: Record<string, string>
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
@@ -38,15 +34,6 @@ export function useStakingPage(
 ): UseStakingPageReturn {
   const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.account
-
-  const {
-    calculatedRewards: userRewards,
-    distributionTimestamp: lastDistribution,
-  } = useAccountRewards({
-    address: account?.address || '',
-  })
-
-  // -----------------------------
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
@@ -138,11 +125,8 @@ export function useStakingPage(
 
   // -----------------------------
 
-  const {
-    userStake,
-    handleStake: handleStakeBase,
-    handleUnstake: handleUnstakeBase,
-  } = useStaking()
+  const { handleStake: handleStakeBase, handleUnstake: handleUnstakeBase } =
+    useStaking()
 
   const handleStake = useCallback(
     async (nodeHash: string) => {
@@ -179,9 +163,6 @@ export function useStakingPage(
     tabs,
     isStakeableOnly,
     isStakeableOnlyDisabled,
-    userStake,
-    userRewards,
-    lastDistribution,
     nodesIssues,
     ...rest,
     handleTabChange,

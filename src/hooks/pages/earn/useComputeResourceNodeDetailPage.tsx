@@ -126,7 +126,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   const createInstanceUrl = useMemo(() => {
     if (!node) return
-    if (!nodeManager.isStreamPaymentSupported(node)) return
+    if (nodeManager.isStreamPaymentNotSupported(node)) return
 
     return `${consoleNewInstanceUrl}/${node.hash}`
   }, [node, nodeManager])

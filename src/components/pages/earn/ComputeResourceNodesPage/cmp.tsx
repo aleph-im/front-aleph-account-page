@@ -12,8 +12,8 @@ import ToggleDashboard from '@/components/common/ToggleDashboard'
 import SpinnerOverlay from '@/components/common/SpinnerOverlay'
 import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
-import RewardChart from '@/components/common/RewardChart'
 import { useLazyRender } from '@/hooks/common/useLazyRender'
+import TotalNetworkResourcesChart from '@/components/common/TotalNetworkResourcesChart'
 
 export const ComputeResourceNodesPage = (
   props: UseComputeResourceNodesPageProps,
@@ -32,8 +32,7 @@ export const ComputeResourceNodesPage = (
     lastVersion,
     isLinkableOnly,
     isLinkableOnlyDisabled,
-    userRewards,
-    lastDistribution,
+    totalResources,
     handleLink,
     handleUnlink,
     handleTabChange,
@@ -86,12 +85,9 @@ export const ComputeResourceNodesPage = (
                   />
                 </div>
                 <div tw="flex-1">
-                  {userRewards}
-                  <RewardChart
-                    title="CRN REWARDS"
-                    calculatedRewards={userRewards}
-                    distributionTimestamp={lastDistribution}
-                    disabled={!account || !userNodes?.length}
+                  <TotalNetworkResourcesChart
+                    title="TOTAL NETWORK RESOURCES"
+                    resources={totalResources}
                   />
                 </div>
               </div>

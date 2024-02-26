@@ -7,7 +7,6 @@ import {
   useCoreChannelNodes,
 } from '@/hooks/common/useCoreChannelNodes'
 import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
-import { useLastRewards } from '@/hooks/common/useRewards'
 import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 
@@ -21,8 +20,6 @@ export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
   userNodesIssues: Record<string, string>
   selectedTab: string
   tabs: TabsProps['tabs']
-  userRewards?: number
-  lastDistribution?: number
   handleTabChange: (tab: string) => void
 }
 
@@ -82,24 +79,6 @@ export function useCoreChannelNodesPage(
 
   // -----------------------------
 
-  const { lastRewardsCalculation, lastRewardsDistribution } = useLastRewards()
-
-  const userRewards = useMemo(
-    () =>
-      lastRewardsCalculation
-        ? userNodes?.reduce((ac, cv) => {
-            return ac + (lastRewardsCalculation.rewards[cv.reward] || 0)
-          }, 0)
-        : undefined,
-    [lastRewardsCalculation, userNodes],
-  )
-
-  const lastDistribution = lastRewardsDistribution?.timestamp
-
-  // -----------------------------
-
-  // console.log(filteredNodes)
-
   return {
     account,
     accountBalance,
@@ -109,8 +88,6 @@ export function useCoreChannelNodesPage(
     filteredUserNodes,
     selectedTab,
     tabs,
-    userRewards,
-    lastDistribution,
     userNodesIssues,
     ...rest,
     handleTabChange,

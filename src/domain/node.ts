@@ -248,6 +248,23 @@ export type CRNBenchmark = {
   }
 }
 
+// ---------- @todo: refactor into npm package
+
+export type CRNIps = {
+  hash: string
+  name?: string
+  host: boolean
+  vm: boolean
+}
+
+export enum StreamNotSupportedIssue {
+  Valid = 0,
+  IPV6 = 1,
+  MinSpecs = 2,
+  Version = 3,
+  RewardAddress = 4,
+}
+
 export class NodeManager {
   static newCCNSchema = newCCNSchema
   static newCRNSchema = newCRNSchema
@@ -647,11 +664,13 @@ export class NodeManager {
     return getVersionNumber(node.metricsData?.version)
   }
 
-  isStreamPaymentSupported(node: CRN): boolean {
-    return (
-      !!node.stream_reward &&
-      this.getNodeVersionNumber(node) >= getVersionNumber('v0.4.0')
-    )
+  isStreamPaymentNotSupported(node: CRN): StreamNotSupportedIssue {
+    if (!node.stream_reward) return StreamNotSupportedIssue.RewardAddress
+
+    if (this.getNodeVersionNumber(node) < getVersionNumber('v0.4.0'))
+      return StreamNotSupportedIssue.Version
+
+    return StreamNotSupportedIssue.Valid
   }
 
   // @todo: move this to domain package
@@ -691,6 +710,36 @@ export class NodeManager {
       if (!retries) return
       await sleep(100 * 2)
       return this.getCRNspecs(node, retries - 1)
+    }
+  }
+
+  async getCRNips(node: CRN, retries = 2): Promise<CRNIps | undefined> {
+    if (!node.address) return
+
+    const address = node.address.toLowerCase().replace(/\/$/, '')
+    const url = `${address}/status/check/ipv6`
+    const { success } = urlSchema.safeParse(url)
+    if (!success) return
+
+    try {
+      return await fetchAndCache(
+        url,
+        `3crn_ips_${node.hash}`,
+        4_600,
+        (res: CRNIps) => {
+          if (res.vm === undefined) throw new Error('invalid response')
+
+          return {
+            ...res,
+            hash: node.hash,
+            name: node.name,
+          }
+        },
+      )
+    } catch (e) {
+      if (!retries) return
+      await sleep(100 * 2)
+      return this.getCRNips(node, retries - 1)
     }
   }
 

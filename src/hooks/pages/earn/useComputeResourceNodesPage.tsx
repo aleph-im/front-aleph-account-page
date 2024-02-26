@@ -6,12 +6,12 @@ import {
   useComputeResourceNodes,
 } from '@/hooks/common/useComputeResourceNodes'
 import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
-import { useLastRewards } from '@/hooks/common/useRewards'
 import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useUserCoreChannelNode } from '@/hooks/common/useUserCoreChannelNode'
 import { useLinking } from '@/hooks/common/useLinking'
 import { useRouter } from 'next/router'
+import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCRNSpecs'
 
 export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
@@ -27,8 +27,13 @@ export type UseComputeResourceNodesPageReturn =
     tabs: TabsProps['tabs']
     isLinkableOnly: boolean
     isLinkableOnlyDisabled: boolean
-    userRewards?: number
-    lastDistribution?: number
+    totalResources?: {
+      cpu: number
+      ram: number
+      hdd: number
+      nodes: number
+      total: number
+    }
     handleLink: (nodeHash: string) => void
     handleUnlink: (nodeHash: string) => void
     handleTabChange: (tab: string) => void
@@ -38,7 +43,7 @@ export type UseComputeResourceNodesPageReturn =
 export function useComputeResourceNodesPage(
   props: UseComputeResourceNodesPageProps,
 ): UseComputeResourceNodesPageReturn {
-  // ----------------------------- CR NODES
+  // ----------------------------- CRN NODES
 
   const {
     nodes,
@@ -137,22 +142,6 @@ export function useComputeResourceNodesPage(
     return linkableNodes
   }, [account, baseFilteredNodes, linkableNodes, isLinkableOnly])
 
-  // ----------------------------- REWARDS
-
-  const { lastRewardsCalculation, lastRewardsDistribution } = useLastRewards()
-
-  const userRewards = useMemo(
-    () =>
-      lastRewardsCalculation
-        ? userNodes?.reduce((ac, cv) => {
-            return ac + (lastRewardsCalculation.rewards[cv.reward] || 0)
-          }, 0)
-        : undefined,
-    [lastRewardsCalculation, userNodes],
-  )
-
-  const lastDistribution = lastRewardsDistribution?.timestamp
-
   // ----------------------------- LINK CRN
 
   const router = useRouter()
@@ -182,9 +171,27 @@ export function useComputeResourceNodesPage(
     [handleUnlinkBase, router, userNode],
   )
 
-  // -----------------------------
+  // ----------------------------- NETWORK RESOURCES CHART
 
-  // console.log(filteredNodes)
+  const { specs } = useRequestCRNSpecs({ nodes })
+
+  const totalResources = useMemo(() => {
+    const resources = Object.values(specs)
+    return resources.reduce(
+      (ac, cv) => {
+        ac.cpu += cv.data?.cpu.count || 0
+        ac.ram += (cv.data?.mem.total_kB || 0) / 1024
+        ac.hdd += (cv.data?.disk.total_kB || 0) / 1024
+        ac.nodes += cv.data ? 1 : 0
+        ac.total += 1
+
+        return ac
+      },
+      { cpu: 0, ram: 0, hdd: 0, nodes: 0, total: 0 },
+    )
+  }, [specs])
+
+  // -----------------------------
 
   return {
     nodes,
@@ -197,8 +204,7 @@ export function useComputeResourceNodesPage(
     tabs,
     isLinkableOnly,
     isLinkableOnlyDisabled,
-    userRewards,
-    lastDistribution,
+    totalResources,
     handleLink,
     handleUnlink,
     handleTabChange,
