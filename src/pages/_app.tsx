@@ -14,11 +14,8 @@ import Sidebar from '@/components/common/Sidebar'
 import Viewport from '@/components/common/Viewport'
 import Content from '@/components/common/Content'
 import Loading from './loading'
-import { useRouterLoadState } from '@/hooks/common/useRouterLoadState'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { loading } = useRouterLoadState()
-
   return (
     <ThemeProvider theme={themes.aleph}>
       <GlobalStyles />
@@ -31,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <Header />
               <Content>
                 <Component {...pageProps} />
-                {loading && <Loading />}
+                <Loading />
               </Content>
               <Footer />
             </Main>

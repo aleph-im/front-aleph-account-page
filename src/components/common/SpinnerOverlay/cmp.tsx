@@ -39,7 +39,6 @@ export const SpinnerOverlay = ({
     </>
   )
 }
-
 SpinnerOverlay.displayName = 'SpinnerOverlay'
 
 export default memo(SpinnerOverlay)
