@@ -6,6 +6,7 @@ export const Footer = () => {
     <BaseFooter
       {...{
         small: true,
+        maxWidth: '100%',
         Link: Link as LinkComponent,
         breakpoint: 'lg',
         buttons: [],
