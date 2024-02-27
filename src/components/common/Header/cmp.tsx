@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Button, Icon, RenderLinkProps } from '@aleph-front/core'
 import {
   StyledNavbarDesktop,
-  StyledButton,
   StyledWalletPicker,
   StyledNavbarMobile,
   StyledHeader,
@@ -32,7 +31,9 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
     walletPickerTriggerRef,
     walletPosition,
     rewards,
-    provider,
+    selectedNetwork,
+    networks,
+    handleSwitchNetwork,
     handleConnect,
     handleDisplayWalletPicker,
   } = useAccountButton(rest)
@@ -74,21 +75,10 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
         createPortal(
           <StyledWalletPicker
             ref={walletPickerRef}
+            networks={networks}
             rewards={rewards}
-            networks={[
-              {
-                icon: 'ethereum',
-                name: 'Ethereum',
-                wallets: [
-                  {
-                    color: 'orange',
-                    icon: 'metamask',
-                    name: 'Metamask',
-                    provider,
-                  },
-                ],
-              },
-            ]}
+            selectedNetwork={selectedNetwork}
+            onSwitchNetwork={handleSwitchNetwork}
             onConnect={handleConnect}
             onDisconnect={handleConnect}
             address={account?.address}
@@ -139,15 +129,8 @@ export const Header = () => {
           }}
         />
         <StyledNavbarDesktop $breakpoint={breakpoint}>
-          <div>
-            <AutoBreadcrumb names={breadcrumbNames} />
-          </div>
-          <div tw="relative flex items-center justify-center gap-7">
-            <StyledButton key="link" forwardedAs="button" disabled>
-              <Icon name="ethereum" />
-            </StyledButton>
-            <AccountButtonMemo {...accountProps} />
-          </div>
+          <AutoBreadcrumb names={breadcrumbNames} />
+          <AccountButtonMemo {...accountProps} />
         </StyledNavbarDesktop>
       </StyledHeader>
       <div tw="block flex-auto grow-0 shrink-0 h-[6.5rem] lg:hidden"></div>
