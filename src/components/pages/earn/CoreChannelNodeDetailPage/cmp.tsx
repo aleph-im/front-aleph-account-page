@@ -2,7 +2,7 @@ import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useCoreChannelNodeDetailPage } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
-import { Button, Icon, Logo, NodeName } from '@aleph-front/core'
+import { Button, Icon, NodeName } from '@aleph-front/core'
 import {
   ellipseAddress,
   getETHExplorerURL,
@@ -10,7 +10,6 @@ import {
 } from '@/helpers/utils'
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
 import Card2, { Card2Field } from '@/components/common/Card2'
-import ColumnLayout from '@/components/common/ColumnLayout'
 import StyledProgressBar from '@/components/common/ColorProgressBar'
 import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
 import ButtonLink from '@/components/common/ButtonLink'
@@ -95,8 +94,8 @@ export const CoreChannelNodeDetailPage = () => {
         </section>
       )}
       <section tw="mt-8">
-        <ColumnLayout>
-          <div>
+        <div tw="flex flex-wrap gap-9">
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="GENERAL INFO">
               <NodeDetailStatus status={node?.status} />
               <Card2Field name="NAME" value={node?.name} />
@@ -158,8 +157,6 @@ export const CoreChannelNodeDetailPage = () => {
                 big
               />
             </Card2>
-          </div>
-          <div>
             <Card2 title="ADDITIONAL SETTINGS">
               <Card2Field
                 name="MANAGER"
@@ -215,7 +212,7 @@ export const CoreChannelNodeDetailPage = () => {
               />
             </Card2>
           </div>
-          <div>
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="REWARD INDICATORS">
               {/* <Card2Field name="NODES ON ASN" value={nodesOnSameASN} /> */}
               <Card2Field name="VERSION" value={node?.metricsData?.version} />
@@ -242,8 +239,6 @@ export const CoreChannelNodeDetailPage = () => {
                 }
               />
             </Card2>
-          </div>
-          <div>
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
                 name="TOTAL REWARDS"
@@ -251,7 +246,7 @@ export const CoreChannelNodeDetailPage = () => {
               />
             </Card2>
           </div>
-          <div>
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED RESOURCES">
               {Array.from(
                 { length: Math.max(3, node?.crnsData.length || 0) },
@@ -303,8 +298,6 @@ export const CoreChannelNodeDetailPage = () => {
                 },
               )}
             </Card2>
-          </div>
-          <div>
             <Card2 title="PERFORMANCE">
               {/* <Card2Field name="AVERAGE RESPONSE" value="?????" />
               <Card2Field name="RESPONSIVENESS" value="?????" /> */}
@@ -317,7 +310,7 @@ export const CoreChannelNodeDetailPage = () => {
               <Card2Field name="CREATION TIME" value={creationDate} />
             </Card2>
           </div>
-        </ColumnLayout>
+        </div>
       </section>
     </>
   )

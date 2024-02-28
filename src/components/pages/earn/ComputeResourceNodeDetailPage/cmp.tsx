@@ -11,7 +11,6 @@ import {
 import Link from 'next/link'
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
 import Card2, { Card2Field } from '@/components/common/Card2'
-import ColumnLayout from '@/components/common/ColumnLayout'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
 import NodeDecentralization from '@/components/common/NodeDecentralization'
 import NodeDetailEditableField from '@/components/common/NodeDetailEditableField'
@@ -101,8 +100,8 @@ export const ComputeResourceNodeDetailPage = () => {
         </section>
       )}
       <section tw="mt-8">
-        <ColumnLayout>
-          <div>
+        <div tw="flex flex-wrap gap-9">
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="GENERAL INFO">
               <NodeDetailStatus status={node?.status} />
               <Card2Field name="NAME" value={node?.name} />
@@ -180,8 +179,6 @@ export const ComputeResourceNodeDetailPage = () => {
                 big
               />
             </Card2>
-          </div>
-          <div>
             <Card2 title="HARDWARE">
               <Card2Field name="CPU" value={nodeSpecs?.properties.cpu.vendor} />
               <Card2Field
@@ -329,7 +326,7 @@ export const ComputeResourceNodeDetailPage = () => {
               </div>
             </Card2>
           </div>
-          <div>
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="REWARD INDICATORS">
               <Card2Field
                 name="NODES ON ASN"
@@ -349,7 +346,6 @@ export const ComputeResourceNodeDetailPage = () => {
               <Card2Field name="BASE LATENCY" value={baseLatency} />
               <Card2Field name="LAST CHECK" value={lastMetricsCheck} />
             </Card2>
-
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
                 name="ESTIMATED MONTHLY REWARD"
@@ -357,7 +353,7 @@ export const ComputeResourceNodeDetailPage = () => {
               />
             </Card2>
           </div>
-          <div>
+          <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED CORE NODE">
               {!node?.parentData ? (
                 <div tw="inline-flex gap-3 items-center">
@@ -405,8 +401,7 @@ export const ComputeResourceNodeDetailPage = () => {
                 </div>
               )}
             </Card2>
-          </div>
-          <div>
+
             <Card2 title="DECENTRALIZED SCORE">
               <div
                 tw="flex gap-3 items-center"
@@ -426,8 +421,7 @@ export const ComputeResourceNodeDetailPage = () => {
                 </p>
               )}
             </Card2>
-          </div>
-          <div>
+
             <Card2 title="PERFORMANCE">
               {/* <Card2Field name="AVERAGE RESPONSE" value="?????" />
               <Card2Field name="RESPONSIVENESS" value="?????" />
@@ -436,7 +430,7 @@ export const ComputeResourceNodeDetailPage = () => {
               <Card2Field name="CREATION TIME" value={creationDate} />
             </Card2>
           </div>
-        </ColumnLayout>
+        </div>
       </section>
     </>
   )
