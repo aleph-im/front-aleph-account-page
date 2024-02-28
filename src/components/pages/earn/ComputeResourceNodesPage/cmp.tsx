@@ -21,7 +21,7 @@ export const ComputeResourceNodesPage = (
   const {
     account,
     nodes,
-    filteredNodes,
+    paginatedFilteredNodes,
     userNodes,
     filteredUserNodes,
     userNodesIssues,
@@ -33,6 +33,8 @@ export const ComputeResourceNodesPage = (
     isLinkableOnly,
     isLinkableOnlyDisabled,
     totalResources,
+    loadItemsDisabled,
+    handleLoadItems,
     handleLink,
     handleUnlink,
     handleTabChange,
@@ -175,11 +177,13 @@ export const ComputeResourceNodesPage = (
                 </>
               ) : (
                 <>
-                  {nodes && filteredNodes && (
+                  {nodes && (
                     <ComputeResourceNodesTable
                       {...{
                         nodes,
-                        filteredNodes,
+                        filteredNodes: paginatedFilteredNodes,
+                        loadItemsDisabled,
+                        handleLoadItems,
                         userNode,
                         account,
                         lastVersion,

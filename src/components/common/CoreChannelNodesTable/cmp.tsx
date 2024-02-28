@@ -18,9 +18,11 @@ import Image from 'next/image'
 
 export type CoreChannelNodesTableProps = {
   nodes: CCN[]
-  filteredNodes: CCN[]
+  filteredNodes?: CCN[]
   lastVersion?: NodeLastVersions
   nodesIssues?: Record<string, string>
+  loadItemsDisabled?: boolean
+  handleLoadItems?: () => Promise<void>
 }
 
 export const CoreChannelNodesTable = ({
@@ -28,6 +30,8 @@ export const CoreChannelNodesTable = ({
   filteredNodes,
   lastVersion,
   nodesIssues,
+  loadItemsDisabled,
+  handleLoadItems,
 }: CoreChannelNodesTableProps) => {
   const columns = useMemo(() => {
     return [
@@ -116,7 +120,16 @@ export const CoreChannelNodesTable = ({
     ] as TableColumn<CCN>[]
   }, [lastVersion, nodes, nodesIssues])
 
-  return <NodesTable columns={columns} data={filteredNodes} />
+  return (
+    <NodesTable
+      {...{
+        columns,
+        data: filteredNodes,
+        infiniteScroll: !loadItemsDisabled,
+        onLoadMore: handleLoadItems,
+      }}
+    />
+  )
 }
 CoreChannelNodesTable.displayName = 'CoreChannelNodesTable'
 

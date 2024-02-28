@@ -20,14 +20,16 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     account,
     accountBalance,
     nodes,
-    filteredNodes,
     userNodes,
     filteredUserNodes,
+    paginatedFilteredNodes,
     userNodesIssues,
     tabs,
     selectedTab,
     filter,
     lastVersion,
+    loadItemsDisabled,
+    handleLoadItems,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -154,12 +156,14 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                 </>
               ) : (
                 <>
-                  {nodes && filteredNodes && (
+                  {nodes && (
                     <CoreChannelNodesTable
                       {...{
                         nodes,
-                        filteredNodes,
+                        filteredNodes: paginatedFilteredNodes,
                         lastVersion,
+                        loadItemsDisabled,
+                        handleLoadItems,
                       }}
                     />
                   )}

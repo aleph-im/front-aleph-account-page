@@ -20,11 +20,13 @@ import Image from 'next/image'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]
-  filteredNodes: CCN[]
+  filteredNodes?: CCN[]
   account?: Account
   accountBalance?: number
   showStakedAmount?: boolean
   nodesIssues?: Record<string, string>
+  loadItemsDisabled?: boolean
+  handleLoadItems?: () => Promise<void>
   handleStake: (nodeHash: string) => void
   handleUnstake: (nodeHash: string) => void
 }
@@ -36,6 +38,8 @@ export const StakingNodesTable = ({
   accountBalance,
   showStakedAmount,
   nodesIssues,
+  loadItemsDisabled,
+  handleLoadItems,
   handleStake: onStake,
   handleUnstake: onUnstake,
 }: StakingNodesTableProps) => {
@@ -145,7 +149,16 @@ export const StakingNodesTable = ({
     showStakedAmount,
   ])
 
-  return <NodesTable columns={columns} data={filteredNodes} />
+  return (
+    <NodesTable
+      {...{
+        columns,
+        data: filteredNodes,
+        infiniteScroll: !loadItemsDisabled,
+        onLoadMore: handleLoadItems,
+      }}
+    />
+  )
 }
 StakingNodesTable.displayName = 'StakingNodesTable'
 

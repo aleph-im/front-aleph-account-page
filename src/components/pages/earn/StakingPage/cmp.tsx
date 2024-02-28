@@ -17,7 +17,7 @@ export const StakingPage = (props: UseStakingPageProps) => {
     account,
     accountBalance,
     nodes,
-    filteredNodes,
+    paginatedFilteredNodes,
     stakeNodes,
     filteredStakeNodes,
     tabs,
@@ -26,6 +26,8 @@ export const StakingPage = (props: UseStakingPageProps) => {
     isStakeableOnly,
     isStakeableOnlyDisabled,
     nodesIssues,
+    loadItemsDisabled,
+    handleLoadItems,
     handleTabChange,
     handleFilterChange,
     handleStake,
@@ -142,16 +144,18 @@ export const StakingPage = (props: UseStakingPageProps) => {
                 </>
               ) : (
                 <>
-                  {nodes && filteredNodes && (
+                  {nodes && (
                     <StakingNodesTable
                       {...{
                         nodes,
-                        filteredNodes,
+                        filteredNodes: paginatedFilteredNodes,
                         accountBalance,
                         account,
                         handleStake,
                         handleUnstake,
                         nodesIssues,
+                        loadItemsDisabled,
+                        handleLoadItems,
                       }}
                     />
                   )}

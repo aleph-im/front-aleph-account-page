@@ -10,6 +10,7 @@ import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
 import { NotificationBadge, TabsProps } from '@aleph-front/core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useStaking } from '@/hooks/common/useStaking'
+import { usePaginatedList } from '@/hooks/common/usePaginatedList'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
@@ -152,6 +153,14 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const {
+    list: paginatedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
+  } = usePaginatedList({
+    list: filteredNodes,
+  })
+
   return {
     account,
     accountBalance,
@@ -165,6 +174,9 @@ export function useStakingPage(
     isStakeableOnlyDisabled,
     nodesIssues,
     ...rest,
+    paginatedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
     handleTabChange,
     handleStake,
     handleUnstake,

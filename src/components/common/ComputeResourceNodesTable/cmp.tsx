@@ -18,23 +18,25 @@ import Image from 'next/image'
 import { apiServer } from '@/helpers/constants'
 
 export type ComputeResourceNodesTableProps = {
-  nodes: CRN[]
-  filteredNodes: CRN[]
+  filteredNodes?: CRN[]
   userNode?: CCN
   account?: Account
   lastVersion?: NodeLastVersions
   nodesIssues?: Record<string, string>
+  loadItemsDisabled?: boolean
+  handleLoadItems?: () => Promise<void>
   handleLink: (nodeHash: string) => void
   handleUnlink: (nodeHash: string) => void
 }
 
 export const ComputeResourceNodesTable = ({
-  nodes,
   filteredNodes,
   userNode,
   account,
   lastVersion,
   nodesIssues,
+  loadItemsDisabled,
+  handleLoadItems,
   handleLink: onLink,
   handleUnlink: onUnlink,
 }: ComputeResourceNodesTableProps) => {
@@ -144,9 +146,18 @@ export const ComputeResourceNodesTable = ({
         ),
       },
     ] as TableColumn<CRN>[]
-  }, [account, lastVersion, nodes, nodesIssues, onLink, onUnlink, userNode])
+  }, [account, lastVersion, nodesIssues, onLink, onUnlink, userNode])
 
-  return <NodesTable columns={columns} data={filteredNodes} />
+  return (
+    <NodesTable
+      {...{
+        columns,
+        data: filteredNodes,
+        infiniteScroll: !loadItemsDisabled,
+        onLoadMore: handleLoadItems,
+      }}
+    />
+  )
 }
 ComputeResourceNodesTable.displayName = 'ComputeResourceNodesTable'
 
