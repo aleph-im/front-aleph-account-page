@@ -45,7 +45,7 @@ export const AutoBreadcrumb = ({
     return links
   }, [router, names, isHome, includeHome])
 
-  return isHome ? null : <Breadcrumb navLinks={navLinks} {...rest} />
+  return isHome ? <div /> : <Breadcrumb navLinks={navLinks} {...rest} />
 }
 AutoBreadcrumb.displayName = 'AutoBreadcrumb'
 
