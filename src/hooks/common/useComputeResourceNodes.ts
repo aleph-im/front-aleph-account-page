@@ -1,9 +1,8 @@
 import { useAppState } from '@/contexts/appState'
 import { CRN, NodeLastVersions } from '@/domain/node'
-import { useDebounceState } from '@aleph-front/core'
+import { useDebounceState, usePaginatedList } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { usePaginatedList } from './usePaginatedList'
 
 export type UseComputeResourceNodesProps = {
   nodes?: CRN[]

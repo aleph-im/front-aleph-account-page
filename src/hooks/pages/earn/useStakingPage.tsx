@@ -7,10 +7,13 @@ import {
 import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useFilterUserStakeNodes } from '@/hooks/common/useFilterUserStakeNodes'
-import { NotificationBadge, TabsProps } from '@aleph-front/core'
+import {
+  NotificationBadge,
+  TabsProps,
+  usePaginatedList,
+} from '@aleph-front/core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useStaking } from '@/hooks/common/useStaking'
-import { usePaginatedList } from '@/hooks/common/usePaginatedList'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
