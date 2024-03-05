@@ -277,6 +277,8 @@ export class NodeManager {
   static updateCCNSchema = updateCCNSchema
   static updateCRNSchema = updateCRNSchema
 
+  static maxStakedPerNode = 1_000_000
+
   constructor(
     protected account?: Account,
     protected fileManager: FileManager = new FileManager(account, channel),
@@ -617,7 +619,7 @@ export class NodeManager {
     if (balance < 10_000)
       return [false, 'You need at least 10000 ALEPH to stake']
 
-    if (node.total_staked >= 1_000_000)
+    if (node.total_staked >= NodeManager.maxStakedPerNode)
       return [false, 'Too many ALEPH staked on that node']
 
     if (this.isLocked(node)) return [false, 'This node is locked']

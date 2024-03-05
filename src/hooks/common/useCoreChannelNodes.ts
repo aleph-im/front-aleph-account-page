@@ -1,5 +1,5 @@
 import { useAppState } from '@/contexts/appState'
-import { CCN, NodeLastVersions } from '@/domain/node'
+import { CCN, NodeLastVersions, NodeManager } from '@/domain/node'
 import { useDebounceState, usePaginatedList } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
@@ -60,7 +60,25 @@ export function useCoreChannelNodes({
     const nodes = prefetchNodes || data
     if (!nodes) return
 
-    return nodes.sort((a, b) => b.score - a.score)
+    return nodes.sort((a, b) => {
+      const aSlotsScore =
+        1 - Math.min(a.total_staked / NodeManager.maxStakedPerNode, 1)
+
+      const bSlotsScore =
+        1 - Math.min(b.total_staked / NodeManager.maxStakedPerNode, 1)
+
+      const aScore =
+        a.score + a.total_staked >= NodeManager.maxStakedPerNode
+          ? 0
+          : (a.score + aSlotsScore) / 2
+
+      const bScore =
+        b.score + b.total_staked >= NodeManager.maxStakedPerNode
+          ? 0
+          : (b.score + bSlotsScore) / 2
+
+      return bScore - aScore
+    })
   }, [prefetchNodes, data])
 
   const filteredNodes = useMemo(
