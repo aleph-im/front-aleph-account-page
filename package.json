@@ -1,6 +1,6 @@
 {
   "name": "front-aleph-account-page",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
