@@ -157,8 +157,32 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const presortedFilteredNodes = useMemo(() => {
+    if (!filteredNodes) return
+
+    return filteredNodes.sort((a, b) => {
+      const aSlotsScore =
+        1 - Math.min(a.total_staked / NodeManager.maxStakedPerNode, 1)
+
+      const bSlotsScore =
+        1 - Math.min(b.total_staked / NodeManager.maxStakedPerNode, 1)
+
+      const aScore =
+        a.score + a.total_staked >= NodeManager.maxStakedPerNode
+          ? 0
+          : (a.score + aSlotsScore) / 2
+
+      const bScore =
+        b.score + b.total_staked >= NodeManager.maxStakedPerNode
+          ? 0
+          : (b.score + bSlotsScore) / 2
+
+      return bScore - aScore
+    })
+  }, [filteredNodes])
+
   const { list: sortedFilteredNodes, handleSortItems } = useSortedList({
-    list: filteredNodes,
+    list: presortedFilteredNodes,
   })
 
   const {
