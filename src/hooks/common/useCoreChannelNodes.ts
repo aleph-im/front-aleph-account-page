@@ -3,6 +3,7 @@ import { CCN, NodeLastVersions } from '@/domain/node'
 import { useDebounceState, usePaginatedList } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { UseSortedListReturn, useSortedList } from './useSortedList'
 
 export type UseCoreChannelNodesProps = {
   nodes?: CCN[]
@@ -13,10 +14,11 @@ export type UseCoreChannelNodesReturn = {
   accountBalance?: number
   nodes?: CCN[]
   filteredNodes?: CCN[]
-  paginatedFilteredNodes?: CCN[]
+  paginatedSortedFilteredNodes?: CCN[]
   filter: string
   lastVersion?: NodeLastVersions
   loadItemsDisabled: boolean
+  handleSortItems: UseSortedListReturn<CCN>['handleSortItems']
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleLoadItems: () => Promise<void>
 }
@@ -68,12 +70,16 @@ export function useCoreChannelNodes({
 
   // -----------------------------
 
+  const { list: sortedFilteredNodes, handleSortItems } = useSortedList({
+    list: filteredNodes,
+  })
+
   const {
-    list: paginatedFilteredNodes,
+    list: paginatedSortedFilteredNodes,
     loadItemsDisabled,
     handleLoadItems,
   } = usePaginatedList({
-    list: filteredNodes,
+    list: sortedFilteredNodes,
   })
 
   // -----------------------------
@@ -83,10 +89,11 @@ export function useCoreChannelNodes({
     accountBalance,
     nodes,
     filteredNodes,
-    paginatedFilteredNodes,
+    paginatedSortedFilteredNodes,
     filter,
     lastVersion,
     loadItemsDisabled,
+    handleSortItems,
     handleFilterChange,
     handleLoadItems,
   }

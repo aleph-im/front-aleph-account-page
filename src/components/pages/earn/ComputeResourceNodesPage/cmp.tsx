@@ -21,7 +21,7 @@ export const ComputeResourceNodesPage = (
   const {
     account,
     nodes,
-    paginatedFilteredNodes,
+    paginatedSortedFilteredNodes,
     userNodes,
     filteredUserNodes,
     userNodesIssues,
@@ -35,6 +35,7 @@ export const ComputeResourceNodesPage = (
     totalResources,
     loadItemsDisabled,
     handleLoadItems,
+    handleSortItems,
     handleLink,
     handleUnlink,
     handleTabChange,
@@ -181,9 +182,10 @@ export const ComputeResourceNodesPage = (
                     <ComputeResourceNodesTable
                       {...{
                         nodes,
-                        filteredNodes: paginatedFilteredNodes,
+                        filteredNodes: paginatedSortedFilteredNodes,
                         loadItemsDisabled,
                         handleLoadItems,
+                        handleSortItems,
                         userNode,
                         account,
                         lastVersion,

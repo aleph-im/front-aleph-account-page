@@ -14,6 +14,7 @@ import {
 } from '@aleph-front/core'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useStaking } from '@/hooks/common/useStaking'
+import { useSortedList } from '@/hooks/common/useSortedList'
 
 export type UseStakingPageProps = {
   nodes?: CCN[]
@@ -156,12 +157,16 @@ export function useStakingPage(
 
   // -----------------------------
 
+  const { list: sortedFilteredNodes, handleSortItems } = useSortedList({
+    list: filteredNodes,
+  })
+
   const {
-    list: paginatedFilteredNodes,
+    list: paginatedSortedFilteredNodes,
     loadItemsDisabled,
     handleLoadItems,
   } = usePaginatedList({
-    list: filteredNodes,
+    list: sortedFilteredNodes,
   })
 
   return {
@@ -177,8 +182,9 @@ export function useStakingPage(
     isStakeableOnlyDisabled,
     nodesIssues,
     ...rest,
-    paginatedFilteredNodes,
+    paginatedSortedFilteredNodes,
     loadItemsDisabled,
+    handleSortItems,
     handleLoadItems,
     handleTabChange,
     handleStake,

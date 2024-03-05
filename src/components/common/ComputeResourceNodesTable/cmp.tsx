@@ -16,6 +16,7 @@ import LinkCRNButton from '../LinkCRNButton'
 import ButtonLink from '../ButtonLink'
 import Image from 'next/image'
 import { apiServer } from '@/helpers/constants'
+import { UseSortedListReturn } from '@/hooks/common/useSortedList'
 
 export type ComputeResourceNodesTableProps = {
   filteredNodes?: CRN[]
@@ -25,6 +26,7 @@ export type ComputeResourceNodesTableProps = {
   nodesIssues?: Record<string, string>
   loadItemsDisabled?: boolean
   handleLoadItems?: () => Promise<void>
+  handleSortItems?: UseSortedListReturn<CRN>['handleSortItems']
   handleLink: (nodeHash: string) => void
   handleUnlink: (nodeHash: string) => void
 }
@@ -37,6 +39,7 @@ export const ComputeResourceNodesTable = ({
   nodesIssues,
   loadItemsDisabled,
   handleLoadItems,
+  handleSortItems,
   handleLink: onLink,
   handleUnlink: onUnlink,
 }: ComputeResourceNodesTableProps) => {
@@ -155,6 +158,7 @@ export const ComputeResourceNodesTable = ({
         data: filteredNodes,
         infiniteScroll: !loadItemsDisabled,
         onLoadMore: handleLoadItems,
+        onSort: handleSortItems,
       }}
     />
   )

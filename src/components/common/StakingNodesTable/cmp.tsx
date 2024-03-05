@@ -17,6 +17,7 @@ import tw from 'twin.macro'
 import ButtonLink from '../ButtonLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
+import { UseSortedListReturn } from '@/hooks/common/useSortedList'
 
 export type StakingNodesTableProps = {
   nodes: CCN[]
@@ -27,6 +28,7 @@ export type StakingNodesTableProps = {
   nodesIssues?: Record<string, string>
   loadItemsDisabled?: boolean
   handleLoadItems?: () => Promise<void>
+  handleSortItems?: UseSortedListReturn<CCN>['handleSortItems']
   handleStake: (nodeHash: string) => void
   handleUnstake: (nodeHash: string) => void
 }
@@ -40,6 +42,7 @@ export const StakingNodesTable = ({
   nodesIssues,
   loadItemsDisabled,
   handleLoadItems,
+  handleSortItems,
   handleStake: onStake,
   handleUnstake: onUnstake,
 }: StakingNodesTableProps) => {
@@ -156,6 +159,7 @@ export const StakingNodesTable = ({
         data: filteredNodes,
         infiniteScroll: !loadItemsDisabled,
         onLoadMore: handleLoadItems,
+        onSort: handleSortItems,
       }}
     />
   )

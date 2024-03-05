@@ -22,7 +22,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     nodes,
     userNodes,
     filteredUserNodes,
-    paginatedFilteredNodes,
+    paginatedSortedFilteredNodes,
     userNodesIssues,
     tabs,
     selectedTab,
@@ -30,6 +30,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     lastVersion,
     loadItemsDisabled,
     handleLoadItems,
+    handleSortItems,
     handleTabChange,
     handleFilterChange,
   } = useCoreChannelNodesPage(props)
@@ -160,10 +161,11 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                     <CoreChannelNodesTable
                       {...{
                         nodes,
-                        filteredNodes: paginatedFilteredNodes,
+                        filteredNodes: paginatedSortedFilteredNodes,
                         lastVersion,
                         loadItemsDisabled,
                         handleLoadItems,
+                        handleSortItems,
                       }}
                     />
                   )}

@@ -15,6 +15,7 @@ import NodeStaked from '@/components/common/NodeStaked'
 import ButtonLink from '../ButtonLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
+import { UseSortedListReturn } from '@/hooks/common/useSortedList'
 
 export type CoreChannelNodesTableProps = {
   nodes: CCN[]
@@ -23,6 +24,7 @@ export type CoreChannelNodesTableProps = {
   nodesIssues?: Record<string, string>
   loadItemsDisabled?: boolean
   handleLoadItems?: () => Promise<void>
+  handleSortItems?: UseSortedListReturn<CCN>['handleSortItems']
 }
 
 export const CoreChannelNodesTable = ({
@@ -32,6 +34,7 @@ export const CoreChannelNodesTable = ({
   nodesIssues,
   loadItemsDisabled,
   handleLoadItems,
+  handleSortItems,
 }: CoreChannelNodesTableProps) => {
   const columns = useMemo(() => {
     return [
@@ -127,6 +130,7 @@ export const CoreChannelNodesTable = ({
         data: filteredNodes,
         infiniteScroll: !loadItemsDisabled,
         onLoadMore: handleLoadItems,
+        onSort: handleSortItems,
       }}
     />
   )

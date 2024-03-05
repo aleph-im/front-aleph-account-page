@@ -3,6 +3,7 @@ import { CRN, NodeLastVersions } from '@/domain/node'
 import { useDebounceState, usePaginatedList } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { UseSortedListReturn, useSortedList } from './useSortedList'
 
 export type UseComputeResourceNodesProps = {
   nodes?: CRN[]
@@ -13,10 +14,11 @@ export type UseComputeResourceNodesReturn = {
   accountBalance?: number
   nodes?: CRN[]
   filteredNodes?: CRN[]
-  paginatedFilteredNodes?: CRN[]
+  paginatedSortedFilteredNodes?: CRN[]
   filter: string
   lastVersion?: NodeLastVersions
   loadItemsDisabled: boolean
+  handleSortItems: UseSortedListReturn<CRN>['handleSortItems']
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleLoadItems: () => Promise<void>
 }
@@ -72,12 +74,16 @@ export function useComputeResourceNodes({
 
   // -----------------------------
 
+  const { list: sortedFilteredNodes, handleSortItems } = useSortedList({
+    list: filteredNodes,
+  })
+
   const {
-    list: paginatedFilteredNodes,
+    list: paginatedSortedFilteredNodes,
     loadItemsDisabled,
     handleLoadItems,
   } = usePaginatedList({
-    list: filteredNodes,
+    list: sortedFilteredNodes,
   })
 
   // -----------------------------
@@ -87,10 +93,11 @@ export function useComputeResourceNodes({
     accountBalance,
     nodes,
     filteredNodes,
-    paginatedFilteredNodes,
+    paginatedSortedFilteredNodes,
     filter,
     lastVersion,
     loadItemsDisabled,
+    handleSortItems,
     handleFilterChange,
     handleLoadItems,
   }
