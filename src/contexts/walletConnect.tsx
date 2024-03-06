@@ -64,7 +64,7 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
         namespaces: {
           eip155: {
             methods,
-            chains: ['eip155:1'],
+            chains: [`eip155:${chainToId(chain)}`],
             events,
           },
         },
@@ -124,6 +124,8 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
     await disconnect()
   }, [disconnect])
   
+  /*
+  note: no chain updates for now
   const sessionEventListener = useCallback(async (event: any) => {
     console.log("EVENT", "session_update", event)
 
@@ -131,7 +133,7 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
     if (event.params?.event?.name === 'chainChanged') {
       await onSessionConnect(idToChain(event.params?.event?.data), ethereumProvider)
     }
-  }, [onSessionConnect, ethereumProvider])
+  }, [onSessionConnect, ethereumProvider])*/
 
   const subscribeToEvents = useCallback(
     async (provider: Provider) => {
@@ -140,10 +142,10 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
       }
 
       provider.on("display_uri", displayUriListener)
-      provider.on("session_update", sessionEventListener)
+      //provider.on("session_update", sessionEventListener)
       provider.on("session_delete", sessionDeleteListener)
     },
-    [displayUriListener, sessionEventListener, sessionDeleteListener]
+    [displayUriListener, sessionDeleteListener]
   )
   
   useEffect(() => {
@@ -152,7 +154,7 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
 
       return () => {
         ethereumProvider.off('display_uri', displayUriListener)
-        ethereumProvider.off('session_update', displayUriListener)
+        //ethereumProvider.off('session_update', sessionEventListener)
         ethereumProvider.off('session_delete', sessionDeleteListener)
       }
     }
