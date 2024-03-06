@@ -10,8 +10,7 @@ import {
 import { DefaultTheme, useTheme } from 'styled-components'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
-import { useConnect } from '../common/useConnect'
-import { useSessionStorage } from 'usehooks-ts'
+import { ProviderEnum, useConnect } from '../common/useConnect'
 import {
   BreakpointId,
   NetworkProps,
@@ -30,6 +29,7 @@ import {
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
+import { useWalletConnect } from '@/contexts/walletConnect'
 
 export function chainNameToEnum(chainName?: string): Chain {
   switch (chainName) {
@@ -167,77 +167,60 @@ export type UseHeaderReturn = UseRoutesReturn & {
 export function useHeader(): UseHeaderReturn {
   const {
     connect,
+    onSessionConnect,
+    account,
     disconnect,
     isConnected,
-    account,
     selectedNetwork: selectedNetworkChain,
     switchNetwork: switchNetworkChain,
+    currentProvider
   } = useConnect()
+  const walletConnect = useWalletConnect()
+  
   const { routes } = useRoutes()
   const router = useRouter()
   const { pathname } = router
-
-  const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
-    'keepAccountAlive',
-    false,
-  )
-
-  // const enableConnection = useCallback(async () => {
-  //   if (!isConnected) {
-  //     const acc = await connect()
-  //     if (!acc) return
-  //   } else {
-  //     await disconnect()
-  //   }
-  // }, [connect, disconnect, isConnected])
 
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
     async (wallet?: WalletProps, network?: NetworkProps['network']) => {
       console.log('handleConnect', wallet, network)
       if (!isConnected && (wallet || network)) {
-        setkeepAccountAlive(true)
-        const acc = await connect(
-          chainNameToEnum(network?.name),
-          wallet?.provider(),
-        )
+        const provider =
+          wallet && wallet.provider ? wallet.provider() : window.ethereum
+        const acc = await connect(chainNameToEnum(network?.name), provider)
         if (!acc) return
         // router.push('/')
       } else {
-        setkeepAccountAlive(false)
         await disconnect()
         router.push('/')
       }
     },
-    [connect, disconnect, isConnected, router, setkeepAccountAlive],
+    [connect, disconnect, isConnected, router],
   )
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     if (!account && keepAccountAlive) {
-  //       enableConnection()
-  //     }
-  //   })()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [account, keepAccountAlive])
-
-  // --------------------
-
   const provider = useCallback(() => {
-    window.ethereum?.on('accountsChanged', function () {
+    ;(window.ethereum as any)?.on('accountsChanged', function () {
       connect()
     })
 
     return window.ethereum
   }, [connect])
 
-  // @todo: handle this on the provider method of the WalletConnect component
-  // the provider function should initialize the provider and return a dispose function
+  // auto-login metamask
+
+  const enableConnection = useCallback(async () => {
+    if (currentProvider === ProviderEnum.Metamask && !account && !isConnected) {
+      await onSessionConnect(selectedNetworkChain, window.ethereum)
+    }
+  }, [currentProvider, onSessionConnect, isConnected, account])
+
   useEffect(() => {
     provider()
+    enableConnection()
     return () => {
-      window.ethereum?.removeListener('accountsChanged', () => {
-        connect()
+      ;(window.ethereum as any)?.removeListener('accountsChanged', () => {
+        disconnect()
       })
     }
   }, [])
@@ -270,10 +253,16 @@ export function useHeader(): UseHeaderReturn {
             name: 'Metamask',
             provider,
           },
+          {
+            color: 'blue',
+            icon: 'walletConnect',
+            name: 'Wallet Connect',
+            provider: () => walletConnect,
+          },
         ],
       },
     ],
-    [provider],
+    [provider, walletConnect],
   )
 
   const handleSwitchNetwork = useCallback(
