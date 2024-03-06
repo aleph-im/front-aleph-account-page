@@ -1,5 +1,18 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useConnect, idToChain, ProviderEnum, chainToId } from '@/hooks/common/useConnect'
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import {
+  useConnect,
+  idToChain,
+  ProviderEnum,
+  chainToId,
+} from '@/hooks/common/useConnect'
 import UniversalProvider from '@walletconnect/universal-provider'
 import { Web3Modal } from '@web3modal/standalone'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
@@ -16,26 +29,34 @@ export type WalletConnect = {
 
 export const WalletConnectContext = createContext<WalletConnect | null>(null)
 
-export const WalletConnectProvider = ({ children }: { children: ReactNode }) => {
-  const { currentProvider, onSessionConnect, isConnected, selectedNetwork } = useConnect()
+export const WalletConnectProvider = ({
+  children,
+}: {
+  children: ReactNode
+}) => {
+  const { currentProvider, onSessionConnect, isConnected, selectedNetwork } =
+    useConnect()
   const [ethereumProvider, setEthereumProvider] = useState<UniversalProvider>()
   const [web3Modal, setWeb3Modal] = useState<Web3Modal>()
 
-  const switchNetwork = useCallback(async (chain: Chain) => {
-    if (!ethereumProvider) {
-      throw new Error('ethereumProvider is not initialized')
-    }
-    if (!ethereumProvider.session) {
-      throw new Error('session is not initialized')
-    }
+  const switchNetwork = useCallback(
+    async (chain: Chain) => {
+      if (!ethereumProvider) {
+        throw new Error('ethereumProvider is not initialized')
+      }
+      if (!ethereumProvider.session) {
+        throw new Error('session is not initialized')
+      }
 
-    await ethereumProvider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{chainId: `0x${chainToId(chain).toString(16)}`}]
-    })
+      await ethereumProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${chainToId(chain).toString(16)}` }],
+      })
 
-    return await onSessionConnect(chain, ethereumProvider)
-  }, [ethereumProvider, onSessionConnect])
+      return await onSessionConnect(chain, ethereumProvider)
+    },
+    [ethereumProvider, onSessionConnect],
+  )
 
   const disconnect = useCallback(async () => {
     if (!ethereumProvider) {
@@ -57,10 +78,10 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
         'personal_sign',
         'eth_signTypedData',
         'wallet_addEthereumChain',
-        'wallet_switchEthereumChain'
+        'wallet_switchEthereumChain',
       ]
-      const events = ["chainChanged", "accountsChanged"]
-      await ethereumProvider.connect({ 
+      const events = ['chainChanged', 'accountsChanged']
+      await ethereumProvider.connect({
         namespaces: {
           eip155: {
             methods,
@@ -68,7 +89,7 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
             events,
           },
         },
-       })
+      })
 
       await ethereumProvider.enable()
       web3Modal?.closeModal()
@@ -91,7 +112,7 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
           name: 'Aleph.im',
           description: 'Aleph.im: Web3 cloud solution',
           url: 'https://aleph.im/',
-          icons: []
+          icons: [],
         },
       })
 
@@ -115,15 +136,18 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
   }, [ethereumProvider])
 
   // setup - clean-up listeners
-  
-  const displayUriListener = useCallback(async (uri: string) => {
-    web3Modal?.openModal({ uri })
-  }, [web3Modal])
+
+  const displayUriListener = useCallback(
+    async (uri: string) => {
+      web3Modal?.openModal({ uri })
+    },
+    [web3Modal],
+  )
 
   const sessionDeleteListener = useCallback(async () => {
     await disconnect()
   }, [disconnect])
-  
+
   /*
   note: no chain updates for now
   const sessionEventListener = useCallback(async (event: any) => {
@@ -137,17 +161,17 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
 
   const subscribeToEvents = useCallback(
     async (provider: Provider) => {
-      if (typeof provider === "undefined") {
-        throw new Error("WalletConnect is not initialized");
+      if (typeof provider === 'undefined') {
+        throw new Error('WalletConnect is not initialized')
       }
 
-      provider.on("display_uri", displayUriListener)
+      provider.on('display_uri', displayUriListener)
       //provider.on("session_update", sessionEventListener)
-      provider.on("session_delete", sessionDeleteListener)
+      provider.on('session_delete', sessionDeleteListener)
     },
-    [displayUriListener, sessionDeleteListener]
+    [displayUriListener, sessionDeleteListener],
   )
-  
+
   useEffect(() => {
     if (ethereumProvider) {
       subscribeToEvents(ethereumProvider)
@@ -164,15 +188,19 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
 
   const enableConnection = useCallback(async () => {
     if (!ethereumProvider) return
-    if (ethereumProvider.session && !isConnected && currentProvider === ProviderEnum.WalletConnect) {
+    if (
+      ethereumProvider.session &&
+      !isConnected &&
+      currentProvider === ProviderEnum.WalletConnect
+    ) {
       await onSessionConnect(selectedNetwork, ethereumProvider)
     }
   }, [ethereumProvider, currentProvider, selectedNetwork, onSessionConnect])
-  
+
   useEffect(() => {
     enableConnection()
   }, [ethereumProvider])
-  
+
   const value = useMemo(
     () => ({
       isWalletConnect: true,
@@ -181,26 +209,21 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
       switchNetwork,
       ethereumProvider,
     }),
-    [
-      disconnect,
-      connect,
-      switchNetwork,
-      ethereumProvider,
-    ]
+    [disconnect, connect, switchNetwork, ethereumProvider],
   )
 
   return (
-    <WalletConnectContext.Provider value={{...value}}>
+    <WalletConnectContext.Provider value={{ ...value }}>
       {children}
     </WalletConnectContext.Provider>
   )
 }
 
-export function useWalletConnect(): WalletConnect| null {
+export function useWalletConnect(): WalletConnect | null {
   const context = useContext(WalletConnectContext)
   if (context === undefined) {
     throw new Error(
-      "useWalletConnectClient must be used within a ClientContextProvider"
+      'useWalletConnectClient must be used within a ClientContextProvider',
     )
   }
   return context

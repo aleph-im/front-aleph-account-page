@@ -173,10 +173,10 @@ export function useHeader(): UseHeaderReturn {
     isConnected,
     selectedNetwork: selectedNetworkChain,
     switchNetwork: switchNetworkChain,
-    currentProvider
+    currentProvider,
   } = useConnect()
   const walletConnect = useWalletConnect()
-  
+
   const { routes } = useRoutes()
   const router = useRouter()
   const { pathname } = router
