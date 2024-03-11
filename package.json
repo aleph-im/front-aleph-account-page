@@ -23,7 +23,6 @@
     "@types/react-dom": "18.0.11",
     "@walletconnect/modal": "^2.6.2",
     "@walletconnect/universal-provider": "^2.11.2",
-    "@web3modal/standalone": "^2.4.3",
     "aleph-sdk-ts": "^3.8.1",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.1",

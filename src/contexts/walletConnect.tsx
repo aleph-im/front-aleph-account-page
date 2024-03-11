@@ -7,14 +7,9 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {
-  useConnect,
-  idToChain,
-  ProviderEnum,
-  chainToId,
-} from '@/hooks/common/useConnect'
+import { useConnect, ProviderEnum, chainToId } from '@/hooks/common/useConnect'
 import UniversalProvider from '@walletconnect/universal-provider'
-import { Web3Modal } from '@web3modal/standalone'
+import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
@@ -37,7 +32,7 @@ export const WalletConnectProvider = ({
   const { currentProvider, onSessionConnect, isConnected, selectedNetwork } =
     useConnect()
   const [ethereumProvider, setEthereumProvider] = useState<UniversalProvider>()
-  const [web3Modal, setWeb3Modal] = useState<Web3Modal>()
+  const [web3Modal, setWeb3Modal] = useState<WalletConnectModal>()
 
   const switchNetwork = useCallback(
     async (chain: Chain) => {
@@ -91,12 +86,11 @@ export const WalletConnectProvider = ({
         },
       })
 
-      await ethereumProvider.enable()
       web3Modal?.closeModal()
 
       return await onSessionConnect(chain, ethereumProvider)
     },
-    [ethereumProvider, web3Modal],
+    [ethereumProvider, web3Modal, onSessionConnect],
   )
 
   // provider initialization
@@ -107,7 +101,6 @@ export const WalletConnectProvider = ({
 
       const provider = await UniversalProvider.init({
         projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-        logger: 'debug',
         metadata: {
           name: 'Aleph.im',
           description: 'Aleph.im: Web3 cloud solution',
@@ -116,9 +109,8 @@ export const WalletConnectProvider = ({
         },
       })
 
-      const web3Modal = new Web3Modal({
+      const web3Modal = new WalletConnectModal({
         projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-        walletConnectVersion: 2,
         //mobileWallets: []
       })
 
@@ -148,9 +140,7 @@ export const WalletConnectProvider = ({
     await disconnect()
   }, [disconnect])
 
-  /*
-  note: no chain updates for now
-  const sessionEventListener = useCallback(async (event: any) => {
+  /*const sessionEventListener = useCallback(async (event: any) => {
     console.log("EVENT", "session_update", event)
 
     if (!ethereumProvider?.session) return        

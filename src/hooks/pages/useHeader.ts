@@ -248,15 +248,15 @@ export function useHeader(): UseHeaderReturn {
         name: 'Ethereum',
         wallets: [
           {
-            color: 'orange',
-            icon: 'metamask',
             name: 'Metamask',
+            icon: 'metamask',
+            color: 'orange',
             provider,
           },
           {
-            color: 'blue',
-            icon: 'walletConnect',
             name: 'Wallet Connect',
+            icon: 'walletConnect',
+            color: 'main0',
             provider: () => walletConnect,
           },
         ],
