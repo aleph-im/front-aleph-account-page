@@ -4,7 +4,7 @@ import { StakeManager } from '@/domain/stake'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
 import Card1 from '../Card1'
-import { ColorDot, Logo, TextGradient } from '@aleph-front/core'
+import { ColorDot, TextGradient } from '@aleph-front/core'
 import { SVGGradients } from '../charts'
 import Price from '../Price'
 
@@ -22,7 +22,7 @@ export const EstimatedNodeRewardsChart = ({
   const data = useMemo(() => {
     const activeNodes = stakeManager.activeNodes(nodes || [])
 
-    const perDayRewards = 15000 / activeNodes.length
+    const perDayRewards = StakeManager.dailyRewardsPool / activeNodes.length
     const perMonthRewards = perDayRewards * 30
     const total = perMonthRewards + perDayRewards
 

@@ -25,6 +25,7 @@ import {
 } from '@/helpers/schemas'
 import { FileManager } from './file'
 import { subscribeSocketFeed } from '@/helpers/socket'
+import { StakeManager } from './stake'
 
 const { post } = messages
 
@@ -278,6 +279,7 @@ export class NodeManager {
   static updateCRNSchema = updateCRNSchema
 
   static maxStakedPerNode = 1_000_000
+  static maxLinkedPerNode = 5
 
   constructor(
     protected account?: Account,
@@ -643,7 +645,7 @@ export class NodeManager {
     if (!!node.parent)
       return [false, `The node is already linked to ${node.parent} ccn`]
 
-    if (userNode.resource_nodes.length >= 3)
+    if (userNode.resource_nodes.length >= NodeManager.maxLinkedPerNode)
       return [
         false,
         `The user node is already linked to ${userNode.resource_nodes.length} nodes`,
@@ -660,7 +662,7 @@ export class NodeManager {
         return 'The linked CCN is underperforming'
     } else {
       if (node.score < 0.8) return 'The CCN is underperforming'
-      if ((node?.crnsData.length || 0) < 3)
+      if ((node?.crnsData.length || 0) < StakeManager.minLinkedNodesForPenalty)
         return 'The CCN has less than three linked CRNs'
       if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
         return 'One of the linked CRN is underperforming'
