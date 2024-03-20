@@ -9,11 +9,11 @@ import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
   
 export type WalletConnectReturn = {
-    isWalletConnect: boolean
     createClient: () => Promise<UniversalProvider | undefined>
     connect: (chain: Chain) => Promise<UniversalProvider>
     switchNetwork: (chain: Chain) => Promise<void>
     disconnect: () => Promise<void>
+    removeListeners: () => void
 }
   
 export function useWalletConnect(): WalletConnectReturn {
@@ -131,11 +131,20 @@ export function useWalletConnect(): WalletConnectReturn {
       [displayUriListener, sessionDeleteListener],
     )
 
+    const removeListeners = useCallback(() => {
+      if (!universalProvider) throw new Error('wallet connect is not initialized')
+
+      universalProvider.off('display_uri', displayUriListener)
+      universalProvider.off('session_update', displayUriListener)
+      universalProvider.off('session_delete', sessionDeleteListener)
+    },
+    [displayUriListener, sessionDeleteListener])
+
     return {
-        isWalletConnect: true,
-        createClient,
-        connect,
-        switchNetwork,
-        disconnect
+      createClient,
+      connect,
+      switchNetwork,
+      disconnect,
+      removeListeners
     }
 }
