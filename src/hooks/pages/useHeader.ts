@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import {
   useCallback,
   useState,
-  useEffect,
   useRef,
   RefObject,
   useMemo,
@@ -29,7 +28,6 @@ import {
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { useWalletConnect } from '@/contexts/walletConnect'
 
 export function chainNameToEnum(chainName?: string): Chain {
   switch (chainName) {
@@ -161,22 +159,17 @@ export type UseHeaderReturn = UseRoutesReturn & {
     network?: NetworkProps['network'],
   ) => Promise<void>
   handleDisconnect: () => void
-  provider: () => void
 }
 
 export function useHeader(): UseHeaderReturn {
   const {
     connect,
-    onSessionConnect,
     account,
     disconnect,
     isConnected,
     selectedNetwork: selectedNetworkChain,
     switchNetwork: switchNetworkChain,
-    currentProvider,
   } = useConnect()
-  const walletConnect = useWalletConnect()
-
   const { routes } = useRoutes()
   const router = useRouter()
   const { pathname } = router
@@ -185,10 +178,8 @@ export function useHeader(): UseHeaderReturn {
   const handleConnect = useCallback(
     async (wallet?: WalletProps, network?: NetworkProps['network']) => {
       console.log('handleConnect', wallet, network)
-      if (!isConnected && (wallet || network)) {
-        const provider =
-          wallet && wallet.provider ? wallet.provider() : window.ethereum
-        const acc = await connect(chainNameToEnum(network?.name), provider)
+      if (!isConnected && wallet) {
+        const acc = await connect(chainNameToEnum(network?.name), wallet.provider())
         if (!acc) return
         // router.push('/')
       } else {
@@ -199,31 +190,6 @@ export function useHeader(): UseHeaderReturn {
     [connect, disconnect, isConnected, router],
   )
 
-  const provider = useCallback(() => {
-    ;(window.ethereum as any)?.on('accountsChanged', function () {
-      connect()
-    })
-
-    return window.ethereum
-  }, [connect])
-
-  // auto-login metamask
-
-  const enableConnection = useCallback(async () => {
-    if (currentProvider === ProviderEnum.Metamask && !account && !isConnected) {
-      await onSessionConnect(selectedNetworkChain, window.ethereum)
-    }
-  }, [currentProvider, onSessionConnect, isConnected, account])
-
-  useEffect(() => {
-    provider()
-    enableConnection()
-    return () => {
-      ;(window.ethereum as any)?.removeListener('accountsChanged', () => {
-        disconnect()
-      })
-    }
-  }, [])
 
   // --------------------
 
@@ -241,6 +207,7 @@ export function useHeader(): UseHeaderReturn {
 
   // --------------------
 
+  // to-do: change provider type on core
   const networks: NetworkProps['network'][] = useMemo(
     () => [
       {
@@ -251,18 +218,18 @@ export function useHeader(): UseHeaderReturn {
             name: 'Metamask',
             icon: 'metamask',
             color: 'orange',
-            provider,
+            provider: () => ProviderEnum.Metamask,
           },
           {
             name: 'Wallet Connect',
             icon: 'walletConnect',
             color: 'main0',
-            provider: () => walletConnect,
+            provider: () => ProviderEnum.WalletConnect,
           },
         ],
       },
     ],
-    [provider, walletConnect],
+    [],
   )
 
   const handleSwitchNetwork = useCallback(
@@ -323,6 +290,5 @@ export function useHeader(): UseHeaderReturn {
     handleToggle,
     handleConnect,
     handleDisconnect,
-    provider,
   }
 }

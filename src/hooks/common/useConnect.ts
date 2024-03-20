@@ -4,16 +4,12 @@ import { AccountActionType } from '@/store/account'
 import { useNotification } from '@aleph-front/core'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { Dispatch, SetStateAction, useCallback } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import { useWalletConnect } from '@/contexts/walletConnect'
+import { useWalletConnect } from './useWalletConnect'
 
 export type UseConnectReturn = {
   connect: (chain?: Chain, provider?: any) => Promise<Account | undefined>
-  onSessionConnect: (
-    chain: Chain,
-    provider: any,
-  ) => Promise<Account | undefined>
   disconnect: () => Promise<void>
   switchNetwork: (chain?: Chain, provider?: any) => Promise<Account | undefined>
   getBalance: (account: Account) => Promise<void>
@@ -33,8 +29,8 @@ export enum ProviderEnum {
 }
 
 export function useConnect(): UseConnectReturn {
-  const [state, dispatch] = useAppState()
   const walletConnect = useWalletConnect()
+  const [state, dispatch] = useAppState()
   const noti = useNotification()
   const [selectedNetwork, setSelectedNetwork] = useSessionStorage<Chain>(
     'selectedNetwork',
@@ -44,6 +40,14 @@ export function useConnect(): UseConnectReturn {
     'currentProvider',
     ProviderEnum.Disconnected,
   )
+
+  const metamaskProvider = useCallback(() => {
+    ;(window.ethereum as any)?.on('accountsChanged', function () {
+      connect()
+    })
+
+    return window.ethereum
+  }, [])
 
   const onNoti = useCallback(
     (error: string, variant: NotificationCardVariant) => {
@@ -68,7 +72,7 @@ export function useConnect(): UseConnectReturn {
     [dispatch],
   )
 
-  const onSessionConnect = useCallback(
+  const updateState = useCallback(
     async (chain: Chain, provider: any) => {
       const account = await web3Connect(chain, provider)
       if (!account) return
@@ -91,53 +95,49 @@ export function useConnect(): UseConnectReturn {
   )
 
   const connect = useCallback(
-    async (chain?: Chain, provider?: any) => {
+    async (chain?: Chain, providerType: ProviderEnum = ProviderEnum.Metamask) => {
       if (!chain) return
-      if (!provider) provider = window.ethereum
 
       let account
       try {
-        if (provider?.isWalletConnect) {
-          account = await provider.connect(chain)
+        let account
+        let provider = metamaskProvider()
 
-          if (!account) return
-        } else {
-          account = onSessionConnect(chain, provider)
+        switch (providerType) {
+          case ProviderEnum.WalletConnect:
+            provider = await walletConnect.connect(chain)
+          case ProviderEnum.Metamask:
+          default:
+            account = await updateState(chain, provider);
         }
-        if (!account) return
+  
+        return account;
       } catch (err) {
-        const e = err as Error
-        onNoti(e.message, 'error') // we assume because the user denied the connection
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        onNoti(errorMessage, 'error');
       }
 
       return account
     },
-    [onSessionConnect, onNoti],
+    [updateState, onNoti, walletConnect],
   )
 
   const disconnect = useCallback(async () => {
-    if (currentProvider === ProviderEnum.WalletConnect) {
-      walletConnect?.disconnect()
-    }
     setCurrentProvider(ProviderEnum.Disconnected)
     dispatch({ type: AccountActionType.ACCOUNT_DISCONNECT, payload: null })
-  }, [dispatch, currentProvider, walletConnect])
+  }, [dispatch, setCurrentProvider])
 
   const switchNetwork = useCallback(
     async (chain?: Chain, provider?: any) => {
       if (!chain) return
-      if (!provider)
-        provider =
-          currentProvider === ProviderEnum.Metamask
-            ? window.ethereum
-            : walletConnect
+      if (!provider) return
 
       let account
       try {
         if (provider?.isWalletConnect) {
           account = await provider.switchNetwork(chain)
         } else {
-          account = await onSessionConnect(chain, provider)
+          account = await updateState(chain, provider)
         }
         if (!account) return
       } catch (err) {
@@ -148,8 +148,7 @@ export function useConnect(): UseConnectReturn {
       return account
     },
     [
-      onSessionConnect,
-      walletConnect,
+      updateState,
       currentProvider,
       setSelectedNetwork,
       setCurrentProvider,
@@ -160,9 +159,46 @@ export function useConnect(): UseConnectReturn {
   const { account } = state
   const isConnected = !!account.account?.address
 
+  const enableConnection = useCallback(async () => {
+    if (currentProvider === ProviderEnum.Disconnected) return
+    
+    let provider
+
+    switch (currentProvider) {
+      case ProviderEnum.Metamask:
+        provider = metamaskProvider()
+        break;
+      case ProviderEnum.WalletConnect:
+        provider = await walletConnect.createClient();
+        if (!provider || !provider.session) return
+        break;
+      default:
+        console.log("No provider selected or provider not supported.");
+    }
+
+    await updateState(selectedNetwork, provider);
+  }, [currentProvider, selectedNetwork, metamaskProvider, walletConnect]);
+  
+
+  useEffect(() => {
+    enableConnection()
+
+    return () => {
+      switch (currentProvider) {
+        case ProviderEnum.Metamask:
+          ;(window.ethereum as any)?.removeListener('accountsChanged', () => {
+            disconnect()
+          })
+        case ProviderEnum.WalletConnect:
+          //walletConnect.removeListeners()
+        default:
+          console.log("No provider selected or provider not supported.");
+      }  
+    }
+  }, [currentProvider])
+
   return {
     connect,
-    onSessionConnect,
     disconnect,
     switchNetwork,
     isConnected,
@@ -174,7 +210,6 @@ export function useConnect(): UseConnectReturn {
   }
 }
 
-// todo: get useHeader helpers and improve this also
 export function chainToId(chain: Chain): number {
   switch (chain) {
     case Chain.ETH:
