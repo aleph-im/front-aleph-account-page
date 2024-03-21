@@ -20,9 +20,16 @@ export const EstimatedNodeRewardsChart = ({
   const theme = useTheme()
 
   const data = useMemo(() => {
-    const activeNodes = stakeManager.activeNodes(nodes || [])
+    let perDayRewards = 0
 
-    const perDayRewards = StakeManager.dailyRewardsPool / activeNodes.length
+    if (nodes) {
+      const activeNodes = stakeManager.activeNodes(nodes)
+      const totalPerDay = stakeManager.totalPerDay(nodes)
+      // const totalPerDay = StakeManager.dailyCCNRewardsPool / activeNodes.length
+
+      perDayRewards = totalPerDay / activeNodes.length
+    }
+
     const perMonthRewards = perDayRewards * 30
     const total = perMonthRewards + perDayRewards
 
