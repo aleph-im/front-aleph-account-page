@@ -23,6 +23,13 @@ export type RewardsResponse = {
 }
 
 export class StakeManager {
+  static dailyCCNRewardsPool = 15_000
+  static dailyCRNRewardsBase = 250 / (365 / 12)
+  static dailyCRNRewardsVariable = 1250 / (365 / 12)
+
+  static minStakeToActivateNode = 200_000
+  static minLinkedNodesForPenalty = 3
+
   constructor(
     protected account?: Account,
     protected channel = defaultAccountChannel,
@@ -161,7 +168,7 @@ export class StakeManager {
   }
 
   totalStakedByOperators(nodes: AlephNode[]): number {
-    return nodes.length * 200_000
+    return nodes.length * StakeManager.minStakeToActivateNode
   }
 
   totalStakedInActive(nodes: CCN[]): number {
@@ -170,9 +177,12 @@ export class StakeManager {
 
   totalPerDay(nodes: CCN[]): number {
     const activeNodes = this.activeNodes(nodes).length
-    if (!activeNodes) return activeNodes
+    if (!activeNodes) return 0
 
-    return 15000 * ((Math.log10(activeNodes) + 1) / 3)
+    // @note: https://medium.com/aleph-im/aleph-im-staking-go-live-part-2-stakers-tokenomics-663164b5ec78
+    return (
+      StakeManager.dailyCCNRewardsPool * ((Math.log10(activeNodes) + 1) / 3)
+    )
   }
 
   totalPerAlephPerDay(nodes: CCN[]): number {
@@ -190,15 +200,10 @@ export class StakeManager {
     let estAPY = 0
 
     if (node.score) {
-      const linkedCRN = Math.min(
-        node.crnsData.filter((x) => x.score >= 0.2).length,
-        3,
-      )
-
       const normalizedScore = normalizeValue(node.score, 0.2, 0.8, 0, 1)
-      const linkedCRNPenalty = (3 - linkedCRN) / 10
+      const linkedCRNPenalty = this.totalLinkedCRNPenaltyFactor(node)
 
-      estAPY = this.currentAPY(nodes) * normalizedScore * (1 - linkedCRNPenalty)
+      estAPY = this.currentAPY(nodes) * normalizedScore * linkedCRNPenalty
     }
 
     return estAPY
@@ -208,20 +213,31 @@ export class StakeManager {
     return stake * this.totalPerAlephPerDay(nodes)
   }
 
+  totalLinkedCRNPenaltyFactor(node: CCN): number {
+    /** @note:
+     * 3 to 5 linked > 100%
+     * 2 linked > 90%
+     * 1 linked > 80%
+     * 0 linked > 70%
+     **/
+
+    const linkedCRN = Math.min(
+      node.crnsData.filter((x) => x.score >= 0.2).length,
+      StakeManager.minLinkedNodesForPenalty,
+    )
+
+    return 1 - (StakeManager.minLinkedNodesForPenalty - linkedCRN) / 10
+  }
+
   CCNRewardsPerDay(node: CCN, nodes: CCN[]): number {
-    let estRewards = 0
+    if (!node.score) return 0
 
-    if (node.score) {
-      const linkedCRN = Math.min(node.crnsData.length, 3)
-      const activeNodes = this.activeNodes(nodes).length
-      const pool = 15_000 / activeNodes
-      const normalizedScore = normalizeValue(node.score, 0.2, 0.8, 0, 1)
-      const linkedCRNPenalty = (3 - linkedCRN) / 10
+    const activeNodes = this.activeNodes(nodes).length
+    const nodePool = StakeManager.dailyCCNRewardsPool / activeNodes
+    const normalizedScore = normalizeValue(node.score, 0.2, 0.8, 0, 1)
+    const linkedCRNPenalty = this.totalLinkedCRNPenaltyFactor(node)
 
-      estRewards = pool * normalizedScore * (1 - linkedCRNPenalty)
-    }
-
-    return estRewards
+    return nodePool * normalizedScore * linkedCRNPenalty
   }
 
   CRNRewardsPerDay(node: CRN): number {
@@ -229,8 +245,13 @@ export class StakeManager {
     if (!node.score || !node.decentralization) return 0
 
     const { decentralization, score } = node
-    const maxRewards = 500 + decentralization * 2500
 
-    return maxRewards * normalizeValue(score, 0.2, 0.8, 0, 1)
+    const maxRewards =
+      StakeManager.dailyCRNRewardsBase +
+      StakeManager.dailyCRNRewardsVariable * decentralization
+
+    const normalizedScore = normalizeValue(score, 0.2, 0.8, 0, 1)
+
+    return maxRewards * normalizedScore
   }
 }

@@ -20,6 +20,7 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
+import { NodeManager } from '@/domain/node'
 
 export const CoreChannelNodeDetailPage = () => {
   const {
@@ -249,7 +250,12 @@ export const CoreChannelNodeDetailPage = () => {
           <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED RESOURCES">
               {Array.from(
-                { length: Math.max(3, node?.crnsData.length || 0) },
+                {
+                  length: Math.max(
+                    NodeManager.maxLinkedPerNode,
+                    node?.crnsData.length || 0,
+                  ),
+                },
                 (_, i) => {
                   const crn = node?.crnsData[i]
 

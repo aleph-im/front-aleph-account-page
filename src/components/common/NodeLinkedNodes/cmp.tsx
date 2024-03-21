@@ -1,21 +1,21 @@
 import { HTMLAttributes, memo } from 'react'
 import { StyledDotIcon } from './styles'
-import { CRN } from '@/domain/node'
+import { CRN, NodeManager } from '@/domain/node'
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L163
 
 export type NodeLinkedNodesProps = HTMLAttributes<HTMLDivElement> & {
   nodes?: CRN[]
   subfix?: string
-  max?: number
 }
 
 export const NodeLinkedNodes = ({
   nodes,
   subfix,
-  max = 3,
   ...rest
 }: NodeLinkedNodesProps) => {
+  const max = NodeManager.maxLinkedPerNode
+
   return (
     <div tw="inline-flex items-center gap-3" {...rest}>
       <div tw="flex items-stretch gap-0.5">

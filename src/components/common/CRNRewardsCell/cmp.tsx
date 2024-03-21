@@ -8,7 +8,7 @@ export const CRNRewardsCell = ({ node }: { node: CRN }) => {
   // @todo: Refactor this (use singleton)
   const rewardManager = new StakeManager()
 
-  const rewards = rewardManager.CRNRewardsPerDay(node)
+  const rewards = rewardManager.CRNRewardsPerDay(node) * (365 / 12)
   const isNotFullyLinked = useMemo(() => !node.parent, [node])
 
   return (
@@ -18,6 +18,7 @@ export const CRNRewardsCell = ({ node }: { node: CRN }) => {
       ) : (
         <div tw="inline-flex gap-2 items-center">
           ~ <Price value={rewards} />
+          /M
         </div>
       )}
     </>
