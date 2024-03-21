@@ -100,8 +100,7 @@ export function useConnect(): UseConnectReturn {
         if (providerType === ProviderEnum.WalletConnect) {
           provider = await walletConnect.connect(chain)
         }
-  
-        return await updateState(chain, provider);
+        return await updateState(chain, provider)
       } catch (err) {
         const e = err as Error
         onNoti(e.message, 'error') // we assume because the user denied the connection
@@ -114,9 +113,10 @@ export function useConnect(): UseConnectReturn {
     if (currentProvider === ProviderEnum.WalletConnect) {
       await walletConnect.disconnect()
     }
+
     setCurrentProvider(ProviderEnum.Disconnected)
     dispatch({ type: AccountActionType.ACCOUNT_DISCONNECT, payload: null })
-  }, [dispatch, setCurrentProvider])
+  }, [dispatch, currentProvider, walletConnect.disconnect])
 
   const switchNetwork = useCallback(
     async (chain?: Chain, providerType: ProviderEnum = ProviderEnum.Metamask) => {
@@ -128,19 +128,13 @@ export function useConnect(): UseConnectReturn {
           provider = await walletConnect.connect(chain)
         }
   
-        return await updateState(chain, provider);
+        return await updateState(chain, provider)
       } catch (err) {
         const e = err as Error
         onNoti(e.message, 'error')
       }
     },
-    [
-      updateState,
-      currentProvider,
-      setSelectedNetwork,
-      setCurrentProvider,
-      onNoti,
-    ],
+    [updateState, onNoti],
   )
 
   const { account } = state
@@ -154,22 +148,24 @@ export function useConnect(): UseConnectReturn {
     switch (currentProvider) {
       case ProviderEnum.Metamask:
         provider = metamaskProvider()
-        break;
+        break
+
       case ProviderEnum.WalletConnect:
-        provider = await walletConnect.createClient();
+        provider = await walletConnect.connect(selectedNetwork)
         if (!provider || !provider.session) return
-        break;
+        break
+
       default:
-        console.log("No provider selected or provider not supported.");
+        console.log("No provider selected or provider not supported.")
     }
 
-    await updateState(selectedNetwork, provider);
-  }, [currentProvider, selectedNetwork, metamaskProvider, walletConnect]);
+    await updateState(selectedNetwork, provider)
+  }, [currentProvider, selectedNetwork, metamaskProvider, walletConnect.connect])
   
-
   useEffect(() => {
     autoLogin()
 
+    // fix this clean-up function
     return () => {
       switch (currentProvider) {
         case ProviderEnum.Metamask:
@@ -177,14 +173,14 @@ export function useConnect(): UseConnectReturn {
             disconnect()
           })
           break
-        case ProviderEnum.WalletConnect:
+        /*case ProviderEnum.WalletConnect:
           walletConnect.removeListeners()
           break
         default:
-          console.log("No provider selected or provider not supported.");
-      }  
+          console.log("No provider selected or provider not supported.")*/
+      }
     }
-  }, [currentProvider])
+  }, [])
 
   return {
     connect,
