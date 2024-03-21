@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import {
   useCallback,
   useState,
-  useEffect,
   useRef,
   RefObject,
   useMemo,
@@ -10,8 +9,7 @@ import {
 import { DefaultTheme, useTheme } from 'styled-components'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
-import { useConnect } from '../common/useConnect'
-import { useSessionStorage } from 'usehooks-ts'
+import { ProviderEnum, useConnect } from '../common/useConnect'
 import {
   BreakpointId,
   NetworkProps,
@@ -161,15 +159,14 @@ export type UseHeaderReturn = UseRoutesReturn & {
     network?: NetworkProps['network'],
   ) => Promise<void>
   handleDisconnect: () => void
-  provider: () => void
 }
 
 export function useHeader(): UseHeaderReturn {
   const {
     connect,
+    account,
     disconnect,
     isConnected,
-    account,
     selectedNetwork: selectedNetworkChain,
     switchNetwork: switchNetworkChain,
   } = useConnect()
@@ -177,70 +174,22 @@ export function useHeader(): UseHeaderReturn {
   const router = useRouter()
   const { pathname } = router
 
-  const [keepAccountAlive, setkeepAccountAlive] = useSessionStorage(
-    'keepAccountAlive',
-    false,
-  )
-
-  // const enableConnection = useCallback(async () => {
-  //   if (!isConnected) {
-  //     const acc = await connect()
-  //     if (!acc) return
-  //   } else {
-  //     await disconnect()
-  //   }
-  // }, [connect, disconnect, isConnected])
-
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
     async (wallet?: WalletProps, network?: NetworkProps['network']) => {
       console.log('handleConnect', wallet, network)
-      if (!isConnected && (wallet || network)) {
-        setkeepAccountAlive(true)
-        const acc = await connect(
-          chainNameToEnum(network?.name),
-          wallet?.provider(),
-        )
+      if (!isConnected && wallet) {
+        const acc = await connect(chainNameToEnum(network?.name), wallet.provider())
         if (!acc) return
         // router.push('/')
       } else {
-        setkeepAccountAlive(false)
         await disconnect()
         router.push('/')
       }
     },
-    [connect, disconnect, isConnected, router, setkeepAccountAlive],
+    [connect, disconnect, isConnected, router],
   )
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     if (!account && keepAccountAlive) {
-  //       enableConnection()
-  //     }
-  //   })()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [account, keepAccountAlive])
-
-  // --------------------
-
-  const provider = useCallback(() => {
-    window.ethereum?.on('accountsChanged', function () {
-      connect()
-    })
-
-    return window.ethereum
-  }, [connect])
-
-  // @todo: handle this on the provider method of the WalletConnect component
-  // the provider function should initialize the provider and return a dispose function
-  useEffect(() => {
-    provider()
-    return () => {
-      window.ethereum?.removeListener('accountsChanged', () => {
-        connect()
-      })
-    }
-  }, [])
 
   // --------------------
 
@@ -258,6 +207,7 @@ export function useHeader(): UseHeaderReturn {
 
   // --------------------
 
+  // to-do: change provider type on core
   const networks: NetworkProps['network'][] = useMemo(
     () => [
       {
@@ -265,15 +215,21 @@ export function useHeader(): UseHeaderReturn {
         name: 'Ethereum',
         wallets: [
           {
-            color: 'orange',
-            icon: 'metamask',
             name: 'Metamask',
-            provider,
+            icon: 'metamask',
+            color: 'orange',
+            provider: () => ProviderEnum.Metamask,
+          },
+          {
+            name: 'Wallet Connect',
+            icon: 'walletConnect',
+            color: 'main0',
+            provider: () => ProviderEnum.WalletConnect,
           },
         ],
       },
     ],
-    [provider],
+    [],
   )
 
   const handleSwitchNetwork = useCallback(
@@ -334,6 +290,5 @@ export function useHeader(): UseHeaderReturn {
     handleToggle,
     handleConnect,
     handleDisconnect,
-    provider,
   }
 }

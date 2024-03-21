@@ -21,19 +21,19 @@ export default function App({ Component, pageProps }: AppProps) {
       <GlobalStyles />
       <GlobalStylesOverride />
       <AppStateProvider>
-        <NotificationProvider max={10} timeout={2000}>
-          <Viewport>
-            <Sidebar />
-            <Main>
-              <Header />
-              <Content>
-                <Component {...pageProps} />
-                <Loading />
-              </Content>
-              <Footer />
-            </Main>
-          </Viewport>
-        </NotificationProvider>
+          <NotificationProvider max={10} timeout={2000}>
+            <Viewport>
+              <Sidebar />
+              <Main>
+                <Header />
+                <Content>
+                  <Component {...pageProps} />
+                  <Loading />
+                </Content>
+                <Footer />
+              </Main>
+            </Viewport>
+          </NotificationProvider>
       </AppStateProvider>
     </ThemeProvider>
   )
