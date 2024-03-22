@@ -1,5 +1,9 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/core'
+import {
+  NotificationBadge,
+  TabsProps,
+  usePaginatedList,
+} from '@aleph-front/core'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
@@ -34,6 +38,9 @@ export type UseComputeResourceNodesPageReturn =
       nodes: number
       total: number
     }
+    paginatedSortedFilteredNodes?: CRN[]
+    loadItemsDisabled: boolean
+    handleLoadItems: () => Promise<void>
     handleLink: (nodeHash: string) => void
     handleUnlink: (nodeHash: string) => void
     handleTabChange: (tab: string) => void
@@ -142,6 +149,16 @@ export function useComputeResourceNodesPage(
     return linkableNodes
   }, [account, baseFilteredNodes, linkableNodes, isLinkableOnly])
 
+  // ----------------------------- PAGINATE
+
+  const {
+    list: paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
+  } = usePaginatedList({
+    list: filteredNodes,
+  })
+
   // ----------------------------- LINK CRN
 
   const router = useRouter()
@@ -205,6 +222,9 @@ export function useComputeResourceNodesPage(
     isLinkableOnly,
     isLinkableOnlyDisabled,
     totalResources,
+    paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
     handleLink,
     handleUnlink,
     handleTabChange,

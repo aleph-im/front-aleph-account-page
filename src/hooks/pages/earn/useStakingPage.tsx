@@ -28,6 +28,9 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
   isStakeableOnly: boolean
   isStakeableOnlyDisabled: boolean
   nodesIssues: Record<string, string>
+  paginatedSortedFilteredNodes?: CCN[]
+  loadItemsDisabled: boolean
+  handleLoadItems: () => Promise<void>
   handleTabChange: (tab: string) => void
   handleStake: (nodeHash: string) => void
   handleUnstake: (nodeHash: string) => void
@@ -194,6 +197,7 @@ export function useStakingPage(
   })
 
   return {
+    ...rest,
     account,
     accountBalance,
     nodes,
@@ -205,7 +209,6 @@ export function useStakingPage(
     isStakeableOnly,
     isStakeableOnlyDisabled,
     nodesIssues,
-    ...rest,
     paginatedSortedFilteredNodes,
     loadItemsDisabled,
     handleSortItems,
