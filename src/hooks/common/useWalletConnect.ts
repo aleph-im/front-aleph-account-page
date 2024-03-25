@@ -1,7 +1,4 @@
-import {
-    useCallback,
-    useState,
-} from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { chainToId } from '@/hooks/common/useConnect'
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
@@ -9,11 +6,10 @@ import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
   
 export type WalletConnectReturn = {
-    createClient: () => Promise<UniversalProvider>
-    connect: (chain: Chain) => Promise<UniversalProvider>
-    switchNetwork: (chain: Chain) => Promise<void>
-    disconnect: () => Promise<void>
-    removeListeners: () => void
+  connect: (chain: Chain) => Promise<UniversalProvider>
+  switchNetwork: (chain: Chain) => Promise<void>
+  disconnect: () => Promise<void>
+  removeListeners: () => void
 }
   
 export function useWalletConnect(): WalletConnectReturn {
@@ -21,9 +17,9 @@ export function useWalletConnect(): WalletConnectReturn {
   const [web3Modal, setWeb3Modal] = useState<WalletConnectModal>()
 
   const disconnect = useCallback(async () => {
-    const provider = universalProvider || await createClient()
+    if (!universalProvider) throw new Error('wallet connect is not initialized')
 
-    await provider.disconnect()
+    await universalProvider.disconnect()
   }, [universalProvider])
 
   const displayUriListener = useCallback(
@@ -40,11 +36,11 @@ export function useWalletConnect(): WalletConnectReturn {
   /*const sessionEventListener = useCallback(async (event: any) => {
     console.log("EVENT", "session_update", event)
 
-    if (!ethereumProvider?.session) return        
+    if (!universalProvider?.session) return        
     if (event.params?.event?.name === 'chainChanged') {
-      await onSessionConnect(idToChain(event.params?.event?.data), ethereumProvider)
+      await updateState(idToChain(event.params?.event?.data), universalProvider)
     }
-  }, [onSessionConnect, ethereumProvider])*/
+  }, [updateState, universalProvider])*/
 
   const subscribeToEvents = useCallback(
     (provider: Provider) => {
@@ -64,23 +60,11 @@ export function useWalletConnect(): WalletConnectReturn {
   },
   [displayUriListener, sessionDeleteListener])
 
-  const createModal = useCallback(() => {
-    try {
-      const web3Modal = new WalletConnectModal({
-        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-        //mobileWallets: []
-      })
-
-      setWeb3Modal(web3Modal)
-    } catch (err) {
-      throw err
-    }
-  }, [setWeb3Modal])
-
   const createClient = useCallback(async () => {
     try {
       const provider = await UniversalProvider.init({
         projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
+        //logger: 'info',
         metadata: {
           name: 'Aleph.im',
           description: 'Aleph.im: Web3 cloud solution',
@@ -89,15 +73,19 @@ export function useWalletConnect(): WalletConnectReturn {
         },
       })
 
-      createModal()
-      subscribeToEvents(provider)
+      const modal = new WalletConnectModal({
+        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
+        //mobileWallets: []
+      })
+
+      setWeb3Modal(modal)
       setUniversalProvider(provider)
 
       return provider
     } catch (err) {
       throw err
     }
-  }, [createModal, subscribeToEvents, setUniversalProvider])
+  }, [subscribeToEvents, setUniversalProvider, setWeb3Modal])
 
   const switchNetwork = useCallback(
     async (chain: Chain) => {
@@ -131,7 +119,6 @@ export function useWalletConnect(): WalletConnectReturn {
         'wallet_switchEthereumChain',
       ]
       const events = ['chainChanged', 'accountsChanged']
-
       await provider.connect({
         namespaces: {
           eip155: {
@@ -146,11 +133,20 @@ export function useWalletConnect(): WalletConnectReturn {
 
       return provider
     },
-    [universalProvider, web3Modal, ]
+    [web3Modal, createClient]
   )
 
+  useEffect(() => {
+    if (web3Modal && universalProvider) {
+      subscribeToEvents(universalProvider)
+  
+      return () => {
+        removeListeners()
+      }
+    }
+  }, [web3Modal, universalProvider, subscribeToEvents, removeListeners])
+
   return {
-    createClient,
     connect,
     switchNetwork,
     disconnect,

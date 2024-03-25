@@ -6,7 +6,7 @@ import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import { useCallback, useEffect } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import { useWalletConnect } from './useWalletConnect'
+import { WalletConnectReturn, useWalletConnect } from './useWalletConnect'
 
 export type UseConnectReturn = {
   connect: (chain?: Chain, provider?: any) => Promise<Account | undefined>
@@ -27,8 +27,8 @@ export enum ProviderEnum {
 
 export function useConnect(): UseConnectReturn {
   const walletConnect = useWalletConnect()
-  const [state, dispatch] = useAppState()
   const noti = useNotification()
+  const [state, dispatch] = useAppState()
   const [selectedNetwork, setSelectedNetwork] = useSessionStorage<Chain>(
     'selectedNetwork',
     Chain.ETH,
@@ -69,44 +69,35 @@ export function useConnect(): UseConnectReturn {
     [dispatch],
   )
 
-  const updateState = useCallback(
-    async (chain: Chain, provider: any) => {
-      const account = await web3Connect(chain, provider)
-      if (!account) return
-
-      dispatch({
-        type: AccountActionType.ACCOUNT_CONNECT,
-        payload: { account },
-      })
-      getBalance(account)
-      setSelectedNetwork(chain)
-      setCurrentProvider(
-        provider.isWalletConnect
-          ? ProviderEnum.WalletConnect
-          : ProviderEnum.Metamask,
-      )
-
-      return account
-    },
-    [dispatch, getBalance, setSelectedNetwork, setCurrentProvider],
-  )
-
   const connect = useCallback(
     async (chain?: Chain, providerType: ProviderEnum = ProviderEnum.Metamask) => {
       if (!chain) return
 
       try {
         let provider = metamaskProvider()
+        
         if (providerType === ProviderEnum.WalletConnect) {
           provider = await walletConnect.connect(chain)
         }
-        return await updateState(chain, provider)
+        
+        const account = await web3Connect(chain, provider)
+        if (!account) return
+
+        dispatch({
+          type: AccountActionType.ACCOUNT_CONNECT,
+          payload: { account },
+        })
+        getBalance(account)
+        setSelectedNetwork(chain)
+        setCurrentProvider(providerType)
+
+        return account
       } catch (err) {
         const e = err as Error
         onNoti(e.message, 'error') // we assume because the user denied the connection
       }
     },
-    [updateState, onNoti, walletConnect],
+    [dispatch, getBalance, setSelectedNetwork, setCurrentProvider, onNoti, walletConnect.connect],
   )
 
   const disconnect = useCallback(async () => {
@@ -128,13 +119,23 @@ export function useConnect(): UseConnectReturn {
           provider = await walletConnect.connect(chain)
         }
   
-        return await updateState(chain, provider)
+        const account = await web3Connect(chain, provider)
+        if (!account) return
+
+        dispatch({
+          type: AccountActionType.ACCOUNT_CONNECT,
+          payload: { account },
+        })
+        getBalance(account)
+        setSelectedNetwork(chain)
+
+        return account
       } catch (err) {
         const e = err as Error
         onNoti(e.message, 'error')
       }
     },
-    [updateState, onNoti],
+    [dispatch, getBalance, setSelectedNetwork, setCurrentProvider, onNoti, walletConnect],
   )
 
   const { account } = state
@@ -157,27 +158,29 @@ export function useConnect(): UseConnectReturn {
 
       default:
         console.log("No provider selected or provider not supported.")
+        return
     }
 
-    await updateState(selectedNetwork, provider)
+    const account = await web3Connect(selectedNetwork, provider)
+    if (!account) return
+
+    dispatch({
+      type: AccountActionType.ACCOUNT_CONNECT,
+      payload: { account },
+    })
+    getBalance(account)
   }, [currentProvider, selectedNetwork, metamaskProvider, walletConnect.connect])
   
   useEffect(() => {
     autoLogin()
 
-    // fix this clean-up function
     return () => {
-      switch (currentProvider) {
-        case ProviderEnum.Metamask:
-          ;(window.ethereum as any)?.removeListener('accountsChanged', () => {
-            disconnect()
-          })
-          break
-        /*case ProviderEnum.WalletConnect:
-          walletConnect.removeListeners()
-          break
-        default:
-          console.log("No provider selected or provider not supported.")*/
+      // note: wallet connect hook handles its own listeners
+      if (currentProvider === ProviderEnum.Disconnected) return
+      if (currentProvider === ProviderEnum.Metamask) {
+        ;(window.ethereum as any)?.removeListener('accountsChanged', () => {
+          disconnect()
+        })
       }
     }
   }, [])
