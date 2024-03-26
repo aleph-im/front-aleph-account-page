@@ -663,7 +663,7 @@ export class NodeManager {
     } else {
       if (node.score < 0.8) return 'The CCN is underperforming'
       if ((node?.crnsData.length || 0) < StakeManager.minLinkedNodesForPenalty)
-        return 'The CCN has less than three linked CRNs'
+        return 'The CCN has free slots to link more CRNs'
       if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
         return 'One of the linked CRN is underperforming'
     }
