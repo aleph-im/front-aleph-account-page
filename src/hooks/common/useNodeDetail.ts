@@ -4,6 +4,7 @@ import { useNotification } from '@aleph-front/core'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 import { EntityDelAction } from '@/store/entity'
+import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 
 export type UseNodeDetailProps<N> = {
   node?: N
@@ -11,6 +12,7 @@ export type UseNodeDetailProps<N> = {
 }
 
 export type UseNodeDetailReturn<N> = {
+  account?: Account
   node?: N
   nodes?: N[]
   nodesOnSameASN?: number
@@ -100,13 +102,14 @@ export function useNodeDetail<N extends AlephNode>({
   }, [node])
 
   const isOwner = useMemo(
-    () => node?.owner === account?.address,
-    [account, node],
+    () => node && nodeManager.isUserNode(node),
+    [nodeManager, node],
   )
 
   // -----------------------------
 
   return {
+    account,
     node,
     nodesOnSameASN,
     baseLatency,

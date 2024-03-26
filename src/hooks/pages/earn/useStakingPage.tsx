@@ -106,9 +106,7 @@ export function useStakingPage(
   const stakeableNodes = useMemo(() => {
     if (!baseFilteredNodes) return
     return baseFilteredNodes.filter(
-      (node) =>
-        nodeManager.isStakeable(node, accountBalance)[0] &&
-        !nodeManager.isUserStake(node),
+      (node) => nodeManager.isStakeableBy(node, accountBalance)[0],
     )
   }, [accountBalance, baseFilteredNodes, nodeManager])
 

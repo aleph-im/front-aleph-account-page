@@ -606,7 +606,11 @@ export class NodeManager {
     return !!node.stakers[this.account.address]
   }
 
-  isUserLinked(node: CRN, userNode?: CCN): boolean {
+  isLinked(node: CRN): boolean {
+    return !!node.parentData
+  }
+
+  isUnlinkableBy(node: CRN, userNode?: CCN): boolean {
     if (!userNode) return false
 
     return (
@@ -615,16 +619,21 @@ export class NodeManager {
     )
   }
 
-  isStakeable(node: CCN, balance: number): [boolean, string] {
-    if (!this.account) return [false, 'Please login']
-
-    if (balance < 10_000)
-      return [false, 'You need at least 10000 ALEPH to stake']
-
+  isStakeable(node: CCN): [boolean, string] {
     if (node.total_staked >= NodeManager.maxStakedPerNode)
       return [false, 'Too many ALEPH staked on that node']
 
     if (this.isLocked(node)) return [false, 'This node is locked']
+
+    return [true, `${node.hash} is stakeable`]
+  }
+
+  isStakeableBy(node: CCN, balance: number | undefined): [boolean, string] {
+    const isStakeable = this.isStakeable(node)
+    if (!isStakeable[0]) return isStakeable
+
+    if (!balance || balance < 10_000)
+      return [false, 'You need at least 10000 ALEPH to stake']
 
     if (this.isUserNode(node))
       return [false, "You can't stake while you operate a node"]
@@ -634,8 +643,18 @@ export class NodeManager {
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
   }
 
-  isLinkable(node: CRN, userNode?: CCN): [boolean, string] {
-    if (!this.account) return [false, 'Please login']
+  isLinkable(node: CRN): [boolean, string] {
+    if (node.locked) return [false, 'This node is locked']
+
+    if (!!node.parent)
+      return [false, `The node is already linked to ${node.parent} ccn`]
+
+    return [true, `${node.hash} is linkable`]
+  }
+
+  isLinkableBy(node: CRN, userNode: CCN | undefined): [boolean, string] {
+    const isLinkable = this.isLinkable(node)
+    if (!isLinkable[0]) return isLinkable
 
     if (!userNode || !this.isUserNode(userNode))
       return [false, "The user doesn't own a core channel node"]

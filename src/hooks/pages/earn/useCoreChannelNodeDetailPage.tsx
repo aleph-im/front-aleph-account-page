@@ -12,14 +12,15 @@ import {
   UseEditCoreChannelNodeFormReturn,
   useEditCoreChannelNodeForm,
 } from '@/hooks/form/useEditCoreChannelNodeForm'
-import { useLinking } from '@/hooks/common/useLinking'
+import { UseLinkingReturn, useLinking } from '@/hooks/common/useLinking'
 
 export type UseCoreChannelNodeDetailPageProps = {
   nodes?: CCN[]
 }
 
 export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
-  UseEditCoreChannelNodeFormReturn & {
+  UseEditCoreChannelNodeFormReturn &
+  Pick<UseLinkingReturn, 'isUnlinkableByUser' | 'handleUnlink'> & {
     nodes?: CCN[]
     node?: CCN
     aggregateLatency?: string
@@ -28,7 +29,6 @@ export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
     relativeETHHeightPercent?: number
     calculatedRewards?: number
     locked?: boolean
-    handleUnlink: (nodeHash: string) => void
   }
 
 export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageReturn {
@@ -97,7 +97,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
-  const { handleUnlink } = useLinking()
+  const { isUnlinkableByUser, handleUnlink } = useLinking()
 
   // -----------------------------
 
@@ -125,6 +125,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
     metricsLatency,
     relativeETHHeightPercent,
     calculatedRewards,
+    isUnlinkableByUser,
     handleUnlink,
     ...formProps,
     ...details,
