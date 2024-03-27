@@ -9,7 +9,6 @@ import {
 import { DefaultTheme, useTheme } from 'styled-components'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
-import { ProviderEnum, useConnect } from '../common/useConnect'
 import {
   BreakpointId,
   NetworkProps,
@@ -28,6 +27,7 @@ import {
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
+import { ProviderEnum, useConnect } from '@/contexts/connection'
 
 export function chainNameToEnum(chainName?: string): Chain {
   switch (chainName) {
@@ -207,7 +207,6 @@ export function useHeader(): UseHeaderReturn {
 
   // --------------------
 
-  // to-do: change provider type on core
   const networks: NetworkProps['network'][] = useMemo(
     () => [
       {

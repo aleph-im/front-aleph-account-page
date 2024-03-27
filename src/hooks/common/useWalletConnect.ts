@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { chainToId } from '@/hooks/common/useConnect'
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
+import { chainToId } from '@/contexts/connection'
   
 export type WalletConnectReturn = {
   connect: (chain: Chain) => Promise<UniversalProvider>
   switchNetwork: (chain: Chain) => Promise<void>
   disconnect: () => Promise<void>
-  removeListeners: () => void
 }
   
 export function useWalletConnect(): WalletConnectReturn {
@@ -81,7 +80,7 @@ export function useWalletConnect(): WalletConnectReturn {
       setWeb3Modal(modal)
       setUniversalProvider(provider)
 
-      return provider
+      return { provider, modal }
     } catch (err) {
       throw err
     }
@@ -102,7 +101,7 @@ export function useWalletConnect(): WalletConnectReturn {
 
   const connect = useCallback(
     async (chain: Chain): Promise<UniversalProvider> => {
-      const provider = await createClient()
+      const { provider, modal } = await createClient()
 
       // auto-login
       if (provider.session && provider.session.expiry > Math.floor(Date.now() / 1000)) {
@@ -129,11 +128,11 @@ export function useWalletConnect(): WalletConnectReturn {
         },
       })
 
-      web3Modal?.closeModal()
+      modal.closeModal()
 
       return provider
     },
-    [web3Modal, createClient]
+    [createClient]
   )
 
   useEffect(() => {
@@ -150,6 +149,5 @@ export function useWalletConnect(): WalletConnectReturn {
     connect,
     switchNetwork,
     disconnect,
-    removeListeners
   }
 }

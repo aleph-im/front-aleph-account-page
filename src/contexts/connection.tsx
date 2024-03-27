@@ -1,31 +1,55 @@
-import { useAppState } from '@/contexts/appState'
-import { getAccountBalance, web3Connect } from '@/helpers/aleph'
-import { AccountActionType } from '@/store/account'
-import { useNotification } from '@aleph-front/core'
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { useCallback, useEffect } from 'react'
+import { useAppState } from './appState'
+import { getAccountBalance, web3Connect } from '@/helpers/aleph'
+import { useWalletConnect } from '@/hooks/common/useWalletConnect'
+import { AccountActionType } from '@/store/account'
+import { useNotification } from '@aleph-front/core'
 import { useSessionStorage } from 'usehooks-ts'
-import { WalletConnectReturn, useWalletConnect } from './useWalletConnect'
 
-export type UseConnectReturn = {
-  connect: (chain?: Chain, provider?: any) => Promise<Account | undefined>
-  disconnect: () => Promise<void>
-  switchNetwork: (chain?: Chain, provider?: any) => Promise<Account | undefined>
-  isConnected: boolean
-  account: Account | undefined
-  selectedNetwork: Chain
+export type UseConnectValue = {
+    connect: (chain?: Chain, provider?: any) => Promise<Account | undefined>
+    disconnect: () => Promise<void>
+    switchNetwork: (chain?: Chain, provider?: any) => Promise<Account | undefined>
+    isConnected: boolean
+    account: Account | undefined
+    selectedNetwork: Chain
+}
+
+export type ConnectionProviderProps = {
+    children: ReactNode
 }
 
 type NotificationCardVariant = 'error' | 'success' | 'warning'
 
 export enum ProviderEnum {
-  Metamask = 'Metamask',
-  WalletConnect = 'WalletConnect',
-  Disconnected = 'DisconnectState',
+    Metamask = 'Metamask',
+    WalletConnect = 'WalletConnect',
+    Disconnected = 'DisconnectState',
 }
 
-export function useConnect(): UseConnectReturn {
+const noOpAsync = async () => undefined
+
+const defaultValue: UseConnectValue = {
+    connect: noOpAsync,
+    disconnect: noOpAsync,
+    switchNetwork: noOpAsync,
+    isConnected: false,
+    account: undefined,
+    selectedNetwork: Chain.ETH,
+}
+
+export const ConnectionContext = createContext<UseConnectValue>(defaultValue)
+
+export function ConnectionProvider({ children }: ConnectionProviderProps) {
   const walletConnect = useWalletConnect()
   const noti = useNotification()
   const [state, dispatch] = useAppState()
@@ -74,10 +98,12 @@ export function useConnect(): UseConnectReturn {
       if (!chain) return
 
       try {
-        let provider = metamaskProvider()
+        let provider
         
         if (providerType === ProviderEnum.WalletConnect) {
           provider = await walletConnect.connect(chain)
+        } else {
+          provider = metamaskProvider()
         }
         
         const account = await web3Connect(chain, provider)
@@ -97,7 +123,7 @@ export function useConnect(): UseConnectReturn {
         onNoti(e.message, 'error') // we assume because the user denied the connection
       }
     },
-    [dispatch, getBalance, setSelectedNetwork, setCurrentProvider, onNoti, walletConnect.connect],
+    [dispatch, getBalance, setSelectedNetwork, setCurrentProvider, onNoti],
   )
 
   const disconnect = useCallback(async () => {
@@ -114,9 +140,12 @@ export function useConnect(): UseConnectReturn {
       if (!chain) return
 
       try {
-        let provider = metamaskProvider()
+        let provider
+        
         if (providerType === ProviderEnum.WalletConnect) {
           provider = await walletConnect.connect(chain)
+        } else {
+          provider = metamaskProvider()
         }
   
         const account = await web3Connect(chain, provider)
@@ -138,8 +167,8 @@ export function useConnect(): UseConnectReturn {
     [dispatch, getBalance, setSelectedNetwork, setCurrentProvider, onNoti, walletConnect],
   )
 
-  const { account } = state
-  const isConnected = !!account.account?.address
+  const { account: { account } } = state
+  const isConnected = !!account?.address
 
   const autoLogin = useCallback(async () => {
     if (currentProvider === ProviderEnum.Disconnected) return
@@ -185,14 +214,24 @@ export function useConnect(): UseConnectReturn {
     }
   }, [])
 
-  return {
+  const value = useMemo(() => ({
     connect,
     disconnect,
     switchNetwork,
     isConnected,
-    account: account.account,
+    account,
     selectedNetwork,
-  }
+  }), [connect, disconnect, switchNetwork, isConnected, account, selectedNetwork]);
+
+  return (
+    <ConnectionContext.Provider value={value}>
+      {children}
+    </ConnectionContext.Provider>
+  )
+}
+
+export function useConnect(): UseConnectValue {
+  return useContext(ConnectionContext)
 }
 
 export function chainToId(chain: Chain): number {
