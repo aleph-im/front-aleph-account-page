@@ -9,7 +9,6 @@ import {
 } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
-import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useCallback, useMemo } from 'react'
 import {
   UseNodeDetailReturn,
@@ -29,6 +28,7 @@ import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCR
 import { consoleNewInstanceUrl } from '@/helpers/constants'
 import { convertByteUnits } from '@/helpers/utils'
 import { useRequestCRNIps } from '@/hooks/common/useRequestEntity/useRequestCRNIps'
+import { StakeManager } from '@/domain/stake'
 // import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
@@ -71,9 +71,12 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
-  const { calculatedRewards } = useAccountRewards({
-    address: node?.reward || '',
-  })
+  const stakeManager = useMemo(() => new StakeManager(account), [account])
+
+  const calculatedRewards = useMemo(() => {
+    if (!node) return 0
+    return stakeManager.CRNRewardsPerDay(node) * (365 / 12)
+  }, [node, stakeManager])
 
   // -----------------------------
 

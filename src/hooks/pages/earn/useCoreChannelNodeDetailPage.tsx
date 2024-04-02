@@ -3,7 +3,6 @@ import { useAppState } from '@/contexts/appState'
 import { CCN } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useCoreChannelNode } from '@/hooks/common/useCoreChannelNode'
-import { useAccountRewards } from '@/hooks/common/useRewards'
 import {
   UseNodeDetailReturn,
   useNodeDetail,
@@ -13,6 +12,7 @@ import {
   useEditCoreChannelNodeForm,
 } from '@/hooks/form/useEditCoreChannelNodeForm'
 import { UseLinkingReturn, useLinking } from '@/hooks/common/useLinking'
+import { StakeManager } from '@/domain/stake'
 
 export type UseCoreChannelNodeDetailPageProps = {
   nodes?: CCN[]
@@ -47,9 +47,14 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   const details = useNodeDetail({ node, nodes })
 
-  const { calculatedRewards } = useAccountRewards({
-    address: node?.reward || '',
-  })
+  // -----------------------------
+
+  const stakeManager = useMemo(() => new StakeManager(), [])
+
+  const calculatedRewards = useMemo(() => {
+    if (!node || !nodes) return 0
+    return stakeManager.CCNRewardsPerDay(node, nodes) * (365 / 12)
+  }, [node, nodes, stakeManager])
 
   // -----------------------------
 

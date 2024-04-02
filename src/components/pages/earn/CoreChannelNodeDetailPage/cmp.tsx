@@ -244,7 +244,7 @@ export const CoreChannelNodeDetailPage = () => {
             </Card2>
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
-                name="TOTAL REWARDS"
+                name="ESTIMATED MONTHLY REWARD"
                 value={<Price value={calculatedRewards} />}
               />
             </Card2>
