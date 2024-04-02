@@ -19,7 +19,7 @@ export const CRNRewardsCell = ({ node }: { node: CRN }) => {
       {isNotFullyLinked ? (
         <>-</>
       ) : (
-        <div tw="inline-flex gap-2 items-center">
+        <div tw="inline-flex gap-2 items-center whitespace-nowrap">
           ~ <Price value={rewards} />
           /M
         </div>
