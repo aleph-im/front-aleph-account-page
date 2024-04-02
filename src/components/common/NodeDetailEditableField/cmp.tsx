@@ -77,7 +77,11 @@ export const NodeDetailEditableField = ({
 
   useEffect(() => {
     if (!ref.current) return
-    ref.current.textContent = value ? value + '' : null
+
+    const val = value + ''
+    if (ref.current.textContent === val) return
+
+    ref.current.textContent = val ? val : null
   }, [value, isEditing])
 
   useEffect(() => {
