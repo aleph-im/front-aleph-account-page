@@ -31,8 +31,6 @@ export const ComputeResourceNodeDetailPage = () => {
     baseLatency,
     lastMetricsCheck,
     calculatedRewards,
-    isUserLinked,
-    isLinkable,
     creationDate,
     nameCtrl,
     descriptionCtrl,
@@ -47,6 +45,9 @@ export const ComputeResourceNodeDetailPage = () => {
     nodeSpecs,
     nodeIssue,
     createInstanceUrl,
+    isLinked,
+    isLinkableByUser,
+    isUnlinkableByUser,
     // nodeBenchmark,
     handleRemove,
     handleSubmit,
@@ -355,11 +356,11 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
           <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED CORE NODE">
-              {!node?.parentData ? (
+              {!isLinked ? (
                 <div tw="inline-flex gap-3 items-center">
                   <div tw="w-6 h-6 rounded-full bg-[#C4C4C433]" />
                   <div className="fs-10" tw="leading-4">
-                    {!isUserLinked && isLinkable ? (
+                    {isLinkableByUser ? (
                       <Button
                         color="main2"
                         size="md"
@@ -378,25 +379,25 @@ export const ComputeResourceNodeDetailPage = () => {
                 </div>
               ) : (
                 <div tw="flex items-center">
-                  <Link
-                    href={`/earn/ccn/${node.parentData.hash}`}
-                    legacyBehavior
-                  >
-                    <NodeName
-                      hash={node.parentData.hash}
-                      name={node.parentData.name}
-                      picture={node.parentData.picture}
-                      tw="mr-auto w-auto cursor-pointer"
-                      apiServer={apiServer}
-                      ImageCmp={Image}
-                    />
-                  </Link>
-                  {isUserLinked ? (
+                  {node?.parentData && (
+                    <Link
+                      href={`/earn/ccn/${node.parentData.hash}`}
+                      legacyBehavior
+                    >
+                      <NodeName
+                        hash={node.parentData.hash}
+                        name={node.parentData.name}
+                        picture={node.parentData.picture}
+                        tw="mr-auto w-auto cursor-pointer"
+                        apiServer={apiServer}
+                        ImageCmp={Image}
+                      />
+                    </Link>
+                  )}
+                  {isUnlinkableByUser && (
                     <button onClick={handleUnlink}>
                       <Icon name="trash" color="error" />
                     </button>
-                  ) : (
-                    <></>
                   )}
                 </div>
               )}

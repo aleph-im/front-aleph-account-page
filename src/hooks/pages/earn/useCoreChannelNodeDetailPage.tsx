@@ -3,7 +3,6 @@ import { useAppState } from '@/contexts/appState'
 import { CCN } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useCoreChannelNode } from '@/hooks/common/useCoreChannelNode'
-import { useAccountRewards } from '@/hooks/common/useRewards'
 import {
   UseNodeDetailReturn,
   useNodeDetail,
@@ -12,14 +11,16 @@ import {
   UseEditCoreChannelNodeFormReturn,
   useEditCoreChannelNodeForm,
 } from '@/hooks/form/useEditCoreChannelNodeForm'
-import { useLinking } from '@/hooks/common/useLinking'
+import { UseLinkingReturn, useLinking } from '@/hooks/common/useLinking'
+import { StakeManager } from '@/domain/stake'
 
 export type UseCoreChannelNodeDetailPageProps = {
   nodes?: CCN[]
 }
 
 export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
-  UseEditCoreChannelNodeFormReturn & {
+  UseEditCoreChannelNodeFormReturn &
+  Pick<UseLinkingReturn, 'isUnlinkableByUser' | 'handleUnlink'> & {
     nodes?: CCN[]
     node?: CCN
     aggregateLatency?: string
@@ -28,7 +29,6 @@ export type UseCoreChannelNodeDetailPageReturn = UseNodeDetailReturn<CCN> &
     relativeETHHeightPercent?: number
     calculatedRewards?: number
     locked?: boolean
-    handleUnlink: (nodeHash: string) => void
   }
 
 export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageReturn {
@@ -47,9 +47,14 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   const details = useNodeDetail({ node, nodes })
 
-  const { calculatedRewards } = useAccountRewards({
-    address: node?.reward || '',
-  })
+  // -----------------------------
+
+  const stakeManager = useMemo(() => new StakeManager(), [])
+
+  const calculatedRewards = useMemo(() => {
+    if (!node || !nodes) return 0
+    return stakeManager.CCNRewardsPerDay(node, nodes) * (365 / 12)
+  }, [node, nodes, stakeManager])
 
   // -----------------------------
 
@@ -97,7 +102,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
 
   // -----------------------------
 
-  const { handleUnlink } = useLinking()
+  const { isUnlinkableByUser, handleUnlink } = useLinking()
 
   // -----------------------------
 
@@ -125,6 +130,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
     metricsLatency,
     relativeETHHeightPercent,
     calculatedRewards,
+    isUnlinkableByUser,
     handleUnlink,
     ...formProps,
     ...details,

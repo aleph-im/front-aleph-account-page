@@ -45,9 +45,11 @@ export const CoreChannelNodeDetailPage = () => {
     lockedCtrl,
     registrationUrlCtrl,
     isDirty,
+    account,
+    isUnlinkableByUser,
+    handleUnlink,
     handleRemove,
     handleSubmit,
-    handleUnlink,
   } = useCoreChannelNodeDetailPage()
 
   return (
@@ -242,7 +244,7 @@ export const CoreChannelNodeDetailPage = () => {
             </Card2>
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
-                name="TOTAL REWARDS"
+                name="ESTIMATED MONTHLY REWARD"
                 value={<Price value={calculatedRewards} />}
               />
             </Card2>
@@ -258,6 +260,7 @@ export const CoreChannelNodeDetailPage = () => {
                 },
                 (_, i) => {
                   const crn = node?.crnsData[i]
+                  const isCRNOwner = crn?.owner === account?.address
 
                   return !crn ? (
                     <div key={i} tw="inline-flex gap-3 items-center">
@@ -292,12 +295,10 @@ export const CoreChannelNodeDetailPage = () => {
                           ImageCmp={Image}
                         />
                       </Link>
-                      {isOwner ? (
-                        <button onClick={() => handleUnlink(crn.hash)}>
+                      {isUnlinkableByUser(crn) && (
+                        <button onClick={() => handleUnlink(crn)}>
                           <Icon name="trash" color="error" />
                         </button>
-                      ) : (
-                        <></>
                       )}
                     </div>
                   )

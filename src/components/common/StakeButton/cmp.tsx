@@ -27,7 +27,7 @@ export const StakeButton = ({
   }, [node, nodeManager])
 
   const isDisabled = useMemo(() => {
-    const [canStake] = nodeManager.isStakeable(node, accountBalance)
+    const [canStake] = nodeManager.isStakeableBy(node, accountBalance)
     return !canStake
   }, [nodeManager, node, accountBalance])
 

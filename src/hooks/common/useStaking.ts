@@ -87,10 +87,7 @@ export function useStaking(): UseStakingReturn {
         const targetNode = nodes?.find((node) => node.hash === nodeHash)
         if (!targetNode) throw new Error('Invalid staking node')
 
-        if (
-          !nodeManager.isStakeable(targetNode, balance) ||
-          nodeManager.isUserStake(targetNode)
-        )
+        if (!nodeManager.isStakeableBy(targetNode, balance))
           throw new Error('Not stakeable node')
 
         await stakeManager.stake(nodeHash)

@@ -6,9 +6,12 @@ import { Price } from '../Price/cmp'
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L239
 export const CRNRewardsCell = ({ node }: { node: CRN }) => {
   // @todo: Refactor this (use singleton)
-  const rewardManager = new StakeManager()
 
-  const rewards = rewardManager.CRNRewardsPerDay(node) * (365 / 12)
+  const rewards = useMemo(() => {
+    const rewardManager = new StakeManager()
+    return rewardManager.CRNRewardsPerDay(node) * (365 / 12)
+  }, [node])
+
   const isNotFullyLinked = useMemo(() => !node.parent, [node])
 
   return (
@@ -16,7 +19,7 @@ export const CRNRewardsCell = ({ node }: { node: CRN }) => {
       {isNotFullyLinked ? (
         <>-</>
       ) : (
-        <div tw="inline-flex gap-2 items-center">
+        <div tw="inline-flex gap-2 items-center whitespace-nowrap">
           ~ <Price value={rewards} />
           /M
         </div>

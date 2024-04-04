@@ -9,7 +9,6 @@ import {
 } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
-import { useAccountRewards } from '@/hooks/common/useRewards'
 import { useCallback, useMemo } from 'react'
 import {
   UseNodeDetailReturn,
@@ -29,6 +28,7 @@ import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCR
 import { consoleNewInstanceUrl } from '@/helpers/constants'
 import { convertByteUnits } from '@/helpers/utils'
 import { useRequestCRNIps } from '@/hooks/common/useRequestEntity/useRequestCRNIps'
+import { StakeManager } from '@/domain/stake'
 // import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
@@ -41,16 +41,17 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
     node?: CRN
     userNode?: CCN
     calculatedRewards?: number
-    isUserLinked?: boolean
-    isLinkable?: boolean
     asnTier?: UseHostingProviderTopItem
     nodeSpecs?: CRNSpecs
     nodeIssue?: StreamNotSupportedIssue
     createInstanceUrl?: string
     nodeBenchmark?: CRNBenchmark
+    isLinked?: boolean
+    isLinkableByUser?: boolean
+    isUnlinkableByUser?: boolean
     handleRemove: () => void
-    handleLink: () => void
-    handleUnlink: () => void
+    handleLink: () => Promise<boolean>
+    handleUnlink: () => Promise<boolean>
   }
 
 export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetailPageReturn {
@@ -67,12 +68,15 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
-  nodeManager.isUserLinked
+
   // -----------------------------
 
-  const { calculatedRewards } = useAccountRewards({
-    address: node?.reward || '',
-  })
+  const stakeManager = useMemo(() => new StakeManager(account), [account])
+
+  const calculatedRewards = useMemo(() => {
+    if (!node) return 0
+    return stakeManager.CRNRewardsPerDay(node) * (365 / 12)
+  }, [node, stakeManager])
 
   // -----------------------------
 
@@ -80,37 +84,51 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   // -----------------------------
 
-  const isUserLinked = useMemo(() => {
-    if (!node) return
-    return nodeManager.isUserLinked(node, userNode)
-  }, [node, nodeManager, userNode])
+  const {
+    isLinked: isLinkedCheck,
+    isLinkableByUser: isLinkableByUserCheck,
+    isUnlinkableByUser: isUnlinkableByUserCheck,
+    handleLink: handleLinkBase,
+    handleUnlink: handleUnlinkBase,
+  } = useLinking()
 
-  const isLinkable = useMemo(() => {
-    if (!node) return
-    return nodeManager.isLinkable(node, userNode)[0]
-  }, [node, nodeManager, userNode])
+  const isLinked = useMemo(
+    () => node && isLinkedCheck(node),
+    [isLinkedCheck, node],
+  )
 
-  const { handleLink: handleLinkBase, handleUnlink: handleUnlinkBase } =
-    useLinking()
+  const isLinkableByUser = useMemo(
+    () => node && userNode && isLinkableByUserCheck(node, userNode),
+    [isLinkableByUserCheck, node, userNode],
+  )
+
+  const isUnlinkableByUser = useMemo(
+    () => node && isUnlinkableByUserCheck(node),
+    [isUnlinkableByUserCheck, node],
+  )
 
   const handleLink = useCallback(async () => {
-    if (!node) return
+    if (!node || !userNode) return false
 
-    const success = await handleLinkBase(node.hash)
-    if (!success) return
+    const success = await handleLinkBase(node.hash, userNode.hash)
+    if (!success) return success
 
-    if (!userNode) return
+    if (!userNode) return success
     router.replace(`/earn/ccn/${userNode.hash}`)
+
+    return success
   }, [handleLinkBase, router, node, userNode])
 
   const handleUnlink = useCallback(async () => {
-    if (!node) return
+    if (!node) return false
 
     const success = await handleUnlinkBase(node.hash)
-    if (!success) return
+    if (!success) return success
 
-    if (!userNode) return
+    if (!userNode) return success
     router.replace(`/earn/ccn/${userNode?.hash}`)
+
+    return success
   }, [handleUnlinkBase, router, node, userNode])
 
   // -----------------------------
@@ -233,13 +251,14 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     node,
     userNode,
     calculatedRewards,
-    isUserLinked,
-    isLinkable,
     asnTier,
     nodeSpecs,
     nodeIssue,
     createInstanceUrl,
     // nodeBenchmark,
+    isLinked,
+    isLinkableByUser,
+    isUnlinkableByUser,
     handleLink,
     handleUnlink,
     ...formProps,
