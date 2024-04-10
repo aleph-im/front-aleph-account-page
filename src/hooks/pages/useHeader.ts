@@ -170,7 +170,17 @@ export type UseHeaderReturn = UseRoutesReturn & {
 }
 
 export function useHeader(): UseHeaderReturn {
-  const { state: { connection: { account, network: selectedNetworkChain }}, connect, disconnect, switchNetwork: switchNetworkChain } = useAppState()
+  const { 
+    state: { 
+    connection: {
+       account, 
+       network: selectedNetworkChain 
+    }}, 
+    connect,
+    disconnect, 
+    switchNetwork: switchNetworkChain 
+  } = useAppState()
+
   const { routes } = useRoutes()
   const router = useRouter()
   const { pathname } = router
@@ -182,8 +192,7 @@ export function useHeader(): UseHeaderReturn {
         const chain = chainNameToEnum(network?.name)
         const providerType = walletToEnum(wallet.name)
 
-        const acc = await connect(chain, providerType)
-        if (!acc) return
+        await connect(chain, providerType)
         // router.push('/')
       } else {
         await disconnect()

@@ -31,17 +31,25 @@ export enum ConnectionActionType {
 
 export type ConnectAction = {
   readonly type: ConnectionActionType.CONNECT
-  payload: { account: Account }
+  payload: { 
+    account: Account 
+    balance: number
+    network: Chain
+    provider: ProviderEnum
+  }
 }
 
 export type DisconnectAction = {
   readonly type: ConnectionActionType.DISCONNECT
-  payload: undefined
+  payload: null
 }
 
 export type SwitchNetworkAction = {
   readonly type: ConnectionActionType.SWITCH_NETWORK
-  payload: { network: Chain }
+  payload: { 
+    balance: number
+    network: Chain
+  }
 }
 
 export type SetBalanceAction = {
@@ -61,52 +69,20 @@ export function getConnectionReducer(): ConnectionReducer {
   return (state = initialState, action) => {
     switch (action.type) {
       case ConnectionActionType.CONNECT: {
-        const { account } = action.payload
-
-        // @note: avoid performance issues
-        // @todo: Fix it on the wallet picker component / header which is firing multiple connect events
-        if (state.account?.address === account.address) return state
-
-        // Mock CCN owner
-        // ;(account as any).address = '0xc4CBB0672b2FEbE0D3eC2fD48Be3809078e6593b'
-
-        // Mock CRN owner
-        // ;(account as any).address = '0xD20212929FDe829C57f93dbfF9332f3FC8703BCD'
-
-        // Not fully linked node
-        // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
-
-        // ;(account as any).address = '0x12AcF2e0FBB31972ccE4a97F90A013Ba58585e5c'
-
-        return {
-          ...state,
-          account,
-        }
+        return action.payload
       }
 
       case ConnectionActionType.DISCONNECT: {
-        return {
-          ...state,
-          account: undefined,
-        }
+        return initialState
       }
 
       case ConnectionActionType.SWITCH_NETWORK: {
-        const { network } = action.payload
-
-        return {
-          ...state,
-          network,
-        }
+        return action.payload
       }
 
       case ConnectionActionType.SET_BALANCE: {
         const { balance } = action.payload
-
-        return {
-          ...state,
-          balance,
-        }
+        return { ...state, balance }
       }
 
       default: {

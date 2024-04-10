@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Dispatch, useCallback, useEffect, useState } from 'react'
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
 import { SignClientTypes } from "@walletconnect/types"
-import { chainToId } from './useConnection'
+import { chainToId, idToChain } from './useConnection'
+import { StoreAction, StoreState } from '@/store/store'
+import { ConnectionActionType } from '@/store/connection'
 
 export type WalletConnectReturn = {
   connect: (chain: Chain) => Promise<UniversalProvider>
@@ -14,10 +16,11 @@ export type WalletConnectReturn = {
 
 export type WalletConnectProps = {
   projectId: string
+  dispatch: Dispatch<StoreAction>
   metadata: SignClientTypes.Metadata
 }
 
-export const useWalletConnect = ({ projectId, metadata }: WalletConnectProps) => {
+export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnectProps) => {
   const [universalProvider, setUniversalProvider] = useState<UniversalProvider>()
   const [web3Modal, setWeb3Modal] = useState<WalletConnectModal>()
 
@@ -38,19 +41,21 @@ export const useWalletConnect = ({ projectId, metadata }: WalletConnectProps) =>
     await disconnect()
   }, [disconnect])
 
-  /*const sessionEventListener = useCallback(async (event: any) => {
-    console.log("EVENT", "session_update", event)
-
-    if (!universalProvider?.session) return        
+  const sessionEventListener = useCallback(async (event: any) => {
+    if (!universalProvider?.session) return
+    const network = idToChain(event.params?.event?.data)    
     if (event.params?.event?.name === 'chainChanged') {
-      await updateState(idToChain(event.params?.event?.data), universalProvider)
+      dispatch({
+        type: ConnectionActionType.SWITCH_NETWORK,
+        payload: { network },
+      })
     }
-  }, [updateState, universalProvider])*/
+  }, [universalProvider])
 
   const subscribeToEvents = useCallback(
     (provider: Provider) => {
       provider.on('display_uri', displayUriListener)
-      //provider.on("session_update", sessionEventListener)
+      provider.on("session_update", sessionEventListener)
       provider.on('session_delete', sessionDeleteListener)
     },
     [displayUriListener, sessionDeleteListener],
@@ -60,7 +65,7 @@ export const useWalletConnect = ({ projectId, metadata }: WalletConnectProps) =>
     if (!universalProvider) throw new Error('wallet connect is not initialized')
 
     universalProvider.off('display_uri', displayUriListener)
-    //universalProvider.off('session_update', sessionEventListener)
+    universalProvider.off('session_update', sessionEventListener)
     universalProvider.off('session_delete', sessionDeleteListener)
   },
   [displayUriListener, sessionDeleteListener])
@@ -137,6 +142,7 @@ export const useWalletConnect = ({ projectId, metadata }: WalletConnectProps) =>
         removeListeners()
       }
     }
+    return () => {}
   }, [web3Modal, universalProvider, subscribeToEvents, removeListeners])
 
   return {

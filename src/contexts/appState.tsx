@@ -11,17 +11,11 @@ import {
   storeReducer,
   StoreState,
 } from '@/store/store'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account';
-import { Chain } from 'aleph-sdk-ts/dist/messages/types';
-import { useConnection } from '@/hooks/common/useConnection';
-import { ProviderEnum } from '@/store/connection';
+import { UseConnection, useConnection } from '@/hooks/common/useConnection';
 
-export type AppContextValue = {
+export type AppContextValue = UseConnection & {
   state: StoreState
   dispatch: Dispatch<StoreAction>
-  connect: (chain?: Chain, providerType?: ProviderEnum) => Promise<Account | undefined>
-  disconnect: () => Promise<void>
-  switchNetwork: (chain?: Chain) => Promise<Account | undefined>
 }
 
 export type AppStateProviderProps = {
@@ -37,12 +31,12 @@ export const AppStateContext = createContext<AppContextValue>({
 })
 
 export function AppStateProvider({ children }: AppStateProviderProps) {
-  const state = useReducer(storeReducer, storeInitialState)
-  const { connect, disconnect, switchNetwork } = useConnection(state[1])
+  const [state, dispatch] = useReducer(storeReducer, storeInitialState)
+  const { connect, disconnect, switchNetwork } = useConnection(state.connection, dispatch)
   
   const value = {
-    state: state[0],
-    dispatch: state[1],
+    state,
+    dispatch,
     connect,
     disconnect,
     switchNetwork,
