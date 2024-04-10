@@ -37,8 +37,8 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
 export function useStakingPage(
   props: UseStakingPageProps,
 ): UseStakingPageReturn {
-  const [state] = useAppState()
-  const { account, balance: accountBalance = 0 } = state.account
+  const { state } = useAppState()
+  const { account, balance: accountBalance = 0 } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

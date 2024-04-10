@@ -16,8 +16,8 @@ export function useFilterNodeIssues<T extends AlephNode>({
   nodes,
   isStaking,
 }: UseFilterNodeIssuesProps<T>): UseFilterNodeIssuesReturn {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

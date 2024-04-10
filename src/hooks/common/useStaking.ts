@@ -64,8 +64,8 @@ function calculateVirtualNodesUnstake(
 }
 
 export function useStaking(): UseStakingReturn {
-  const [state, dispatch] = useAppState()
-  const { account, balance = 0 } = state.account
+  const { state, dispatch } = useAppState()
+  const { account, balance = 0 } = state.connection
   const { entities: nodes } = state.ccns
 
   const stakeManager = useMemo(() => new StakeManager(account), [account])

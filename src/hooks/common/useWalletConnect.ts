@@ -3,15 +3,21 @@ import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
-import { chainToId } from '@/contexts/connection'
-  
+import { SignClientTypes } from "@walletconnect/types"
+import { chainToId } from './useConnection'
+
 export type WalletConnectReturn = {
   connect: (chain: Chain) => Promise<UniversalProvider>
-  switchNetwork: (chain: Chain) => Promise<void>
+  switchNetwork: (chain: Chain) => Promise<UniversalProvider>
   disconnect: () => Promise<void>
 }
-  
-export function useWalletConnect(): WalletConnectReturn {
+
+export type WalletConnectProps = {
+  projectId: string
+  metadata: SignClientTypes.Metadata
+}
+
+export const useWalletConnect = ({ projectId, metadata }: WalletConnectProps) => {
   const [universalProvider, setUniversalProvider] = useState<UniversalProvider>()
   const [web3Modal, setWeb3Modal] = useState<WalletConnectModal>()
 
@@ -61,21 +67,8 @@ export function useWalletConnect(): WalletConnectReturn {
 
   const createClient = useCallback(async () => {
     try {
-      const provider = await UniversalProvider.init({
-        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-        //logger: 'info',
-        metadata: {
-          name: 'Aleph.im',
-          description: 'Aleph.im: Web3 cloud solution',
-          url: 'https://aleph.im/',
-          icons: [],
-        },
-      })
-
-      const modal = new WalletConnectModal({
-        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-        //mobileWallets: []
-      })
+      const provider = await UniversalProvider.init({ projectId, metadata })
+      const modal = new WalletConnectModal({ projectId })
 
       setWeb3Modal(modal)
       setUniversalProvider(provider)
@@ -95,6 +88,8 @@ export function useWalletConnect(): WalletConnectReturn {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${chainToId(chain).toString(16)}` }],
       })
+
+      return universalProvider
     },
     [universalProvider],
   )
@@ -138,7 +133,6 @@ export function useWalletConnect(): WalletConnectReturn {
   useEffect(() => {
     if (web3Modal && universalProvider) {
       subscribeToEvents(universalProvider)
-  
       return () => {
         removeListeners()
       }

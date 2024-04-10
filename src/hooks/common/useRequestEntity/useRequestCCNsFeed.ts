@@ -9,9 +9,9 @@ export type UseRequestCCNsFeedReturn = {
 }
 
 export function useRequestCCNsFeed(): UseRequestCCNsFeedReturn {
-  const [state, dispatch] = useAppState()
-  const { account } = state.account
-
+  const { state: appState, dispatch } = useAppState()
+  const { account } = appState.connection
+  
   // @todo: Refactor this (use singleton)
   const manager = useMemo(() => new NodeManager(account), [account])
 

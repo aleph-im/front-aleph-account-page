@@ -13,7 +13,7 @@ export type UseComputeResourceNodeReturn = {
 export function useComputeResourceNode({
   hash,
 }: UseComputeResourceNodeProps): UseComputeResourceNodeReturn {
-  const [state] = useAppState()
+  const { state } = useAppState()
   const { entities } = state.crns
 
   const nodes = useMemo(() => {

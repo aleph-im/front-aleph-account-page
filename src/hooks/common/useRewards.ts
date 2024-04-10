@@ -7,7 +7,7 @@ export type UseLastRewards = {
 }
 
 export function useLastRewards(): UseLastRewards {
-  const [state] = useAppState()
+  const { state } = useAppState()
   const { data: lastRewardsCalculation } = state.lastRewardsCalculation
   const { data: lastRewardsDistribution } = state.lastRewardsDistribution
 

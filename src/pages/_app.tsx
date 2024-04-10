@@ -14,7 +14,6 @@ import Sidebar from '@/components/common/Sidebar'
 import Viewport from '@/components/common/Viewport'
 import Content from '@/components/common/Content'
 import Loading from './loading'
-import { ConnectionProvider } from '@/contexts/connection'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -22,21 +21,19 @@ export default function App({ Component, pageProps }: AppProps) {
       <GlobalStyles />
       <GlobalStylesOverride />
       <AppStateProvider>
-        <ConnectionProvider>
-          <NotificationProvider max={10} timeout={2000}>
-            <Viewport>
-              <Sidebar />
-              <Main>
-                <Header />
-                <Content>
-                  <Component {...pageProps} />
-                  <Loading />
-                </Content>
-                <Footer />
-              </Main>
-            </Viewport>
-          </NotificationProvider>
-        </ConnectionProvider>
+        <NotificationProvider max={10} timeout={2000}>
+          <Viewport>
+            <Sidebar />
+            <Main>
+              <Header />
+              <Content>
+                <Component {...pageProps} />
+                <Loading />
+              </Content>
+              <Footer />
+            </Main>
+          </Viewport>
+        </NotificationProvider>
       </AppStateProvider>
     </ThemeProvider>
   )

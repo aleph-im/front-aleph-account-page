@@ -15,8 +15,8 @@ export type UseRequestCRNSpecsReturn = {
 export function useRequestCRNSpecs({
   nodes,
 }: UseRequestCRNSpecsProps): UseRequestCRNSpecsReturn {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state: appState } = useAppState()
+  const { account } = appState.connection
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
   const [specs, setSpecs] = useState<Record<string, RequestState<CRNSpecs>>>({})

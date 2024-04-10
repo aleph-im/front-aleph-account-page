@@ -15,8 +15,8 @@ export type UseRequestRewardsReturn = {
 export function useRequestRewards({
   triggerDeps,
 }: UseRequestRewardsProps): UseRequestRewardsReturn {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state: appState } = useAppState()
+  const { account } = appState.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new StakeManager(account), [account])

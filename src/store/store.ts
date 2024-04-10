@@ -1,5 +1,5 @@
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
-import { AccountState, getAccountReducer } from './account'
+import { ConnectionState, getConnectionReducer } from './connection'
 import { EntityState, getEntityReducer } from './entity'
 import { RequestState, getRequestReducer } from './request'
 import { RewardsResponse } from '@/domain/stake'
@@ -43,7 +43,7 @@ export function getInitialState<
 }
 
 export type StoreState = {
-  account: AccountState
+  connection: ConnectionState
   lastRewardsDistribution: RequestState<RewardsResponse>
   lastRewardsCalculation: RequestState<RewardsResponse>
   lastCRNVersion: RequestState<NodeLastVersions>
@@ -53,7 +53,7 @@ export type StoreState = {
 }
 
 export const storeReducer = mergeReducers<StoreState>({
-  account: getAccountReducer(),
+  connection: getConnectionReducer(),
   ccns: getEntityReducer<CCN>('ccns', 'hash', 'virtual'),
   crns: getEntityReducer<CRN>('crns', 'hash', 'virtual'),
   lastCRNVersion: getRequestReducer<NodeLastVersions>('lastCRNVersion'),

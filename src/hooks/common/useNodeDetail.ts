@@ -28,8 +28,8 @@ export function useNodeDetail<N extends AlephNode>({
   const router = useRouter()
   const noti = useNotification()
 
-  const [state, dispatch] = useAppState()
-  const { account } = state.account
+  const { state, dispatch } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

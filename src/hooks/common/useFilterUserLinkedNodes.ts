@@ -14,8 +14,8 @@ export type UseFilterUserLinkedNodesReturn = {
 export function useFilterUserLinkedNodes({
   nodes,
 }: UseFilterUserLinkedNodesProps): UseFilterUserLinkedNodesReturn {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

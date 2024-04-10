@@ -10,8 +10,8 @@ export type UseRequestRewardsFeedReturn = {
 }
 
 export function useRequestRewardsFeed(): UseRequestRewardsFeedReturn {
-  const [state, dispatch] = useAppState()
-  const { account } = state.account
+  const { state: appState, dispatch } = useAppState()
+  const { account } = appState.connection
 
   // @todo: Refactor this (use singleton)
   const manager = useMemo(() => new StakeManager(account), [account])

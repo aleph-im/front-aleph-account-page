@@ -19,8 +19,8 @@ export type UseRequestAlephNodesReturn = {
 export function useRequestAlephNodes({
   triggerDeps,
 }: UseRequestAlephNodesProps): UseRequestAlephNodesReturn {
-  const [appState, dispatch] = useAppState()
-  const { account } = appState.account
+  const { state: appState, dispatch } = useAppState()
+  const { account } = appState.connection
   const { ccns, crns } = appState
 
   // @todo: Refactor this (use singleton)

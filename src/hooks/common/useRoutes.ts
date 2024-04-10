@@ -10,7 +10,7 @@ export type UseRoutesReturn = {
 }
 
 export function useRoutes(): UseRoutesReturn {
-  const [state] = useAppState()
+  const { state } = useAppState()
   const { entities: nodes } = state.ccns
   const { entities: crns } = state.crns
 

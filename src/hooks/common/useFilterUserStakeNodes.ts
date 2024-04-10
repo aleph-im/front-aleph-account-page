@@ -13,8 +13,8 @@ export type UseFilterUserStakeNodesReturn = {
 export function useFilterUserStakeNodes({
   nodes,
 }: UseFilterUserStakeNodesProps): UseFilterUserStakeNodesReturn {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

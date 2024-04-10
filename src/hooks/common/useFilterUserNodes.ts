@@ -13,8 +13,8 @@ export type UseFilterUserNodesReturn<Node> = {
 export function useFilterUserNodes<Node extends AlephNode>({
   nodes,
 }: UseFilterUserNodesProps<Node>): UseFilterUserNodesReturn<Node> {
-  const [state] = useAppState()
-  const { account } = state.account
+  const { state } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

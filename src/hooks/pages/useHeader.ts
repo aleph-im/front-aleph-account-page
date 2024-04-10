@@ -27,7 +27,18 @@ import {
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { ProviderEnum, useConnect } from '@/contexts/connection'
+import { ProviderEnum } from '@/store/connection'
+
+export function walletToEnum(walletName?: string): ProviderEnum {
+  switch (walletName) {
+    case 'Metamask':
+      return ProviderEnum.Metamask
+    case 'Wallet Connect':
+      return ProviderEnum.WalletConnect
+    default:
+      return ProviderEnum.Metamask
+  }
+}
 
 export function chainNameToEnum(chainName?: string): Chain {
   switch (chainName) {
@@ -83,11 +94,8 @@ export function useAccountButton({
   handleConnect: handleConnectProp,
   ...rest
 }: UseAccountButtonProps): UseAccountButtonReturn {
-  const { account } = useConnect()
   const theme = useTheme()
-  const [appState] = useAppState()
-
-  const { balance: accountBalance } = appState.account
+  const { state: { connection: { balance: accountBalance, account }} } = useAppState()
 
   const [displayWalletPicker, setDisplayWalletPicker] = useState(false)
 
@@ -162,14 +170,7 @@ export type UseHeaderReturn = UseRoutesReturn & {
 }
 
 export function useHeader(): UseHeaderReturn {
-  const {
-    connect,
-    account,
-    disconnect,
-    isConnected,
-    selectedNetwork: selectedNetworkChain,
-    switchNetwork: switchNetworkChain,
-  } = useConnect()
+  const { state: { connection: { account, network: selectedNetworkChain }}, connect, disconnect, switchNetwork: switchNetworkChain } = useAppState()
   const { routes } = useRoutes()
   const router = useRouter()
   const { pathname } = router
@@ -177,9 +178,11 @@ export function useHeader(): UseHeaderReturn {
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
     async (wallet?: WalletProps, network?: NetworkProps['network']) => {
-      console.log('handleConnect', wallet, network)
-      if (!isConnected && wallet) {
-        const acc = await connect(chainNameToEnum(network?.name), wallet.provider())
+      if (!account && wallet) {
+        const chain = chainNameToEnum(network?.name)
+        const providerType = walletToEnum(wallet.name)
+
+        const acc = await connect(chain, providerType)
         if (!acc) return
         // router.push('/')
       } else {
@@ -187,9 +190,8 @@ export function useHeader(): UseHeaderReturn {
         router.push('/')
       }
     },
-    [connect, disconnect, isConnected, router],
+    [connect, disconnect, account, router],
   )
-
 
   // --------------------
 
@@ -217,13 +219,11 @@ export function useHeader(): UseHeaderReturn {
             name: 'Metamask',
             icon: 'metamask',
             color: 'orange',
-            provider: () => ProviderEnum.Metamask,
           },
           {
             name: 'Wallet Connect',
             icon: 'walletConnect',
             color: 'main0',
-            provider: () => ProviderEnum.WalletConnect,
           },
         ],
       },
@@ -240,6 +240,8 @@ export function useHeader(): UseHeaderReturn {
   )
 
   const selectedNetwork = useMemo(() => {
+    if (!selectedNetworkChain) return
+    
     const name = chainEnumToName(selectedNetworkChain)
     return networks.find((network) => network.name === name)
   }, [networks, selectedNetworkChain])

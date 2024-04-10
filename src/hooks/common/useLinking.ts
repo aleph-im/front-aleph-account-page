@@ -51,8 +51,8 @@ function calculateVirtualNodesUnlink(
 }
 
 export function useLinking(): UseLinkingReturn {
-  const [state, dispatch] = useAppState()
-  const { account } = state.account
+  const { state, dispatch } = useAppState()
+  const { account } = state.connection
   const { entities: nodes } = state.crns
 
   const nodeManager = useMemo(() => new NodeManager(account), [account])
