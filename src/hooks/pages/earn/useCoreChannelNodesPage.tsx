@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/core'
+import {
+  NotificationBadge,
+  TabsProps,
+  usePaginatedList,
+} from '@aleph-front/core'
 import { useAppState } from '@/contexts/appState'
 import { CCN } from '@/domain/node'
 import {
@@ -20,6 +24,9 @@ export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
   userNodesIssues: Record<string, string>
   selectedTab: string
   tabs: TabsProps['tabs']
+  paginatedSortedFilteredNodes?: CCN[]
+  loadItemsDisabled: boolean
+  handleLoadItems: () => Promise<void>
   handleTabChange: (tab: string) => void
 }
 
@@ -77,9 +84,18 @@ export function useCoreChannelNodesPage(
     return tabs
   }, [userNodesWarningFlag])
 
-  // -----------------------------
+  // ----------------------------- PAGINATE
+
+  const {
+    list: paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
+  } = usePaginatedList({
+    list: filteredNodes,
+  })
 
   return {
+    ...rest,
     account,
     accountBalance,
     nodes,
@@ -89,7 +105,9 @@ export function useCoreChannelNodesPage(
     selectedTab,
     tabs,
     userNodesIssues,
-    ...rest,
+    paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
     handleTabChange,
   }
 }

@@ -20,6 +20,7 @@ import NodeDetailLink from '@/components/common/NodeDetailLink'
 import { apiServer } from '@/helpers/constants'
 import Image from 'next/image'
 import Price from '@/components/common/Price'
+import { NodeManager } from '@/domain/node'
 
 export const CoreChannelNodeDetailPage = () => {
   const {
@@ -44,9 +45,11 @@ export const CoreChannelNodeDetailPage = () => {
     lockedCtrl,
     registrationUrlCtrl,
     isDirty,
+    account,
+    isUnlinkableByUser,
+    handleUnlink,
     handleRemove,
     handleSubmit,
-    handleUnlink,
   } = useCoreChannelNodeDetailPage()
 
   return (
@@ -241,7 +244,7 @@ export const CoreChannelNodeDetailPage = () => {
             </Card2>
             <Card2 title="POTENTIAL REWARD">
               <Card2Field
-                name="TOTAL REWARDS"
+                name="ESTIMATED MONTHLY REWARD"
                 value={<Price value={calculatedRewards} />}
               />
             </Card2>
@@ -249,9 +252,15 @@ export const CoreChannelNodeDetailPage = () => {
           <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED RESOURCES">
               {Array.from(
-                { length: Math.max(3, node?.crnsData.length || 0) },
+                {
+                  length: Math.max(
+                    NodeManager.maxLinkedPerNode,
+                    node?.crnsData.length || 0,
+                  ),
+                },
                 (_, i) => {
                   const crn = node?.crnsData[i]
+                  const isCRNOwner = crn?.owner === account?.address
 
                   return !crn ? (
                     <div key={i} tw="inline-flex gap-3 items-center">
@@ -286,12 +295,10 @@ export const CoreChannelNodeDetailPage = () => {
                           ImageCmp={Image}
                         />
                       </Link>
-                      {isOwner ? (
-                        <button onClick={() => handleUnlink(crn.hash)}>
+                      {isUnlinkableByUser(crn) && (
+                        <button onClick={() => handleUnlink(crn)}>
                           <Icon name="trash" color="error" />
                         </button>
-                      ) : (
-                        <></>
                       )}
                     </div>
                   )

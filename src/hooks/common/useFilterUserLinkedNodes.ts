@@ -25,7 +25,7 @@ export function useFilterUserLinkedNodes({
   const filterUserNodes = useCallback(
     (nodes?: CRN[]) => {
       if (!nodes) return
-      return nodes.filter((node) => nodeManager.isUserLinked(node, userNode))
+      return nodes.filter((node) => nodeManager.isUnlinkableBy(node, userNode))
     },
     [nodeManager, userNode],
   )

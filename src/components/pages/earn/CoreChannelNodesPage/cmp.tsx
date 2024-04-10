@@ -14,6 +14,7 @@ import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import EstimatedNodeRewardsChart from '@/components/common/EstimatedNodeRewardsChart'
 import { useLazyRender } from '@/hooks/common/useLazyRender'
 import AvailableCRNSpotChart from '@/components/common/AvailableCRNSpotChart'
+import { StakeManager } from '@/domain/stake'
 
 export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
   const {
@@ -45,7 +46,10 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
         variant="secondary"
         size="md"
         tw="gap-2.5"
-        disabled={!account || (accountBalance || 0) <= 200_000}
+        disabled={
+          !account ||
+          (accountBalance || 0) <= StakeManager.minStakeToActivateNode
+        }
       >
         <Icon name="key" />
         Create core node

@@ -1,55 +1,63 @@
 import { memo, useCallback, useMemo } from 'react'
 import { Button } from '@aleph-front/core'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { CCN, CRN, NodeManager } from '@/domain/node'
+import { CCN, CRN } from '@/domain/node'
+import { UseLinkingReturn, useLinking } from '@/hooks/common/useLinking'
 
 export type LinkCRNButtonProps = {
   node: CRN
   userNode?: CCN
-  account?: Account
   accountBalance?: number
-  onLink: (nodeHash: string) => void
-  onUnlink: (nodeHash: string) => void
+  onLink?: UseLinkingReturn['handleLink']
+  onUnlink?: UseLinkingReturn['handleUnlink']
 }
 
 // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L298
 export const LinkCRNButton = ({
   node,
   userNode,
-  account,
   onLink,
   onUnlink,
 }: LinkCRNButtonProps) => {
-  // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new NodeManager(account), [account])
+  const {
+    isLinkableByUser: isLinkableByUserCheck,
+    isUnlinkableByUser: isUnlinkableByUserCheck,
+    handleLink: defaultHandleLink,
+    handleUnlink: defaultHandleUnlink,
+  } = useLinking()
 
-  const isLinkedNode = useMemo(() => {
-    return nodeManager.isUserLinked(node, userNode)
-  }, [node, nodeManager, userNode])
+  const handleLink = onLink || defaultHandleLink
+  const handleUnlink = onUnlink || defaultHandleUnlink
 
-  const isDisabled = useMemo(() => {
-    const [canLink] = nodeManager.isLinkable(node, userNode)
-    return !canLink
-  }, [nodeManager, node, userNode])
+  const isLinkableByUser = useMemo(
+    () => node && userNode && isLinkableByUserCheck(node, userNode),
+    [isLinkableByUserCheck, node, userNode],
+  )
+
+  const isUnlinkableByUser = useMemo(
+    () => node && isUnlinkableByUserCheck(node),
+    [isUnlinkableByUserCheck, node],
+  )
 
   const handleOnClick = useCallback(() => {
-    if (isLinkedNode) {
-      onUnlink(node.hash)
+    if (!userNode) return
+
+    if (isUnlinkableByUser) {
+      handleUnlink(node.hash)
     } else {
-      onLink(node.hash)
+      handleLink(node, userNode)
     }
-  }, [isLinkedNode, onUnlink, node.hash, onLink])
+  }, [handleLink, handleUnlink, isUnlinkableByUser, node, userNode])
 
   return (
     <>
-      {!isLinkedNode ? (
+      {!isUnlinkableByUser ? (
         <Button
           kind="neon"
           size="md"
           variant="secondary"
           color="main0"
           onClick={handleOnClick}
-          disabled={isDisabled}
+          disabled={!isLinkableByUser}
         >
           Link
         </Button>

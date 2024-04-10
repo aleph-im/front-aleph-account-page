@@ -106,7 +106,7 @@ export const ComputeResourceNodesPage = (
                   in our ecosystem, enabling various services. While no
                   commitment is needed to establish a CRN, to unlock a minimum
                   wage for your CRN, it needs the endorsement of a Core Channel
-                  Node (CCN). A CCN operator can vouch for up to three CRNs,
+                  Node (CCN). A CCN operator can vouch for up to five CRNs,
                   ensuring fair and balanced participation.
                 </p>
                 <ExternalLinkButton

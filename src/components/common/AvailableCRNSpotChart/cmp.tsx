@@ -1,6 +1,5 @@
 import { memo, useMemo } from 'react'
-import { CCN } from '@/domain/node'
-import { StakeManager } from '@/domain/stake'
+import { CCN, NodeManager } from '@/domain/node'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useTheme } from 'styled-components'
 import Card1 from '../Card1'
@@ -24,7 +23,7 @@ export const AvailableCRNSpotChart = ({
     const [linkedSpots, freeSpots] = nodes.reduce(
       (ac, cv) => {
         const linked = cv.resource_nodes.length
-        const free = Math.max(3 - linked, 0)
+        const free = Math.max(NodeManager.maxLinkedPerNode - linked, 0)
         ac[0] += linked
         ac[1] += free
         return ac

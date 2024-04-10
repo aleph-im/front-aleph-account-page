@@ -1,5 +1,9 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { NotificationBadge, TabsProps } from '@aleph-front/core'
+import {
+  NotificationBadge,
+  TabsProps,
+  usePaginatedList,
+} from '@aleph-front/core'
 import { CCN, CRN, NodeManager } from '@/domain/node'
 import {
   UseComputeResourceNodesReturn,
@@ -9,7 +13,7 @@ import { useFilterNodeIssues } from '@/hooks/common/useFilterNodeIssues'
 import { useFilterUserNodes } from '@/hooks/common/useFilterUserNodes'
 import { useSortByIssuesNodes } from '@/hooks/common/useSortByIssuesNodes'
 import { useUserCoreChannelNode } from '@/hooks/common/useUserCoreChannelNode'
-import { useLinking } from '@/hooks/common/useLinking'
+import { UseLinkingReturn, useLinking } from '@/hooks/common/useLinking'
 import { useRouter } from 'next/router'
 import { useRequestCRNSpecs } from '@/hooks/common/useRequestEntity/useRequestCRNSpecs'
 
@@ -17,8 +21,8 @@ export type UseComputeResourceNodesPageProps = {
   nodes?: CRN[]
 }
 
-export type UseComputeResourceNodesPageReturn =
-  UseComputeResourceNodesReturn & {
+export type UseComputeResourceNodesPageReturn = UseComputeResourceNodesReturn &
+  Pick<UseLinkingReturn, 'handleLink' | 'handleUnlink'> & {
     userNodes?: CRN[]
     filteredUserNodes?: CRN[]
     userNodesIssues: Record<string, string>
@@ -34,8 +38,9 @@ export type UseComputeResourceNodesPageReturn =
       nodes: number
       total: number
     }
-    handleLink: (nodeHash: string) => void
-    handleUnlink: (nodeHash: string) => void
+    paginatedSortedFilteredNodes?: CRN[]
+    loadItemsDisabled: boolean
+    handleLoadItems: () => Promise<void>
     handleTabChange: (tab: string) => void
     handleLinkableOnlyChange: (e: ChangeEvent<HTMLInputElement>) => void
   }
@@ -122,9 +127,7 @@ export function useComputeResourceNodesPage(
   const linkableNodes = useMemo(() => {
     if (!baseFilteredNodes) return
     return baseFilteredNodes.filter(
-      (node) =>
-        nodeManager.isLinkable(node, userNode)[0] &&
-        !nodeManager.isUserLinked(node, userNode),
+      (node) => nodeManager.isLinkableBy(node, userNode)[0],
     )
   }, [baseFilteredNodes, nodeManager, userNode])
 
@@ -142,6 +145,16 @@ export function useComputeResourceNodesPage(
     return linkableNodes
   }, [account, baseFilteredNodes, linkableNodes, isLinkableOnly])
 
+  // ----------------------------- PAGINATE
+
+  const {
+    list: paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
+  } = usePaginatedList({
+    list: filteredNodes,
+  })
+
   // ----------------------------- LINK CRN
 
   const router = useRouter()
@@ -150,23 +163,28 @@ export function useComputeResourceNodesPage(
     useLinking()
 
   const handleLink = useCallback(
-    async (nodeHash: string) => {
-      const success = await handleLinkBase(nodeHash)
-      if (!success) return
-      if (!userNode?.hash) return
+    async (crnHashOrNode: string | CRN) => {
+      if (!userNode?.hash) return false
+
+      const success = await handleLinkBase(crnHashOrNode, userNode.hash)
+      if (!success) return success
 
       router.replace(`/earn/ccn/${userNode.hash}`)
+
+      return success
     },
     [handleLinkBase, router, userNode],
   )
 
   const handleUnlink = useCallback(
-    async (nodeHash: string) => {
-      const success = await handleUnlinkBase(nodeHash)
-      if (!success) return
-      if (!userNode?.hash) return
+    async (crnHashOrNode: string | CRN) => {
+      const success = await handleUnlinkBase(crnHashOrNode)
+      if (!success) return success
 
+      if (!userNode?.hash) return success
       router.replace(`/earn/ccn/${userNode.hash}`)
+
+      return success
     },
     [handleUnlinkBase, router, userNode],
   )
@@ -205,6 +223,9 @@ export function useComputeResourceNodesPage(
     isLinkableOnly,
     isLinkableOnlyDisabled,
     totalResources,
+    paginatedSortedFilteredNodes,
+    loadItemsDisabled,
+    handleLoadItems,
     handleLink,
     handleUnlink,
     handleTabChange,

@@ -3,11 +3,19 @@ import { CCN, CRN, NodeManager } from '@/domain/node'
 import { EntityAddAction } from '@/store/entity'
 import { useNotification } from '@aleph-front/core'
 import { useCallback, useMemo } from 'react'
-import { useUserCoreChannelNode } from './useUserCoreChannelNode'
 
 export type UseLinkingReturn = {
-  handleLink: (nodeHash: string) => Promise<boolean>
-  handleUnlink: (nodeHash: string) => Promise<boolean>
+  isLinked: (crnHashOrNode: string | CRN) => boolean
+  isLinkableByUser: (
+    crnHashOrNode: string | CRN,
+    ccnHashOrNode: string | CCN,
+  ) => boolean
+  isUnlinkableByUser: (crnHashOrNode: string | CRN) => boolean
+  handleLink: (
+    crnHashOrNode: string | CRN,
+    ccnHashOrNode: string | CCN,
+  ) => Promise<boolean>
+  handleUnlink: (crnHashOrNode: string | CRN) => Promise<boolean>
 }
 
 function calculateVirtualNodesLink(userNode: CCN, linkNode: CRN): [CCN, CRN] {
@@ -56,39 +64,89 @@ function calculateVirtualNodesUnlink(
 export function useLinking(): UseLinkingReturn {
   const { state, dispatch } = useAppState()
   const { account } = state.connection
-  const { entities: nodes } = state.crns
+  const { entities: crns } = state.crns
+  const { entities: ccns } = state.ccns
 
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
   const noti = useNotification()
 
-  const { userNode } = useUserCoreChannelNode({})
+  const getCRNNode = useCallback(
+    (crnHashOrNode: string | CRN) => {
+      return typeof crnHashOrNode === 'string'
+        ? crns?.find((node) => node.hash === crnHashOrNode)
+        : crnHashOrNode
+    },
+    [crns],
+  )
+
+  const getCCNNode = useCallback(
+    (ccnHashOrNode: string | CCN) => {
+      return typeof ccnHashOrNode === 'string'
+        ? ccns?.find((node) => node.hash === ccnHashOrNode)
+        : ccnHashOrNode
+    },
+    [ccns],
+  )
+
+  const isLinked = useCallback(
+    (crnHashOrNode: string | CRN) => {
+      const node = getCRNNode(crnHashOrNode)
+      if (!node) return false
+
+      return nodeManager.isLinked(node)
+    },
+    [getCRNNode, nodeManager],
+  )
+
+  const isLinkableByUser = useCallback(
+    (crnHashOrNode: string | CRN, ccnHashOrNode: string | CCN) => {
+      const node = getCRNNode(crnHashOrNode)
+      const userNode = getCCNNode(ccnHashOrNode)
+      if (!node || !userNode) return false
+
+      return nodeManager.isLinkableBy(node, userNode)[0]
+    },
+    [getCCNNode, getCRNNode, nodeManager],
+  )
+
+  const isUnlinkableByUser = useCallback(
+    (crnHashOrNode: string | CRN) => {
+      const node = getCRNNode(crnHashOrNode)
+      if (!node) return false
+
+      const userNode = getCCNNode(node.parentData || node.parent || '')
+      if (!userNode) return false
+
+      return nodeManager.isUnlinkableBy(node, userNode)
+    },
+
+    [getCCNNode, getCRNNode, nodeManager],
+  )
 
   const handleLink = useCallback(
-    async (nodeHash: string) => {
+    async (crnHashOrNode: string | CRN, ccnHashOrNode: string | CCN) => {
       try {
         if (!noti) throw new Error('Notification not ready')
-        if (!account) throw new Error('Invalid account')
-        if (!userNode) throw new Error('Invalid user node')
 
-        const targetNode = nodes?.find((node) => node.hash === nodeHash)
-        if (!targetNode) throw new Error('Invalid staking node')
+        const crnNode = getCRNNode(crnHashOrNode)
+        if (!crnNode) throw new Error('Invalid CRN node')
 
-        if (
-          !nodeManager.isLinkable(targetNode, userNode) ||
-          nodeManager.isUserLinked(targetNode, userNode)
-        )
+        const ccnNode = getCCNNode(ccnHashOrNode)
+        if (!ccnNode) throw new Error('Invalid CCN node')
+
+        if (!isLinkableByUser(crnNode, ccnNode))
           throw new Error('Not linkable node')
 
-        await nodeManager.linkComputeResourceNode(nodeHash)
+        await nodeManager.linkComputeResourceNode(crnNode.hash)
 
         noti.add({
           variant: 'success',
           title: 'Success',
-          text: `Linked resource node "${nodeHash}" successfully.`,
+          text: `Linked resource node "${crnNode.hash}" successfully.`,
         })
 
-        const [ccn, crn] = calculateVirtualNodesLink(userNode, targetNode)
+        const [ccn, crn] = calculateVirtualNodesLink(ccnNode, crnNode)
 
         dispatch(
           new EntityAddAction<CCN>({
@@ -115,31 +173,31 @@ export function useLinking(): UseLinkingReturn {
 
       return false
     },
-    [account, dispatch, nodeManager, nodes, noti, userNode],
+    [dispatch, getCCNNode, getCRNNode, isLinkableByUser, nodeManager, noti],
   )
 
   const handleUnlink = useCallback(
-    async (nodeHash: string) => {
+    async (crnHashOrNode: string | CRN) => {
       try {
         if (!noti) throw new Error('Notification not ready')
-        if (!account) throw new Error('Invalid account')
-        if (!userNode) throw new Error('Invalid user node')
 
-        const targetNode = nodes?.find((node) => node.hash === nodeHash)
-        if (!targetNode) throw new Error('Invalid staking node')
+        const crnNode = getCRNNode(crnHashOrNode)
+        if (!crnNode) throw new Error('Invalid CRN node')
 
-        if (!nodeManager.isUserLinked(targetNode, userNode))
-          throw new Error('Not linkable node')
+        const ccnNode = getCCNNode(crnNode.parentData || crnNode.parent || '')
+        if (!ccnNode) throw new Error('Invalid CCN node')
 
-        await nodeManager.unlinkComputeResourceNode(nodeHash)
+        if (!isUnlinkableByUser(crnNode)) throw new Error('Not unlinkable node')
+
+        await nodeManager.unlinkComputeResourceNode(crnNode.hash)
 
         noti.add({
           variant: 'success',
           title: 'Success',
-          text: `Unlinked resource node "${nodeHash}" successfully.`,
+          text: `Unlinked resource node "${crnNode.hash}" successfully.`,
         })
 
-        const [ccn, crn] = calculateVirtualNodesUnlink(userNode, targetNode)
+        const [ccn, crn] = calculateVirtualNodesUnlink(ccnNode, crnNode)
 
         dispatch(
           new EntityAddAction<CCN>({
@@ -166,10 +224,13 @@ export function useLinking(): UseLinkingReturn {
 
       return false
     },
-    [account, dispatch, nodeManager, nodes, noti, userNode],
+    [dispatch, getCCNNode, getCRNNode, isUnlinkableByUser, nodeManager, noti],
   )
 
   return {
+    isLinked,
+    isLinkableByUser,
+    isUnlinkableByUser,
     handleLink,
     handleUnlink,
   }

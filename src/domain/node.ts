@@ -25,6 +25,7 @@ import {
 } from '@/helpers/schemas'
 import { FileManager } from './file'
 import { subscribeSocketFeed } from '@/helpers/socket'
+import { StakeManager } from './stake'
 
 const { post } = messages
 
@@ -278,6 +279,7 @@ export class NodeManager {
   static updateCRNSchema = updateCRNSchema
 
   static maxStakedPerNode = 1_000_000
+  static maxLinkedPerNode = 5
 
   constructor(
     protected account?: Account,
@@ -604,7 +606,11 @@ export class NodeManager {
     return !!node.stakers[this.account.address]
   }
 
-  isUserLinked(node: CRN, userNode?: CCN): boolean {
+  isLinked(node: CRN): boolean {
+    return !!node.parentData
+  }
+
+  isUnlinkableBy(node: CRN, userNode?: CCN): boolean {
     if (!userNode) return false
 
     return (
@@ -613,16 +619,21 @@ export class NodeManager {
     )
   }
 
-  isStakeable(node: CCN, balance: number): [boolean, string] {
-    if (!this.account) return [false, 'Please login']
-
-    if (balance < 10_000)
-      return [false, 'You need at least 10000 ALEPH to stake']
-
+  isStakeable(node: CCN): [boolean, string] {
     if (node.total_staked >= NodeManager.maxStakedPerNode)
       return [false, 'Too many ALEPH staked on that node']
 
     if (this.isLocked(node)) return [false, 'This node is locked']
+
+    return [true, `${node.hash} is stakeable`]
+  }
+
+  isStakeableBy(node: CCN, balance: number | undefined): [boolean, string] {
+    const isStakeable = this.isStakeable(node)
+    if (!isStakeable[0]) return isStakeable
+
+    if (!balance || balance < 10_000)
+      return [false, 'You need at least 10000 ALEPH to stake']
 
     if (this.isUserNode(node))
       return [false, "You can't stake while you operate a node"]
@@ -632,8 +643,18 @@ export class NodeManager {
     return [true, `Stake ${balance.toFixed(2)} ALEPH in this node`]
   }
 
-  isLinkable(node: CRN, userNode?: CCN): [boolean, string] {
-    if (!this.account) return [false, 'Please login']
+  isLinkable(node: CRN): [boolean, string] {
+    if (node.locked) return [false, 'This node is locked']
+
+    if (!!node.parent)
+      return [false, `The node is already linked to ${node.parent} ccn`]
+
+    return [true, `${node.hash} is linkable`]
+  }
+
+  isLinkableBy(node: CRN, userNode: CCN | undefined): [boolean, string] {
+    const isLinkable = this.isLinkable(node)
+    if (!isLinkable[0]) return isLinkable
 
     if (!userNode || !this.isUserNode(userNode))
       return [false, "The user doesn't own a core channel node"]
@@ -643,7 +664,7 @@ export class NodeManager {
     if (!!node.parent)
       return [false, `The node is already linked to ${node.parent} ccn`]
 
-    if (userNode.resource_nodes.length >= 3)
+    if (userNode.resource_nodes.length >= NodeManager.maxLinkedPerNode)
       return [
         false,
         `The user node is already linked to ${userNode.resource_nodes.length} nodes`,
@@ -660,8 +681,8 @@ export class NodeManager {
         return 'The linked CCN is underperforming'
     } else {
       if (node.score < 0.8) return 'The CCN is underperforming'
-      if ((node?.crnsData.length || 0) < 3)
-        return 'The CCN has less than three linked CRNs'
+      if ((node?.crnsData.length || 0) < StakeManager.minLinkedNodesForPenalty)
+        return 'The CCN has free slots to link more CRNs'
       if (!staking && node?.crnsData.some((crn) => crn.score < 0.8))
         return 'One of the linked CRN is underperforming'
     }
