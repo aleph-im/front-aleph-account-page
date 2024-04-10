@@ -170,8 +170,8 @@ export const ComputeResourceNodesPage = (
                         {!account
                           ? 'Connect your wallet to see your compute node running.'
                           : !userNodes?.length
-                          ? 'You have no compute node running.'
-                          : ''}
+                            ? 'You have no compute node running.'
+                            : ''}
                       </div>
                     </>
                   )}

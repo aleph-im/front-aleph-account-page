@@ -112,8 +112,8 @@ export const NetworkHealthChart = ({
               const fill = entry.gradient
                 ? `url(#${color})`
                 : entry.color
-                ? theme.color[entry.color] || entry.color
-                : undefined
+                  ? theme.color[entry.color] || entry.color
+                  : undefined
 
               return <Cell key={entry.label} fill={fill} />
             })}

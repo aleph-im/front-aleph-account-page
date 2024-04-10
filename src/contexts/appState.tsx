@@ -11,7 +11,7 @@ import {
   storeReducer,
   StoreState,
 } from '@/store/store'
-import { UseConnection, useConnection } from '@/hooks/common/useConnection';
+import { UseConnection, useConnection } from '@/hooks/common/useConnection'
 
 export type AppContextValue = UseConnection & {
   state: StoreState
@@ -32,8 +32,11 @@ export const AppStateContext = createContext<AppContextValue>({
 
 export function AppStateProvider({ children }: AppStateProviderProps) {
   const [state, dispatch] = useReducer(storeReducer, storeInitialState)
-  const { connect, disconnect, switchNetwork } = useConnection(state.connection, dispatch)
-  
+  const { connect, disconnect, switchNetwork } = useConnection(
+    state.connection,
+    dispatch,
+  )
+
   const value = {
     state,
     dispatch,

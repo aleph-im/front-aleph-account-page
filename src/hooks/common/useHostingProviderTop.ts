@@ -27,7 +27,7 @@ export function useHostingProviderTop<T extends AlephNode>({
       nodes ||
       Array.from(
         { length: 4 },
-        (_, i) => ({ metricsData: { as_name: `Provider ${i}` } } as T),
+        (_, i) => ({ metricsData: { as_name: `Provider ${i}` } }) as T,
       )
 
     return safeNodes.reduce(

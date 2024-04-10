@@ -116,10 +116,10 @@ export const RewardChart = ({
               const fill = disabled
                 ? disabledColor
                 : entry.gradient
-                ? `url(#${color})`
-                : entry.color
-                ? theme.color[entry.color] || entry.color
-                : undefined
+                  ? `url(#${color})`
+                  : entry.color
+                    ? theme.color[entry.color] || entry.color
+                    : undefined
 
               return <Cell key={entry.label} fill={fill} />
             })}

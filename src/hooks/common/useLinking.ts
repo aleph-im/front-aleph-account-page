@@ -17,10 +17,13 @@ function calculateVirtualNodesLink(userNode: CCN, linkNode: CRN): [CCN, CRN] {
   newLinkedNode.parent = newUserNode.hash
   newLinkedNode.parentData = newUserNode
 
-  const crnsMap = newUserNode.crnsData.reduce((ac, cv) => {
-    ac[cv.hash] = cv
-    return ac
-  }, {} as Record<string, CRN>)
+  const crnsMap = newUserNode.crnsData.reduce(
+    (ac, cv) => {
+      ac[cv.hash] = cv
+      return ac
+    },
+    {} as Record<string, CRN>,
+  )
 
   crnsMap[newLinkedNode.hash] = newLinkedNode
 

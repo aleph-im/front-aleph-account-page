@@ -115,10 +115,10 @@ export function useForm<FormState extends Record<string, any>, Response>({
             typeof err === 'string'
               ? err
               : err?.message
-              ? `: ${err.message}`
-              : err?.type
-              ? `: "${err?.type}" validation not satisfied`
-              : ''
+                ? `: ${err.message}`
+                : err?.type
+                  ? `: "${err?.type}" validation not satisfied`
+                  : ''
 
           error = new Error(`Error on field "${field}"${description}`)
         }

@@ -114,8 +114,8 @@ export function useStakingPage(
   const isStakeableOnly = isStakeableOnlyDisabled
     ? false
     : stakeableOnly !== undefined
-    ? stakeableOnly
-    : !!account
+      ? stakeableOnly
+      : !!account
 
   const filteredNodes = useMemo(() => {
     if (!isStakeableOnly) return baseFilteredNodes

@@ -135,8 +135,8 @@ export const StakingPage = (props: UseStakingPageProps) => {
                         {!account
                           ? 'Connect your wallet to see your stakes.'
                           : !stakeNodes?.length
-                          ? 'You are not staking.'
-                          : ''}
+                            ? 'You are not staking.'
+                            : ''}
                       </div>
                     </>
                   ) : (

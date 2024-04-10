@@ -822,14 +822,17 @@ export class NodeManager {
   }
 
   protected parseChildrenResourceNodes(ccns: CCN[], crns: CRN[]): CCN[] {
-    const crnsMap = crns.reduce((ac, cu) => {
-      if (!cu.parent) return ac
+    const crnsMap = crns.reduce(
+      (ac, cu) => {
+        if (!cu.parent) return ac
 
-      const crns = (ac[cu.parent] = ac[cu.parent] || [])
-      crns.push(cu)
+        const crns = (ac[cu.parent] = ac[cu.parent] || [])
+        crns.push(cu)
 
-      return ac
-    }, {} as Record<string, CRN[]>)
+        return ac
+      },
+      {} as Record<string, CRN[]>,
+    )
 
     return ccns.map((ccn) => {
       const crnsData = crnsMap[ccn.hash] || []
@@ -843,10 +846,13 @@ export class NodeManager {
   }
 
   protected parseParentNodes(crns: CRN[], ccns: CCN[]): CRN[] {
-    const ccnsMap = ccns.reduce((ac, cu) => {
-      ac[cu.hash] = cu
-      return ac
-    }, {} as Record<string, CCN>)
+    const ccnsMap = ccns.reduce(
+      (ac, cu) => {
+        ac[cu.hash] = cu
+        return ac
+      },
+      {} as Record<string, CCN>,
+    )
 
     return crns.map((crn) => {
       if (!crn.parent) return crn

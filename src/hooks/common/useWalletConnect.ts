@@ -3,7 +3,7 @@ import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
-import { SignClientTypes } from "@walletconnect/types"
+import { SignClientTypes } from '@walletconnect/types'
 import { chainToId, idToChain } from './useConnection'
 import { StoreAction, StoreState } from '@/store/store'
 import { ConnectionActionType } from '@/store/connection'
@@ -20,8 +20,13 @@ export type WalletConnectProps = {
   metadata: SignClientTypes.Metadata
 }
 
-export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnectProps) => {
-  const [universalProvider, setUniversalProvider] = useState<UniversalProvider>()
+export const useWalletConnect = ({
+  projectId,
+  metadata,
+  dispatch,
+}: WalletConnectProps) => {
+  const [universalProvider, setUniversalProvider] =
+    useState<UniversalProvider>()
   const [web3Modal, setWeb3Modal] = useState<WalletConnectModal>()
 
   const disconnect = useCallback(async () => {
@@ -41,21 +46,24 @@ export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnec
     await disconnect()
   }, [disconnect])
 
-  const sessionEventListener = useCallback(async (event: any) => {
-    if (!universalProvider?.session) return
-    const network = idToChain(event.params?.event?.data)    
-    if (event.params?.event?.name === 'chainChanged') {
-      dispatch({
-        type: ConnectionActionType.SWITCH_NETWORK,
-        payload: { network },
-      })
-    }
-  }, [universalProvider])
+  const sessionEventListener = useCallback(
+    async (event: any) => {
+      if (!universalProvider?.session) return
+      const network = idToChain(event.params?.event?.data)
+      if (event.params?.event?.name === 'chainChanged') {
+        dispatch({
+          type: ConnectionActionType.SWITCH_NETWORK,
+          payload: { network },
+        })
+      }
+    },
+    [universalProvider],
+  )
 
   const subscribeToEvents = useCallback(
     (provider: Provider) => {
       provider.on('display_uri', displayUriListener)
-      provider.on("session_update", sessionEventListener)
+      provider.on('session_update', sessionEventListener)
       provider.on('session_delete', sessionDeleteListener)
     },
     [displayUriListener, sessionDeleteListener],
@@ -67,8 +75,7 @@ export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnec
     universalProvider.off('display_uri', displayUriListener)
     universalProvider.off('session_update', sessionEventListener)
     universalProvider.off('session_delete', sessionDeleteListener)
-  },
-  [displayUriListener, sessionDeleteListener])
+  }, [displayUriListener, sessionDeleteListener])
 
   const createClient = useCallback(async () => {
     try {
@@ -86,9 +93,11 @@ export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnec
 
   const switchNetwork = useCallback(
     async (chain: Chain) => {
-      if (!universalProvider) throw new Error('ethereumProvider is not initialized')
-      if (!universalProvider.session) throw new Error('session is not initialized')
-      
+      if (!universalProvider)
+        throw new Error('ethereumProvider is not initialized')
+      if (!universalProvider.session)
+        throw new Error('session is not initialized')
+
       await universalProvider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${chainToId(chain).toString(16)}` }],
@@ -104,7 +113,10 @@ export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnec
       const { provider, modal } = await createClient()
 
       // auto-login
-      if (provider.session && provider.session.expiry > Math.floor(Date.now() / 1000)) {
+      if (
+        provider.session &&
+        provider.session.expiry > Math.floor(Date.now() / 1000)
+      ) {
         return provider
       }
 
@@ -132,7 +144,7 @@ export const useWalletConnect = ({ projectId, metadata, dispatch }: WalletConnec
 
       return provider
     },
-    [createClient]
+    [createClient],
   )
 
   useEffect(() => {

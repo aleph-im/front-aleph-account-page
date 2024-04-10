@@ -83,8 +83,8 @@ export const StakeChart = ({ nodes, ...rest }: { nodes?: CCN[] }) => {
               const fill = entry.gradient
                 ? `url(#${color})`
                 : entry.color
-                ? theme.color[entry.color] || entry.color
-                : undefined
+                  ? theme.color[entry.color] || entry.color
+                  : undefined
 
               return <Cell key={entry.label} fill={fill} />
             })}

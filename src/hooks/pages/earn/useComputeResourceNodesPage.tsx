@@ -133,8 +133,8 @@ export function useComputeResourceNodesPage(
   const isLinkableOnly = isLinkableOnlyDisabled
     ? false
     : linkableOnly !== undefined
-    ? linkableOnly
-    : !!account
+      ? linkableOnly
+      : !!account
 
   const filteredNodes = useMemo(() => {
     if (!isLinkableOnly) return baseFilteredNodes

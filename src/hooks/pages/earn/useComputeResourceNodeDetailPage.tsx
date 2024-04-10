@@ -142,42 +142,48 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
   const nodesIssues = useMemo(() => {
     if (!nodeArray) return
 
-    return nodeArray.reduce((ac, node) => {
-      const issue = nodeManager.isStreamPaymentNotSupported(node)
+    return nodeArray.reduce(
+      (ac, node) => {
+        const issue = nodeManager.isStreamPaymentNotSupported(node)
 
-      if (issue) {
-        ac[node.hash] = issue
+        if (issue) {
+          ac[node.hash] = issue
+          return ac
+        }
+
+        const nodeSpecs = specs[node.hash]?.data
+
+        if (nodeSpecs) {
+          const validSpecs = nodeManager.validateMinNodeSpecs(
+            minSpecs,
+            nodeSpecs,
+          )
+
+          if (!validSpecs) {
+            ac[node.hash] = StreamNotSupportedIssue.MinSpecs
+            return ac
+          }
+        }
+
+        const nodeIps = ips[node.hash]?.data
+
+        if (nodeIps) {
+          const validIp = !!nodeIps.vm
+
+          if (!validIp) {
+            ac[node.hash] = StreamNotSupportedIssue.IPV6
+            return ac
+          }
+        }
+
+        if (nodeSpecs && nodeIps) {
+          ac[node.hash] = StreamNotSupportedIssue.Valid
+        }
+
         return ac
-      }
-
-      const nodeSpecs = specs[node.hash]?.data
-
-      if (nodeSpecs) {
-        const validSpecs = nodeManager.validateMinNodeSpecs(minSpecs, nodeSpecs)
-
-        if (!validSpecs) {
-          ac[node.hash] = StreamNotSupportedIssue.MinSpecs
-          return ac
-        }
-      }
-
-      const nodeIps = ips[node.hash]?.data
-
-      if (nodeIps) {
-        const validIp = !!nodeIps.vm
-
-        if (!validIp) {
-          ac[node.hash] = StreamNotSupportedIssue.IPV6
-          return ac
-        }
-      }
-
-      if (nodeSpecs && nodeIps) {
-        ac[node.hash] = StreamNotSupportedIssue.Valid
-      }
-
-      return ac
-    }, {} as Record<string, StreamNotSupportedIssue>)
+      },
+      {} as Record<string, StreamNotSupportedIssue>,
+    )
   }, [nodeArray, nodeManager, specs, ips, minSpecs])
 
   const nodeSpecs = useMemo(() => {

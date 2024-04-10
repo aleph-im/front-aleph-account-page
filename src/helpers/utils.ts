@@ -209,10 +209,10 @@ export const getETHExplorerURL = ({
   hash
     ? `https://etherscan.io/tx/${hash}`
     : address
-    ? `https://etherscan.io/address/${address}`
-    : tokenAddress
-    ? `https://etherscan.io/token/0x27702a26126e0B3702af63Ee09aC4d1A084EF628?a=${tokenAddress}`
-    : undefined
+      ? `https://etherscan.io/address/${address}`
+      : tokenAddress
+        ? `https://etherscan.io/token/0x27702a26126e0B3702af63Ee09aC4d1A084EF628?a=${tokenAddress}`
+        : undefined
 
 export const getAVAXExplorerURL = ({
   hash,
@@ -226,10 +226,10 @@ export const getAVAXExplorerURL = ({
   hash
     ? `https://subnets.avax.network/c-chain/tx/${hash}`
     : address
-    ? `https://subnets.avax.network/c-chain/address/${address}`
-    : tokenAddress
-    ? `https://subnets.avax.network/c-chain/address/${tokenAddress}?tab=erc20`
-    : undefined
+      ? `https://subnets.avax.network/c-chain/address/${address}`
+      : tokenAddress
+        ? `https://subnets.avax.network/c-chain/address/${tokenAddress}?tab=erc20`
+        : undefined
 
 export const getMultiaddressUrl = ({
   multiaddress,

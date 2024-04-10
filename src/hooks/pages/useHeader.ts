@@ -1,11 +1,5 @@
 import { useRouter } from 'next/router'
-import {
-  useCallback,
-  useState,
-  useRef,
-  RefObject,
-  useMemo,
-} from 'react'
+import { useCallback, useState, useRef, RefObject, useMemo } from 'react'
 import { DefaultTheme, useTheme } from 'styled-components'
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { useAppState } from '@/contexts/appState'
@@ -72,8 +66,8 @@ export type UseAccountButtonProps = {
   selectedNetwork: WalletPickerProps['selectedNetwork']
   handleSwitchNetwork: WalletPickerProps['onSwitchNetwork']
   handleConnect: (
-    wallet?: WalletProps,
-    network?: NetworkProps['network'],
+    wallet: WalletProps,
+    network: NetworkProps['network'],
   ) => Promise<void>
   handleDisconnect: () => void
 }
@@ -95,7 +89,11 @@ export function useAccountButton({
   ...rest
 }: UseAccountButtonProps): UseAccountButtonReturn {
   const theme = useTheme()
-  const { state: { connection: { balance: accountBalance, account }} } = useAppState()
+  const {
+    state: {
+      connection: { balance: accountBalance, account },
+    },
+  } = useAppState()
 
   const [displayWalletPicker, setDisplayWalletPicker] = useState(false)
 
@@ -128,7 +126,7 @@ export function useAccountButton({
   const walletPickerOpen = stage === 'enter'
 
   const handleConnect = useCallback(
-    async (wallet?: WalletProps, network?: NetworkProps['network']) => {
+    async (wallet: WalletProps, network: NetworkProps['network']) => {
       await handleConnectProp(wallet, network)
       setDisplayWalletPicker(false)
     },
@@ -163,22 +161,20 @@ export type UseHeaderReturn = UseRoutesReturn & {
   handleSwitchNetwork: WalletPickerProps['onSwitchNetwork']
   handleToggle: (isOpen: boolean) => void
   handleConnect: (
-    wallet?: WalletProps,
-    network?: NetworkProps['network'],
+    wallet: WalletProps,
+    network: NetworkProps['network'],
   ) => Promise<void>
   handleDisconnect: () => void
 }
 
 export function useHeader(): UseHeaderReturn {
-  const { 
-    state: { 
-    connection: {
-       account, 
-       network: selectedNetworkChain 
-    }}, 
+  const {
+    state: {
+      connection: { account, network: selectedNetworkChain },
+    },
     connect,
-    disconnect, 
-    switchNetwork: switchNetworkChain 
+    disconnect,
+    switchNetwork: switchNetworkChain,
   } = useAppState()
 
   const { routes } = useRoutes()
@@ -187,7 +183,7 @@ export function useHeader(): UseHeaderReturn {
 
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
-    async (wallet?: WalletProps, network?: NetworkProps['network']) => {
+    async (wallet: WalletProps, network: NetworkProps['network']) => {
       if (!account && wallet) {
         const chain = chainNameToEnum(network?.name)
         const providerType = walletToEnum(wallet.name)
@@ -250,7 +246,7 @@ export function useHeader(): UseHeaderReturn {
 
   const selectedNetwork = useMemo(() => {
     if (!selectedNetworkChain) return
-    
+
     const name = chainEnumToName(selectedNetworkChain)
     return networks.find((network) => network.name === name)
   }, [networks, selectedNetworkChain])

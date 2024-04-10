@@ -1,6 +1,6 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { StoreReducer } from './store'
-import { Chain } from 'aleph-sdk-ts/dist/messages/types';
+import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 
 export enum ProviderEnum {
   Metamask = 'Metamask',
@@ -31,8 +31,8 @@ export enum ConnectionActionType {
 
 export type ConnectAction = {
   readonly type: ConnectionActionType.CONNECT
-  payload: { 
-    account: Account 
+  payload: {
+    account: Account
     balance: number
     network: Chain
     provider: ProviderEnum
@@ -46,7 +46,7 @@ export type DisconnectAction = {
 
 export type SwitchNetworkAction = {
   readonly type: ConnectionActionType.SWITCH_NETWORK
-  payload: { 
+  payload: {
     balance: number
     network: Chain
   }

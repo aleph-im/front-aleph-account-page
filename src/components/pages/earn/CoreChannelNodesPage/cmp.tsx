@@ -149,8 +149,8 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                         {!account
                           ? 'Connect your wallet to see your core node running.'
                           : !userNodes?.length
-                          ? 'You have no core node running.'
-                          : ''}
+                            ? 'You have no core node running.'
+                            : ''}
                       </div>
                     </>
                   )}

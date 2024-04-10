@@ -1,5 +1,9 @@
 import { getAccountBalance, web3Connect } from '@/helpers/aleph'
-import { ConnectionActionType, ConnectionState, ProviderEnum } from '@/store/connection'
+import {
+  ConnectionActionType,
+  ConnectionState,
+  ProviderEnum,
+} from '@/store/connection'
 import { StoreAction } from '@/store/store'
 import { useNotification } from '@aleph-front/core'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
@@ -36,7 +40,10 @@ export type UseConnection = {
   switchNetwork: (chain: Chain) => Promise<void>
 }
 
-export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAction>): UseConnection => {
+export const useConnection = (
+  state: ConnectionState,
+  dispatch: Dispatch<StoreAction>,
+): UseConnection => {
   const metamaskProvider = useCallback(() => {
     window.ethereum.on('accountsChanged', async function () {
       const account = await web3Connect(currentNetwork, window.ethereum)
@@ -48,11 +55,11 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
         payload: { balance },
       })
     })
-    
+
     window.ethereum.on('networkChanged', async function (networkId: number) {
       const { account } = state
       if (!account) return
-       
+
       const network = idToChain(networkId)
       const balance = await getAccountBalance(account)
       dispatch({
@@ -98,10 +105,15 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
   )
 
   const connect = useCallback(
-    async (chain: Chain, providerType: ProviderEnum = ProviderEnum.Metamask) => {      
+    async (
+      chain: Chain,
+      providerType: ProviderEnum = ProviderEnum.Metamask,
+    ) => {
       try {
-        const provider = providerType === ProviderEnum.Metamask ? 
-          metamaskProvider() : await walletConnect.connect(chain)
+        const provider =
+          providerType === ProviderEnum.Metamask
+            ? metamaskProvider()
+            : await walletConnect.connect(chain)
 
         const account = await web3Connect(chain, provider)
         if (!account) return
@@ -134,8 +146,10 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
       if (!state.account) return
       if (state.network === currentNetwork) return
 
-      const provider = currentProvider === ProviderEnum.Metamask ? 
-        window.ethereum : await walletConnect.switchNetwork(network)
+      const provider =
+        currentProvider === ProviderEnum.Metamask
+          ? window.ethereum
+          : await walletConnect.switchNetwork(network)
 
       const account = await web3Connect(network, provider)
       if (!account) return
@@ -151,14 +165,16 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
 
   const autoLogin = useCallback(async () => {
     if (currentProvider === ProviderEnum.Disconnected) return
-    
+
     if (currentProvider === ProviderEnum.WalletConnect) {
       const universalProvider = await walletConnect.connect(currentNetwork)
       if (!universalProvider || !universalProvider.session) return
     }
 
-    const provider = currentProvider === ProviderEnum.Metamask ? 
-      metamaskProvider() : await walletConnect.connect(currentNetwork)
+    const provider =
+      currentProvider === ProviderEnum.Metamask
+        ? metamaskProvider()
+        : await walletConnect.connect(currentNetwork)
 
     const account = await web3Connect(currentNetwork, provider)
     if (!account) return
@@ -169,7 +185,7 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
       payload: { account, balance, network: currentNetwork, provider },
     })
   }, [currentProvider, currentNetwork, walletConnect.connect])
-  
+
   useEffect(() => {
     autoLogin()
 
@@ -187,5 +203,5 @@ export const useConnection = (state: ConnectionState, dispatch: Dispatch<StoreAc
     }
   }, [])
 
-  return { connect, disconnect, switchNetwork };
-};
+  return { connect, disconnect, switchNetwork }
+}
