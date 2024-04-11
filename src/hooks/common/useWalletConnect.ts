@@ -5,7 +5,7 @@ import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import Provider from '@walletconnect/universal-provider'
 import { SignClientTypes } from '@walletconnect/types'
 import { chainToId, idToChain } from './useConnection'
-import { StoreAction, StoreState } from '@/store/store'
+import { StoreAction } from '@/store/store'
 import { ConnectionActionType } from '@/store/connection'
 
 export type WalletConnectReturn = {
@@ -49,8 +49,9 @@ export const useWalletConnect = ({
   const sessionEventListener = useCallback(
     async (event: any) => {
       if (!universalProvider?.session) return
-      const network = idToChain(event.params?.event?.data)
+
       if (event.params?.event?.name === 'chainChanged') {
+        const network = idToChain(event.params?.event?.data)
         dispatch({
           type: ConnectionActionType.SWITCH_NETWORK,
           payload: { network },
@@ -65,17 +66,15 @@ export const useWalletConnect = ({
       provider.on('display_uri', displayUriListener)
       provider.on('session_update', sessionEventListener)
       provider.on('session_delete', sessionDeleteListener)
+
+      return () => {
+        provider.off('display_uri', displayUriListener)
+        provider.off('session_update', sessionEventListener)
+        provider.off('session_delete', sessionDeleteListener)
+      }
     },
-    [displayUriListener, sessionDeleteListener],
+    [displayUriListener, sessionEventListener, sessionDeleteListener],
   )
-
-  const removeListeners = useCallback(() => {
-    if (!universalProvider) throw new Error('wallet connect is not initialized')
-
-    universalProvider.off('display_uri', displayUriListener)
-    universalProvider.off('session_update', sessionEventListener)
-    universalProvider.off('session_delete', sessionDeleteListener)
-  }, [displayUriListener, sessionDeleteListener])
 
   const createClient = useCallback(async () => {
     try {
@@ -89,7 +88,7 @@ export const useWalletConnect = ({
     } catch (err) {
       throw err
     }
-  }, [subscribeToEvents, setUniversalProvider, setWeb3Modal])
+  }, [setUniversalProvider, setWeb3Modal])
 
   const switchNetwork = useCallback(
     async (chain: Chain) => {
@@ -112,7 +111,7 @@ export const useWalletConnect = ({
     async (chain: Chain): Promise<UniversalProvider> => {
       const { provider, modal } = await createClient()
 
-      // auto-login
+      // auto-login: avoids the need to scan the QR code
       if (
         provider.session &&
         provider.session.expiry > Math.floor(Date.now() / 1000)
@@ -149,13 +148,9 @@ export const useWalletConnect = ({
 
   useEffect(() => {
     if (web3Modal && universalProvider) {
-      subscribeToEvents(universalProvider)
-      return () => {
-        removeListeners()
-      }
+      return subscribeToEvents(universalProvider)
     }
-    return () => {}
-  }, [web3Modal, universalProvider, subscribeToEvents, removeListeners])
+  }, [web3Modal, universalProvider])
 
   return {
     connect,

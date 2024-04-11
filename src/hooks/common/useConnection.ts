@@ -44,29 +44,32 @@ export const useConnection = (
   state: ConnectionState,
   dispatch: Dispatch<StoreAction>,
 ): UseConnection => {
+  const handleNetworkChanged = async () => {
+    const account = await web3Connect(currentNetwork, window.ethereum)
+    if (!account) return
+
+    const balance = await getAccountBalance(account)
+    dispatch({
+      type: ConnectionActionType.SET_BALANCE,
+      payload: { balance },
+    })
+  }
+
+  const handleAccountsChanged = async (networkId: number) => {
+    const { account } = state
+    if (!account) return
+
+    const network = idToChain(networkId)
+    const balance = await getAccountBalance(account)
+    dispatch({
+      type: ConnectionActionType.SWITCH_NETWORK,
+      payload: { network, balance },
+    })
+  }
+
   const metamaskProvider = useCallback(() => {
-    window.ethereum.on('accountsChanged', async function () {
-      const account = await web3Connect(currentNetwork, window.ethereum)
-      if (!account) return
-
-      const balance = await getAccountBalance(account)
-      dispatch({
-        type: ConnectionActionType.SET_BALANCE,
-        payload: { balance },
-      })
-    })
-
-    window.ethereum.on('networkChanged', async function (networkId: number) {
-      const { account } = state
-      if (!account) return
-
-      const network = idToChain(networkId)
-      const balance = await getAccountBalance(account)
-      dispatch({
-        type: ConnectionActionType.SWITCH_NETWORK,
-        payload: { network, balance },
-      })
-    })
+    window.ethereum.on('accountsChanged', handleNetworkChanged)
+    window.ethereum.on('networkChanged', handleAccountsChanged)
 
     return window.ethereum
   }, [])
@@ -137,6 +140,11 @@ export const useConnection = (
     if (currentProvider === ProviderEnum.WalletConnect) {
       await walletConnect.disconnect()
     }
+    if (currentProvider === ProviderEnum.Metamask) {
+      window.ethereum.removeListener('networkChanged', handleNetworkChanged)
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+    }
+
     setCurrentProvider(ProviderEnum.Disconnected)
     dispatch({ type: ConnectionActionType.DISCONNECT, payload: null })
   }, [dispatch, currentProvider, setCurrentProvider, walletConnect.disconnect])
@@ -193,12 +201,8 @@ export const useConnection = (
       if (currentProvider === ProviderEnum.Disconnected) return
 
       if (currentProvider === ProviderEnum.Metamask) {
-        window.ethereum.removeListener('networkChanged', () => {
-          disconnect()
-        })
-        window.ethereum.removeListener('accountsChanged', () => {
-          disconnect()
-        })
+        window.ethereum.removeListener('networkChanged', handleNetworkChanged)
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
       }
     }
   }, [])
