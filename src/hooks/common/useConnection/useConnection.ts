@@ -49,9 +49,8 @@ export const useConnection = (
   }, [state.network, state.provider, setSessionNetwork, setSessionProvider])
 
   const connectionManager = {
-    [ProviderType.Metamask]: useMetamask(sessionNetwork, state, dispatch),
+    [ProviderType.Metamask]: useMetamask(state, dispatch),
     [ProviderType.WalletConnect]: useWalletConnect(
-      sessionNetwork,
       state,
       dispatch,
     ),
@@ -113,7 +112,7 @@ export const useConnection = (
   const disconnect = useCallback(async () => {
     if (!sessionProvider) return
 
-    connectionManager[sessionProvider].disconnect()
+    await connectionManager[sessionProvider].disconnect()
 
     dispatch({
       type: ConnectionActionType.DISCONNECT,

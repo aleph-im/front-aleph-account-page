@@ -9,26 +9,18 @@ import {
 import { getAccountBalance } from '@/helpers/aleph'
 
 export type MetamaskProvider = {
-  connect: (chain: Chain) => Promise<any>
-  switchNetwork: (chain: Chain) => Promise<any>
+  connect: (network: Chain) => Promise<any>
+  switchNetwork: (network: Chain) => Promise<any>
   disconnect: () => void
 }
 
 export const useMetamask = (
-  initialNetwork: Chain,
   state: ConnectionState,
   dispatch: Dispatch<ConnectionAction>,
 ): MetamaskProvider => {
-  // network state to use on listener callbacks
-  const [network, setNetwork] = useState(initialNetwork)
-  const networkRef = useRef(network)
-  useEffect(() => {
-    networkRef.current = network
-  }, [network])
-
   const stateRef = useRef(state)
   useEffect(() => {
-    stateRef.current = state
+      stateRef.current = state
   }, [state])
 
   const handleAccountsChanged = useCallback(
@@ -53,8 +45,7 @@ export const useMetamask = (
       if (!supportedChains.includes(networkId)) return
 
       const newNetwork = idToChain(networkId)
-      if (newNetwork !== networkRef.current) {
-        setNetwork(newNetwork)
+      if (newNetwork !== stateRef.current.network) {
         const { account, balance } = await getAccountInfo(
           newNetwork,
           window.ethereum,
@@ -69,7 +60,7 @@ export const useMetamask = (
   )
 
   const connect = useCallback(
-    async (chain: Chain) => {
+    async (network: Chain) => {
       ;(window.ethereum as any)?.on('chainChanged', handleChainChanged)
       ;(window.ethereum as any)?.on('accountsChanged', handleAccountsChanged)
 
@@ -81,13 +72,11 @@ export const useMetamask = (
   const switchNetwork = useCallback(async (network: Chain) => {
     const chainId = chainToId(network)
     try {
-      if (window.ethereum) {
-        await window.ethereum.request?.({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${chainId.toString(16)}` }],
-        })
-        return window.ethereum
-      }
+      await window.ethereum?.request?.({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${chainId.toString(16)}` }],
+      })
+      return window.ethereum
     } catch (error: any) {
       return
     }

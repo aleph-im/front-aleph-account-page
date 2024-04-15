@@ -2,17 +2,16 @@ import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
 import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { chainToId } from './utils'
-import { ConnectionAction, ConnectionState } from '@/store/connection'
+import { chainToId, getAccountInfo, idToChain } from './utils'
+import { ConnectionAction, ConnectionActionType, ConnectionState } from '@/store/connection'
 
 export type WalletConnectProvider = {
-  connect: (chain: Chain) => Promise<UniversalProvider | undefined>
-  switchNetwork: (chain: Chain) => Promise<void>
+  connect: (network: Chain) => Promise<UniversalProvider | undefined>
+  switchNetwork: (network: Chain) => Promise<UniversalProvider>
   disconnect: () => Promise<void>
 }
 
 export const useWalletConnect = (
-  initialNetwork: Chain,
   state: ConnectionState,
   dispatch: Dispatch<ConnectionAction>,
 ): WalletConnectProvider => {
@@ -24,13 +23,6 @@ export const useWalletConnect = (
   useEffect(() => {
     stateRef.current = state
   }, [state])
-
-  /*const [network, setNetwork] = useState(initialNetwork)
-  const networkRef = useRef(network)
-
-  useEffect(() => {
-    networkRef.current = network
-  }, [network])*/
 
   const createClient = useCallback(async () => {
     try {
@@ -61,20 +53,18 @@ export const useWalletConnect = (
     await universalProvider.disconnect()
   }, [universalProvider])
 
-  /*
-  // wip listener callback, wallet connect connects to all supported chains at once
-  // the app only should update state of the current network
   const sessionEventListener = useCallback(
     async (event: any) => {
+      const network = stateRef.current.network
+      if (!network) return
       if (!universalProvider?.session) return
 
-      const supportedChains = ['1', '43114']
+      const supportedChains = ['1']
       const namespaces = event.params.namespaces
 
       const availableChains = namespaces.eip155.chains.map(
         (chain: string) => chain.split(':')[1],
       )
-
       const currentChainId = chainToId(network).toString()
       const networkId = Number(
         availableChains.find(
@@ -85,9 +75,6 @@ export const useWalletConnect = (
 
       if (networkId) {
         const newNetwork = idToChain(networkId)
-        if (newNetwork === networkRef.current) return
-
-        setNetwork(newNetwork)
         const { account, balance } = await getAccountInfo(
           network,
           universalProvider,
@@ -101,12 +88,12 @@ export const useWalletConnect = (
       }
     },
     [universalProvider, dispatch],
-  )*/
+  )
 
   const addListeners = useCallback(
     (provider: UniversalProvider) => {
       provider.on('display_uri', (uri: string) => web3Modal?.openModal({ uri }))
-      //provider.on('session_update', sessionEventListener)
+      provider.on('session_update', sessionEventListener)
       provider.on('session_delete', async () => await disconnect())
     },
     [web3Modal, disconnect],
@@ -114,22 +101,22 @@ export const useWalletConnect = (
 
   const removeListeners = useCallback((provider: UniversalProvider) => {
     provider.off('display_uri', (uri: string) => web3Modal?.openModal({ uri }))
-    //provider.off('session_update', sessionEventListener)
+    provider.off('session_update', sessionEventListener)
     provider.off('session_delete', async () => await disconnect())
   }, [])
 
-  // wallet connect connects to multiple chains at once, so just update the app state
-  // note: does not return provider to avoid calling getAccountInfo (which reconnects provider)
   const switchNetwork = useCallback(
-    async (chain: Chain) => {
+    async (network: Chain) => {
       if (!universalProvider || !universalProvider.session)
         throw new Error('Provider or session not initialized')
+
+      return universalProvider
     },
     [universalProvider],
   )
 
   const connect = useCallback(
-    async (chain: Chain) => {
+    async (network: Chain) => {
       const { provider, modal } = await createClient()
       if (
         provider.session &&
@@ -140,19 +127,14 @@ export const useWalletConnect = (
 
       // note: defined a custom timeout for the wallet connect modal
       return new Promise<UniversalProvider | undefined>((resolve, reject) => {
-        const timeoutDuration = 60000
+        const timeoutDuration = 2000
         const timeout = setTimeout(() => {
           modal.closeModal()
           removeListeners(provider)
           reject(new Error('Timeout waiting for user to scan QR code'))
         }, timeoutDuration)
 
-        const supportedChains = ['1', '43114']
-        const chainId = chainToId(chain).toString()
-        const optionalChainIds = supportedChains.filter(
-          (id) => id !== chainId,
-        )[0]
-
+        const chainId = chainToId(network).toString()
         const eip155Methods = [
           'eth_sendTransaction',
           'eth_signTransaction',
