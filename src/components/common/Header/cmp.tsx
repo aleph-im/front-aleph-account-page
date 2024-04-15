@@ -35,6 +35,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
     networks,
     handleSwitchNetwork,
     handleConnect,
+    handleDisconnect,
     handleDisplayWalletPicker,
   } = useAccountButton(rest)
 
@@ -80,7 +81,7 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
             selectedNetwork={selectedNetwork}
             onSwitchNetwork={handleSwitchNetwork}
             onConnect={handleConnect}
-            onDisconnect={handleConnect}
+            onDisconnect={handleDisconnect}
             address={account?.address}
             addressHref={`https://etherscan.io/address/${account?.address}`}
             balance={accountBalance}

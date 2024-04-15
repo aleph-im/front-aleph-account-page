@@ -66,7 +66,8 @@ export const StyledContainer = styled.div<StyledContainerProps>`
   }}
 `
 
-export const StyledTitle = styled.h1.attrs(addClasses('tp-h5'))`
+type StyleProps = React.HTMLAttributes<HTMLHeadingElement>
+export const StyledTitle = styled.h1.attrs<StyleProps>(addClasses('tp-h5'))`
   ${({ theme }) => {
     return css`
       ${tw`m-0 py-0.5 px-6 z-10`}
@@ -77,7 +78,9 @@ export const StyledTitle = styled.h1.attrs(addClasses('tp-h5'))`
   }};
 `
 
-export const StyledDescription = styled.h2.attrs(addClasses('tp-body3'))`
+export const StyledDescription = styled.h2.attrs<StyleProps>(
+  addClasses('tp-body3'),
+)`
   ${({ theme }) => {
     return css`
       ${tw`m-0 py-3 px-6`}

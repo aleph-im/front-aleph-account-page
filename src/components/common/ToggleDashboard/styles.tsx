@@ -29,7 +29,9 @@ export const StyledToggleContainer = styled(ToggleContainer)`
     `}
 `
 
-export type StyledButtonsContainerProps = {
+type StyleProps = React.HTMLAttributes<HTMLDivElement>
+export type StyledButtonsContainerProps = StyleProps & {
+  ref?: React.Ref<HTMLDivElement>
   $open: boolean
 }
 

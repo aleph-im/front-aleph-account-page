@@ -1,4 +1,5 @@
 import { addClasses } from '@aleph-front/core'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
@@ -10,6 +11,8 @@ export const StyledContainer = styled.div`
   backdrop-filter: blur(50px);
 `
 
-export const StyledTitle = styled.div.attrs(addClasses('tp-info'))`
+export const StyledTitle = styled.div.attrs(addClasses('tp-info'))<{
+  children?: ReactNode
+}>`
   ${tw`uppercase`}
 `

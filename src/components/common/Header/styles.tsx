@@ -6,6 +6,7 @@ import {
   WalletPicker,
   getResponsiveCss,
 } from '@aleph-front/core'
+import { ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
@@ -44,6 +45,7 @@ export const StyledWalletPicker = styled(WalletPicker)<{
 
 export type StyledNavbarDesktopProps = {
   $breakpoint?: BreakpointId
+  children?: ReactNode
 }
 
 export const StyledNavbarDesktop = styled.div<StyledNavbarDesktopProps>`
@@ -86,6 +88,7 @@ export const StyledNavbarMobile = styled(RouterNavbar)<StyledNavbarMobileProps>`
 
 export type StyledHeaderProps = {
   $breakpoint?: BreakpointId
+  children?: ReactNode
 }
 
 export const StyledHeader = styled.header<StyledHeaderProps>`

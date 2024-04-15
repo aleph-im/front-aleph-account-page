@@ -1,7 +1,8 @@
 import tw from 'twin.macro'
 import styled, { css } from 'styled-components'
 
-export type StyledSpinnerContainerProps = {
+type StyleProps = React.HTMLAttributes<HTMLHeadingElement>
+export type StyledSpinnerContainerProps = StyleProps & {
   $show: boolean
   $center: boolean
   $fullScreen: boolean
