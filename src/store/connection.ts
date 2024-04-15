@@ -1,18 +1,13 @@
 import { Account } from 'aleph-sdk-ts/dist/accounts/account'
 import { StoreReducer } from './store'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-
-export enum ProviderEnum {
-  Metamask = 'Metamask',
-  WalletConnect = 'WalletConnect',
-  Disconnected = 'DisconnectState',
-}
+import { ProviderType } from '@/hooks/common/useConnection/utils'
 
 export type ConnectionState = {
   account?: Account
   balance?: number
   network?: Chain
-  provider?: ProviderEnum
+  provider?: ProviderType
 }
 
 export const initialState: ConnectionState = {
@@ -35,7 +30,7 @@ export type ConnectAction = {
     account: Account
     balance: number
     network: Chain
-    provider: ProviderEnum
+    provider: ProviderType
   }
 }
 
@@ -47,6 +42,7 @@ export type DisconnectAction = {
 export type SwitchNetworkAction = {
   readonly type: ConnectionActionType.SWITCH_NETWORK
   payload: {
+    account: Account
     balance: number
     network: Chain
   }
@@ -77,7 +73,13 @@ export function getConnectionReducer(): ConnectionReducer {
       }
 
       case ConnectionActionType.SWITCH_NETWORK: {
-        return action.payload
+        const { account, balance, network } = action.payload
+        return {
+          ...state,
+          account,
+          balance,
+          network,
+        }
       }
 
       case ConnectionActionType.SET_BALANCE: {

@@ -11,7 +11,10 @@ import {
   storeReducer,
   StoreState,
 } from '@/store/store'
-import { UseConnection, useConnection } from '@/hooks/common/useConnection'
+import {
+  UseConnection,
+  useConnection,
+} from '@/hooks/common/useConnection/useConnection'
 
 export type AppContextValue = UseConnection & {
   state: StoreState

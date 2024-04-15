@@ -20,45 +20,11 @@ import {
 } from '../common/useBreadcrumbNames'
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
-import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { ProviderEnum } from '@/store/connection'
-
-export function walletToEnum(walletName?: string): ProviderEnum {
-  switch (walletName) {
-    case 'Metamask':
-      return ProviderEnum.Metamask
-    case 'Wallet Connect':
-      return ProviderEnum.WalletConnect
-    default:
-      return ProviderEnum.Metamask
-  }
-}
-
-export function chainNameToEnum(chainName?: string): Chain {
-  switch (chainName) {
-    case 'Ethereum':
-      return Chain.ETH
-    case 'Avalanche':
-      return Chain.AVAX
-    case 'Solana':
-      return Chain.SOL
-    default:
-      return Chain.ETH
-  }
-}
-
-export function chainEnumToName(chain: Chain): string {
-  switch (chain) {
-    case Chain.ETH:
-      return 'Ethereum'
-    case Chain.AVAX:
-      return 'Avalanche'
-    case Chain.SOL:
-      return 'Solana'
-    default:
-      return 'Ethereum'
-  }
-}
+import {
+  chainNameToEnum,
+  walletToEnum,
+  chainEnumToName,
+} from '../common/useConnection/utils'
 
 export type UseAccountButtonProps = {
   rewards?: WalletPickerProps['rewards']
@@ -181,19 +147,12 @@ export function useHeader(): UseHeaderReturn {
   const router = useRouter()
   const { pathname } = router
 
-  // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
     async (wallet: WalletProps, network: NetworkProps['network']) => {
-      if (!account && wallet) {
-        const chain = chainNameToEnum(network?.name)
-        const providerType = walletToEnum(wallet.name)
+      const chain = chainNameToEnum(network.name)
+      const providerType = walletToEnum(wallet.name)
 
-        await connect(chain, providerType)
-        // router.push('/')
-      } else {
-        await disconnect()
-        router.push('/')
-      }
+      await connect(chain, providerType)
     },
     [connect, disconnect, account, router],
   )
@@ -210,7 +169,10 @@ export function useHeader(): UseHeaderReturn {
 
   const [isOpen, setIsOpen] = useState(false)
   const handleToggle = useCallback((open: boolean) => setIsOpen(open), [])
-  const handleDisconnect = useCallback(() => null, [])
+  const handleDisconnect = useCallback(async () => {
+    await disconnect()
+    router.push('/')
+  }, [])
 
   // --------------------
 

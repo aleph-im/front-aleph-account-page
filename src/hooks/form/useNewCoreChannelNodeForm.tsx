@@ -65,7 +65,7 @@ function calculateVirtualNode(
 export function useNewCoreChannelNodeForm(): UseNewCoreChannelNodeFormReturn {
   const router = useRouter()
   const { state, dispatch } = useAppState()
-  const { account } = appState.account
+  const { account } = state.connection
 
   const noti = useNotification()
 
