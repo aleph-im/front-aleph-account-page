@@ -3,7 +3,11 @@ import UniversalProvider from '@walletconnect/universal-provider'
 import { WalletConnectModal } from '@walletconnect/modal'
 import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 import { chainToId, getAccountInfo, idToChain } from './utils'
-import { ConnectionAction, ConnectionActionType, ConnectionState } from '@/store/connection'
+import {
+  ConnectionAction,
+  ConnectionActionType,
+  ConnectionState,
+} from '@/store/connection'
 
 export type WalletConnectProvider = {
   connect: (network: Chain) => Promise<UniversalProvider | undefined>

@@ -20,7 +20,7 @@ export const useMetamask = (
 ): MetamaskProvider => {
   const stateRef = useRef(state)
   useEffect(() => {
-      stateRef.current = state
+    stateRef.current = state
   }, [state])
 
   const handleAccountsChanged = useCallback(

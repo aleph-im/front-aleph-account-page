@@ -50,10 +50,7 @@ export const useConnection = (
 
   const connectionManager = {
     [ProviderType.Metamask]: useMetamask(state, dispatch),
-    [ProviderType.WalletConnect]: useWalletConnect(
-      state,
-      dispatch,
-    ),
+    [ProviderType.WalletConnect]: useWalletConnect(state, dispatch),
   }
 
   const noti = useNotification()
