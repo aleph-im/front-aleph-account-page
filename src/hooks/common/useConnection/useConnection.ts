@@ -37,13 +37,6 @@ export const useConnection = (
     ProviderType | undefined
   >('sessionProvider', undefined)
 
-  const sessionProviderRef = useRef(sessionProvider)
-  const sessionNetworkRef = useRef(sessionNetwork)
-  useEffect(() => {
-    sessionProviderRef.current = sessionProvider
-    sessionNetworkRef.current = sessionNetwork
-  }, [sessionProvider, sessionNetwork])
-
   // keep session storage in sync with main state
   // reacts to custom provider changes (metamask extension/wallet connect)
   useEffect(() => {
@@ -101,11 +94,10 @@ export const useConnection = (
 
   const switchNetwork = useCallback(
     async (network: Chain) => {
-      const currentProvider = sessionProviderRef.current
-      if (!currentProvider) return
+      if (!sessionProvider) return
 
       const provider =
-        await connectionManager[currentProvider].switchNetwork(network)
+        await connectionManager[sessionProvider].switchNetwork(network)
       if (!provider) return
 
       const { account, balance } = await getAccountInfo(network, provider)
@@ -119,17 +111,16 @@ export const useConnection = (
   )
 
   const disconnect = useCallback(async () => {
-    const currentProvider = sessionProviderRef.current
-    if (!currentProvider) return
+    if (!sessionProvider) return
 
-    connectionManager[currentProvider].disconnect()
+    connectionManager[sessionProvider].disconnect()
 
     dispatch({
       type: ConnectionActionType.DISCONNECT,
       payload: null,
     })
     setSessionProvider(undefined)
-  }, [dispatch, setSessionProvider])
+  }, [sessionProvider, dispatch, setSessionProvider])
 
   // auto-login
   useEffect(() => {

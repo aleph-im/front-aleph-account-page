@@ -172,7 +172,7 @@ export function useHeader(): UseHeaderReturn {
   const handleDisconnect = useCallback(async () => {
     await disconnect()
     router.push('/')
-  }, [])
+  }, [disconnect])
 
   // --------------------
 
