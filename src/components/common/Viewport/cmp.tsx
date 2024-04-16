@@ -5,8 +5,11 @@ import { useRequestRewards } from '@/hooks/common/useRequestEntity/useRequestRew
 import { useRequestCCNsFeed } from '@/hooks/common/useRequestEntity/useRequestCCNsFeed'
 import { useRequestRewardsFeed } from '@/hooks/common/useRequestEntity/useRequestRewardsFeed'
 import { useRequestAlephNodes } from '@/hooks/common/useRequestEntity/useRequestAlephNodes'
+import { useFilters } from '@/hooks/common/useFilters'
 
 export const Viewport = ({ children }: ViewportProps) => {
+  useFilters({ syncUrl: true })
+
   useRequestAlephNodes({})
   useRequestRewards({})
 
