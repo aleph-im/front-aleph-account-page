@@ -8,6 +8,7 @@ import { UseFiltersReturn } from './useFilters'
 
 export type UseCoreChannelNodesProps = {
   nodes?: CCN[]
+  filterKey?: string
 }
 
 export type UseCoreChannelNodesReturn = {
@@ -23,6 +24,7 @@ export type UseCoreChannelNodesReturn = {
 
 export function useCoreChannelNodes({
   nodes: prefetchNodes,
+  filterKey = 'ccnq',
 }: UseCoreChannelNodesProps): UseCoreChannelNodesReturn {
   const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.account
@@ -35,7 +37,7 @@ export function useCoreChannelNodes({
   // -----------------------------
 
   const [ccnqFilter, setCcnqFilter] = useFilter({
-    key: 'ccnq',
+    key: filterKey,
     debounced: 200,
   })
 

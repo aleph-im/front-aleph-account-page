@@ -50,7 +50,7 @@ export function useStakingPage(
     nodes,
     filteredNodes: baseFilteredNodes,
     ...rest
-  } = useCoreChannelNodes(props)
+  } = useCoreChannelNodes({ ...props, filterKey: 'ccnsq' })
 
   // -----------------------------
 

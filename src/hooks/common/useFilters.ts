@@ -63,7 +63,7 @@ export function useFilters({
         { ...filters },
       )
 
-      console.log('SYNC FILTER STATE', state)
+      // console.log('SYNC FILTER STATE', state)
 
       dispatch(new FilterSetAction({ state }))
     }
@@ -84,9 +84,9 @@ export function useFilters({
         { ...router.query },
       )
 
-      console.log('SYNC FILTER QUERY', query)
+      // console.log('SYNC FILTER QUERY', query)
 
-      router.push({ query })
+      router.replace({ query })
     }
   }, [syncUrl, filters, router, dispatch])
 
