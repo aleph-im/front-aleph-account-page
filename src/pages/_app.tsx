@@ -13,7 +13,7 @@ import Main from '@/components/common/Main'
 import Sidebar from '@/components/common/Sidebar'
 import Viewport from '@/components/common/Viewport'
 import Content from '@/components/common/Content'
-import Loading from './loading'
+import Loading from './_loading'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
