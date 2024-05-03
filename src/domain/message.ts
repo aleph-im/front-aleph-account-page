@@ -1,12 +1,20 @@
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { any, forget } from 'aleph-sdk-ts/dist/messages'
-import E_ from '../helpers/errors'
-import { defaultAccountChannel } from '@/helpers/constants'
+import { Account } from '@aleph-sdk/account'
+import {
+  AlephHttpClient,
+  AuthenticatedAlephHttpClient,
+} from '@aleph-sdk/client'
+import Err from '../helpers/errors'
+import { apiServer, defaultAccountChannel } from '@/helpers/constants'
 
 export class MessageManager {
   constructor(
     protected account: Account,
     protected channel = defaultAccountChannel,
+    protected sdkClient:
+      | AlephHttpClient
+      | AuthenticatedAlephHttpClient = !account
+      ? new AlephHttpClient(apiServer)
+      : new AuthenticatedAlephHttpClient(account, apiServer),
   ) {}
 
   /**
@@ -14,13 +22,11 @@ export class MessageManager {
    */
   async get(hash: string) {
     try {
-      const msg = await any.GetMessage({
-        hash: hash,
-      })
+      const msg = await this.sdkClient.getMessage(hash)
 
       return msg
     } catch (error) {
-      throw E_.RequestFailed(error)
+      throw Err.RequestFailed(error)
     }
   }
 
@@ -29,15 +35,17 @@ export class MessageManager {
    */
   async del(message: any) {
     try {
-      const msg = await forget.Publish({
-        account: this.account,
+      if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+        throw Err.InvalidAccount
+
+      const msg = await this.sdkClient.forget({
         hashes: [message.item_hash],
         channel: message.channel,
       })
 
       return msg
     } catch (err) {
-      throw E_.RequestFailed(err)
+      throw Err.RequestFailed(err)
     }
   }
 }

@@ -1,10 +1,10 @@
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { messages } from 'aleph-sdk-ts'
-import { MessageType, StoreMessage } from 'aleph-sdk-ts/dist/messages/types'
+import { Account } from '@aleph-sdk/account'
 import { apiServer, channel, defaultAccountChannel } from '@/helpers/constants'
-import { store } from 'aleph-sdk-ts/dist/messages'
-
-const { any } = messages
+import { MessageType, StoreMessage } from '@aleph-sdk/message'
+import {
+  AlephHttpClient,
+  AuthenticatedAlephHttpClient,
+} from '@aleph-sdk/client'
 
 export type FileObject = {
   created: string
@@ -25,6 +25,11 @@ export class FileManager {
   constructor(
     protected account?: Account,
     protected channel = defaultAccountChannel,
+    protected sdkClient:
+      | AlephHttpClient
+      | AuthenticatedAlephHttpClient = !account
+      ? new AlephHttpClient(apiServer)
+      : new AuthenticatedAlephHttpClient(account, apiServer),
   ) {}
 
   async getFiles(): Promise<FilesInfo<StoreMessage> | undefined> {
@@ -48,7 +53,7 @@ export class FileManager {
       const newFile = { ...file }
       newFile.content.size = objsMap.get(file.item_hash)?.size || 0
       return newFile
-    })
+    }) as StoreMessage[]
 
     totalSize =
       files.reduce((ac, cv) => ac + (cv?.content?.size || 0), 0) / 1024 ** 2
@@ -66,11 +71,10 @@ export class FileManager {
 
     const { address } = this.account
 
-    const items = await any.GetMessages({
-      messageType: MessageType.store,
+    const items = await this.sdkClient.getMessages({
+      messageTypes: [MessageType.store],
       addresses: [address],
-      pagination: 1000,
-      APIServer: apiServer,
+      pageSize: 1000,
     })
 
     const files = (items?.messages || []) as StoreMessage[]
@@ -104,15 +108,14 @@ export class FileManager {
   }
 
   async uploadFile(fileObject: File): Promise<string> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw new Error('Account needed to perform this action')
 
     // @note: Quick temporal fix to upload files
     const buffer = Buffer.from(await fileObject.arrayBuffer())
 
-    const message = await store.Publish({
-      account: this.account,
+    const message = await this.sdkClient.createStore({
       channel,
-      APIServer: apiServer,
       fileObject: buffer,
     })
 

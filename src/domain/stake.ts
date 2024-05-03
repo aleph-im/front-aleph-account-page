@@ -1,4 +1,4 @@
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import {
   apiServer,
   channel,
@@ -11,9 +11,12 @@ import {
 } from '@/helpers/constants'
 import { AlephNode, CCN, CRN } from './node'
 import { normalizeValue } from '@/helpers/utils'
-import { post } from 'aleph-sdk-ts/dist/messages'
-import { ItemType, PostMessage } from 'aleph-sdk-ts/dist/messages/types'
+import { ItemType, PostMessage } from '@aleph-sdk/message'
 import { subscribeSocketFeed } from '@/helpers/socket'
+import {
+  AlephHttpClient,
+  AuthenticatedAlephHttpClient,
+} from '@aleph-sdk/client'
 
 export type RewardsResponse = {
   type: 'calculation' | 'distribution'
@@ -33,16 +36,23 @@ export class StakeManager {
   constructor(
     protected account?: Account,
     protected channel = defaultAccountChannel,
+    protected sdkClient:
+      | AlephHttpClient
+      | AuthenticatedAlephHttpClient = !account
+      ? new AlephHttpClient(apiServer)
+      : new AuthenticatedAlephHttpClient(account, apiServer),
   ) {}
 
   async getLastRewardsCalculation(): Promise<RewardsResponse> {
-    const res = await post.Get({
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw new Error('Account needed to perform this action')
+
+    const res = await this.sdkClient.getPosts({
       types: 'staking-rewards-distribution',
       addresses: [monitorAddress],
       tags: ['calculation'],
-      pagination: 1,
+      pageSize: 1,
       page: 1,
-      APIServer: apiServer,
     })
 
     const { content, time } = res.posts[0]
@@ -57,13 +67,15 @@ export class StakeManager {
   }
 
   async getLastRewardsDistribution(): Promise<RewardsResponse> {
-    const res = await post.Get({
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw new Error('Account needed to perform this action')
+
+    const res = await this.sdkClient.getPosts({
       types: 'staking-rewards-distribution',
       addresses: [senderAddress],
       tags: ['distribution'],
-      pagination: 1,
+      pageSize: 1,
       page: 1,
-      APIServer: apiServer,
     })
 
     const { content, time } = res.posts[0]
@@ -111,10 +123,10 @@ export class StakeManager {
   // https://github.com/aleph-im/aleph-account/blob/main/src/pages/Stake.vue#L204
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L289
   async stake(nodeHash: string): Promise<void> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw new Error('Account needed to perform this action')
 
-    await post.Publish({
-      account: this.account,
+    await this.sdkClient.createPost({
       postType,
       channel,
       ref: nodeHash,
@@ -123,16 +135,15 @@ export class StakeManager {
         action: 'stake-split',
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
   }
 
   // https://github.com/aleph-im/aleph-account/blob/main/src/components/NodesTable.vue#L268
   async unstake(nodeHash: string): Promise<void> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw new Error('Account needed to perform this action')
 
-    await post.Publish({
-      account: this.account,
+    await this.sdkClient.createPost({
       postType,
       channel,
       ref: nodeHash,
@@ -141,7 +152,6 @@ export class StakeManager {
         action: 'unstake',
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
   }
 

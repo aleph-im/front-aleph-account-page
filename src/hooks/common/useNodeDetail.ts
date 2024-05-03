@@ -4,7 +4,7 @@ import { useNotification } from '@aleph-front/core'
 import { AlephNode, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 import { EntityDelAction } from '@/store/entity'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 
 export type UseNodeDetailProps<N> = {
   node?: N

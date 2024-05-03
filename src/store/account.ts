@@ -1,4 +1,4 @@
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { StoreReducer } from './store'
 
 export type AccountState = {

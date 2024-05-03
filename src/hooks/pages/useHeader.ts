@@ -8,7 +8,8 @@ import {
   useMemo,
 } from 'react'
 import { DefaultTheme, useTheme } from 'styled-components'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Blockchain } from '@aleph-sdk/core'
+import { Account } from '@aleph-sdk/account'
 import { useAppState } from '@/contexts/appState'
 import { useConnect } from '../common/useConnect'
 import { useSessionStorage } from 'usehooks-ts'
@@ -29,28 +30,27 @@ import {
 } from '../common/useBreadcrumbNames'
 import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
 import { useAccountRewards } from '../common/useRewards'
-import { Chain } from 'aleph-sdk-ts/dist/messages/types'
 
-export function chainNameToEnum(chainName?: string): Chain {
+export function chainNameToEnum(chainName?: string): Blockchain {
   switch (chainName) {
     case 'Ethereum':
-      return Chain.ETH
+      return Blockchain.ETH
     case 'Avalanche':
-      return Chain.AVAX
+      return Blockchain.AVAX
     case 'Solana':
-      return Chain.SOL
+      return Blockchain.SOL
     default:
-      return Chain.ETH
+      return Blockchain.ETH
   }
 }
 
-export function chainEnumToName(chain: Chain): string {
+export function chainEnumToName(chain: Blockchain): string {
   switch (chain) {
-    case Chain.ETH:
+    case Blockchain.ETH:
       return 'Ethereum'
-    case Chain.AVAX:
+    case Blockchain.AVAX:
       return 'Avalanche'
-    case Chain.SOL:
+    case Blockchain.SOL:
       return 'Solana'
     default:
       return 'Ethereum'

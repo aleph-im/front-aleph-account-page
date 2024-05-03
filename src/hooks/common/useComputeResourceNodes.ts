@@ -1,6 +1,6 @@
 import { useAppState } from '@/contexts/appState'
 import { CRN, NodeLastVersions } from '@/domain/node'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseSortedListReturn, useSortedList } from './useSortedList'
 import { UseFiltersReturn } from './useFilters'
