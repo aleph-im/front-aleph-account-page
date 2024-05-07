@@ -175,18 +175,20 @@ export const humanReadableCurrency = (value?: number) => {
   else return (value / 10 ** 9).toFixed(1) + 'B'
 }
 
-const messageTypeWhitelist = new Set(...Object.values(MessageType))
+const messageTypeWhitelist = new Set(Object.values(MessageType))
 
 /**
  * Returns a link to the Aleph explorer for a given message
  */
 export const getExplorerURL = ({ item_hash, chain, sender, type }: Message) => {
-  type = messageTypeWhitelist.has(type as string) ? type : MessageType.post
+  type = messageTypeWhitelist.has(type as MessageType) ? type : MessageType.post
   return `https://explorer.aleph.im/address/${chain}/${sender}/message/${type}/${item_hash}`
 }
 
-export const getDate = (time: number): string => {
-  const [date, hour] = new Date(time * 1000).toISOString().split('T')
+export const getDate = (time: number | string): string => {
+  const dateTime =
+    typeof time === 'string' ? time : new Date(time * 1000).toISOString()
+  const [date, hour] = dateTime.split('T')
   const [hours] = hour.split('.')
 
   return `${date} ${hours}`
