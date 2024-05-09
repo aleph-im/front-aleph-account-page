@@ -11,7 +11,9 @@ import {
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
 import Card2, { Card2Field } from '@/components/common/Card2'
 import StyledProgressBar from '@/components/common/ColorProgressBar'
-import NodeLinkedNodes from '@/components/common/NodeLinkedNodes'
+import NodeLinkedNodes, {
+  LinkedStatusDotIcon,
+} from '@/components/common/NodeLinkedNodes'
 import ButtonLink from '@/components/common/ButtonLink'
 import NodeDetailLockSwitch from '@/components/common/NodeDetailLockSwitch'
 import NodeDetailStatus from '@/components/common/NodeDetailStatus'
@@ -260,45 +262,50 @@ export const CoreChannelNodeDetailPage = () => {
                 },
                 (_, i) => {
                   const crn = node?.crnsData[i]
-                  const isCRNOwner = crn?.owner === account?.address
 
-                  return !crn ? (
-                    <div key={i} tw="inline-flex gap-3 items-center">
-                      <div tw="w-6 h-6 rounded-full bg-[#C4C4C433]" />
-                      <div className="fs-10" tw="leading-4">
-                        {isOwner ? (
-                          <ButtonLink
-                            href="/earn/crn"
-                            color="main0"
-                            size="md"
-                            kind="neon"
-                            variant="textOnly"
-                          >
-                            <div>
-                              <Icon name="link" tw="w-3.5 h-3.5" /> link now
-                            </div>
-                          </ButtonLink>
-                        ) : (
-                          <>not linked</>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div key={i} tw="flex items-center">
-                      <Link href={`/earn/crn/${crn.hash}`} legacyBehavior>
-                        <NodeName
-                          hash={crn.hash}
-                          name={crn.name}
-                          picture={crn.picture}
-                          tw="mr-auto w-auto cursor-pointer"
-                          apiServer={apiServer}
-                          ImageCmp={Image}
-                        />
-                      </Link>
-                      {isUnlinkableByUser(crn) && (
-                        <button onClick={() => handleUnlink(crn)}>
-                          <Icon name="trash" color="error" />
-                        </button>
+                  return (
+                    <div key={i} tw="flex gap-3 items-center">
+                      {!crn ? (
+                        <>
+                          <LinkedStatusDotIcon />
+                          <div tw="w-6 h-6 rounded-full bg-[#C4C4C433]" />
+                          <div className="fs-10" tw="leading-4">
+                            {isOwner ? (
+                              <ButtonLink
+                                href="/earn/crn"
+                                color="main0"
+                                size="md"
+                                kind="neon"
+                                variant="textOnly"
+                              >
+                                <div>
+                                  <Icon name="link" tw="w-3.5 h-3.5" /> link now
+                                </div>
+                              </ButtonLink>
+                            ) : (
+                              <>not linked</>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <LinkedStatusDotIcon $score={crn.score} />
+                          <Link href={`/earn/crn/${crn.hash}`} legacyBehavior>
+                            <NodeName
+                              hash={crn.hash}
+                              name={crn.name}
+                              picture={crn.picture}
+                              tw="mr-auto w-auto cursor-pointer"
+                              apiServer={apiServer}
+                              ImageCmp={Image}
+                            />
+                          </Link>
+                          {isUnlinkableByUser(crn) && (
+                            <button onClick={() => handleUnlink(crn)}>
+                              <Icon name="trash" color="error" />
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   )
