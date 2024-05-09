@@ -44,9 +44,6 @@ export class StakeManager {
   ) {}
 
   async getLastRewardsCalculation(): Promise<RewardsResponse> {
-    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
-      throw new Error('Account needed to perform this action')
-
     const res = await this.sdkClient.getPosts({
       types: 'staking-rewards-distribution',
       addresses: [monitorAddress],
@@ -67,9 +64,6 @@ export class StakeManager {
   }
 
   async getLastRewardsDistribution(): Promise<RewardsResponse> {
-    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
-      throw new Error('Account needed to perform this action')
-
     const res = await this.sdkClient.getPosts({
       types: 'staking-rewards-distribution',
       addresses: [senderAddress],
@@ -93,8 +87,7 @@ export class StakeManager {
     abort: Promise<void>,
   ): AsyncGenerator<RewardsResponse> {
     const feed = subscribeSocketFeed<PostMessage<any>>(
-      // `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress},${monitorAddress}`,
-      `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress}`,
+      `${wsServer}/api/ws0/messages?msgType=POST&history=1&contentTypes=staking-rewards-distribution&addresses=${senderAddress},${monitorAddress}`,
       abort,
     )
 

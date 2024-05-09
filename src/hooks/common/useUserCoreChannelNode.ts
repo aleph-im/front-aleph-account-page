@@ -13,7 +13,7 @@ export type UseUserCoreChannelNodeReturn = {
 
 export function useUserCoreChannelNode({
   nodes: prefetchNodes,
-}: UseUserCoreChannelNodeProps): UseUserCoreChannelNodeReturn {
+}: UseUserCoreChannelNodeProps = {}): UseUserCoreChannelNodeReturn {
   const [state] = useAppState()
   const { entities } = state.ccns
   const nodes = prefetchNodes || entities

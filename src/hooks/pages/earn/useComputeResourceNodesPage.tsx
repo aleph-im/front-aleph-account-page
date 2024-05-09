@@ -64,7 +64,7 @@ export function useComputeResourceNodesPage(
 
   // ----------------------------- USER MAIN CC NODE
 
-  const { userNode } = useUserCoreChannelNode({})
+  const { userNode } = useUserCoreChannelNode()
 
   // ----------------------------- READY TO LINK FILTER
 

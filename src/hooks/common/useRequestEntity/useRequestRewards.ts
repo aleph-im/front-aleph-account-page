@@ -14,18 +14,18 @@ export type UseRequestRewardsReturn = {
 
 export function useRequestRewards({
   triggerDeps,
-}: UseRequestRewardsProps): UseRequestRewardsReturn {
+}: UseRequestRewardsProps = {}): UseRequestRewardsReturn {
   const [state] = useAppState()
   const { account } = state.account
 
   // @todo: Refactor this (use singleton)
-  const nodeManager = useMemo(() => new StakeManager(account), [account])
+  const manager = useMemo(() => new StakeManager(account), [account])
 
   // -----------------------------
 
   const { data: lastRewardsDistribution } = useAppStoreRequest({
     name: 'lastRewardsDistribution',
-    doRequest: () => nodeManager.getLastRewardsDistribution(),
+    doRequest: () => manager.getLastRewardsDistribution(),
     onSuccess: () => null,
     flushData: false,
     triggerOnMount: true,
@@ -36,7 +36,7 @@ export function useRequestRewards({
 
   const { data: lastRewardsCalculation } = useAppStoreRequest({
     name: 'lastRewardsCalculation',
-    doRequest: () => nodeManager.getLastRewardsCalculation(),
+    doRequest: () => manager.getLastRewardsCalculation(),
     onSuccess: () => null,
     flushData: false,
     triggerOnMount: true,

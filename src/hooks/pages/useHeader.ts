@@ -191,16 +191,22 @@ export function useHeader(): UseHeaderReturn {
   //   }
   // }, [connect, disconnect, isConnected])
 
+  const provider = useCallback(() => {
+    window.ethereum?.on('accountsChanged', function () {
+      connect()
+    })
+
+    return window.ethereum
+  }, [connect])
+
   // @note: wait till account is connected and redirect
   const handleConnect = useCallback(
     async (wallet?: WalletProps, network?: NetworkProps['network']) => {
       console.log('handleConnect', wallet, network)
       if (!isConnected && (wallet || network)) {
         setkeepAccountAlive(true)
-        const acc = await connect(
-          chainNameToEnum(network?.name),
-          wallet?.provider(),
-        )
+        const prov = provider()
+        const acc = await connect(chainNameToEnum(network?.name), prov)
         if (!acc) return
         // router.push('/')
       } else {
@@ -209,7 +215,7 @@ export function useHeader(): UseHeaderReturn {
         router.push('/')
       }
     },
-    [connect, disconnect, isConnected, router, setkeepAccountAlive],
+    [connect, disconnect, provider, isConnected, router, setkeepAccountAlive],
   )
 
   // useEffect(() => {
@@ -222,14 +228,6 @@ export function useHeader(): UseHeaderReturn {
   // }, [account, keepAccountAlive])
 
   // --------------------
-
-  const provider = useCallback(() => {
-    window.ethereum?.on('accountsChanged', function () {
-      connect()
-    })
-
-    return window.ethereum
-  }, [connect])
 
   // @todo: handle this on the provider method of the WalletConnect component
   // the provider function should initialize the provider and return a dispose function
@@ -298,10 +296,15 @@ export function useHeader(): UseHeaderReturn {
     address: account?.address || '',
   })
 
-  const distributionInterval = 10 * 24 * 60 * 60 * 1000 // 10 days
-
   const pendingDays = useMemo(() => {
-    if (lastDistribution === undefined) return distributionInterval
+    const distributionInterval = 10 * 24 * 60 * 60 * 1000 // 10 days
+
+    if (lastDistribution === undefined) {
+      const pendingDays = Math.ceil(
+        distributionInterval / (1000 * 60 * 60 * 24),
+      )
+      return pendingDays
+    }
 
     const elapsedFromLast = Date.now() - lastDistribution
     const timeTillNext = distributionInterval - elapsedFromLast
@@ -310,7 +313,7 @@ export function useHeader(): UseHeaderReturn {
     const pendingDays = Math.ceil(pendingTime / (1000 * 60 * 60 * 24))
 
     return pendingDays
-  }, [lastDistribution, distributionInterval])
+  }, [lastDistribution])
 
   const rewards = useMemo(() => {
     if (!userRewards) return
