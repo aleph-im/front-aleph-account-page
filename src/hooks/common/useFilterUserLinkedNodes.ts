@@ -20,7 +20,7 @@ export function useFilterUserLinkedNodes({
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-  const { userNode } = useUserCoreChannelNode({})
+  const { userNode } = useUserCoreChannelNode()
 
   const filterUserNodes = useCallback(
     (nodes?: CRN[]) => {

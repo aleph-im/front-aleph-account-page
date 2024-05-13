@@ -1,9 +1,11 @@
-import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { GetAccountFromProvider as getETHAccount } from 'aleph-sdk-ts/dist/accounts/ethereum'
-import { GetAccountFromProvider as getSOLAccount } from 'aleph-sdk-ts/dist/accounts/solana'
+import { Blockchain } from '@aleph-sdk/core'
+
+import { Account } from '@aleph-sdk/account'
+import { getAccountFromProvider as getETHAccount } from '@aleph-sdk/ethereum'
+import { getAccountFromProvider as getSOLAccount } from '@aleph-sdk/solana'
+
 import { getERC20Balance, getSOLBalance } from './utils'
-import E_ from './errors'
+import Err from './errors'
 
 /**
  * Connects to a web3 provider and returns an Aleph account object
@@ -12,16 +14,19 @@ import E_ from './errors'
  * @param provider A web3 provider (ex: window.ethereum)
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const web3Connect = (chain: Chain, provider: any): Promise<Account> => {
+export const web3Connect = (
+  chain: Blockchain,
+  provider: any,
+): Promise<Account> => {
   switch (chain) {
-    case Chain.ETH:
+    case Blockchain.ETH:
       return getETHAccount(provider)
 
-    case Chain.SOL:
+    case Blockchain.SOL:
       return getSOLAccount(provider)
 
     default:
-      throw E_.ChainNotYetSupported
+      throw Err.ChainNotYetSupported
   }
 }
 
@@ -32,14 +37,14 @@ export const web3Connect = (chain: Chain, provider: any): Promise<Account> => {
  * @returns The Aleph balance of the account
  */
 export const getAccountBalance = async (account: Account): Promise<number> => {
-  switch (account.GetChain()) {
-    case Chain.ETH:
+  switch (account.getChain()) {
+    case Blockchain.ETH:
       return getERC20Balance(account.address)
 
-    case Chain.SOL:
+    case Blockchain.SOL:
       return getSOLBalance(account.address)
 
     default:
-      throw E_.ChainNotYetSupported
+      throw Err.ChainNotYetSupported
   }
 }

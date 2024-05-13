@@ -1,16 +1,18 @@
 import { memo } from 'react'
 import { ViewportProps } from './types'
 import { StyledViewport } from './styles'
-import { useRequestRewards } from '@/hooks/common/useRequestEntity/useRequestRewards'
-import { useRequestCCNsFeed } from '@/hooks/common/useRequestEntity/useRequestCCNsFeed'
+import { useRequestNodesFeed } from '@/hooks/common/useRequestEntity/useRequestCCNsFeed'
 import { useRequestRewardsFeed } from '@/hooks/common/useRequestEntity/useRequestRewardsFeed'
-import { useRequestAlephNodes } from '@/hooks/common/useRequestEntity/useRequestAlephNodes'
+import { useFilters } from '@/hooks/common/useFilters'
 
 export const Viewport = ({ children }: ViewportProps) => {
-  useRequestAlephNodes({})
-  useRequestRewards({})
+  useFilters({ syncUrl: true })
 
-  useRequestCCNsFeed()
+  // @note: First state is received by websocket
+  // useRequestAlephNodes()
+  // useRequestRewards()
+
+  useRequestNodesFeed()
   useRequestRewardsFeed()
 
   return <StyledViewport>{children}</StyledViewport>

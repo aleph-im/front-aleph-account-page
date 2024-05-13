@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import { Button } from '@aleph-front/core'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { CCN, NodeManager } from '@/domain/node'
 
 export type StakeButtonProps = {

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useCallback, useState, useRef, RefObject, useMemo } from 'react'
 import { DefaultTheme, useTheme } from 'styled-components'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { useAppState } from '@/contexts/appState'
 import {
   BreakpointId,
@@ -222,10 +222,15 @@ export function useHeader(): UseHeaderReturn {
     address: account?.address || '',
   })
 
-  const distributionInterval = 10 * 24 * 60 * 60 * 1000 // 10 days
-
   const pendingDays = useMemo(() => {
-    if (lastDistribution === undefined) return distributionInterval
+    const distributionInterval = 10 * 24 * 60 * 60 * 1000 // 10 days
+
+    if (lastDistribution === undefined) {
+      const pendingDays = Math.ceil(
+        distributionInterval / (1000 * 60 * 60 * 24),
+      )
+      return pendingDays
+    }
 
     const elapsedFromLast = Date.now() - lastDistribution
     const timeTillNext = distributionInterval - elapsedFromLast
@@ -234,7 +239,7 @@ export function useHeader(): UseHeaderReturn {
     const pendingDays = Math.ceil(pendingTime / (1000 * 60 * 60 * 24))
 
     return pendingDays
-  }, [lastDistribution, distributionInterval])
+  }, [lastDistribution])
 
   const rewards = useMemo(() => {
     if (!userRewards) return

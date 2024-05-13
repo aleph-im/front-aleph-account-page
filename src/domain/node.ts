@@ -7,15 +7,14 @@ import {
   tags,
   wsServer,
 } from '@/helpers/constants'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { messages } from 'aleph-sdk-ts'
+import { Account } from '@aleph-sdk/account'
+import { AggregateMessage, ItemType } from '@aleph-sdk/message'
 import {
   fetchAndCache,
   getLatestReleases,
   getVersionNumber,
   sleep,
 } from '@/helpers/utils'
-import { AggregateMessage, ItemType } from 'aleph-sdk-ts/dist/messages/types'
 import {
   newCCNSchema,
   newCRNSchema,
@@ -26,8 +25,11 @@ import {
 import { FileManager } from './file'
 import { subscribeSocketFeed } from '@/helpers/socket'
 import { StakeManager } from './stake'
-
-const { post } = messages
+import {
+  AlephHttpClient,
+  AuthenticatedAlephHttpClient,
+} from '@aleph-sdk/client'
+import Err from '../helpers/errors'
 
 export type NodeType = 'ccn' | 'crn'
 
@@ -283,7 +285,16 @@ export class NodeManager {
 
   constructor(
     protected account?: Account,
-    protected fileManager: FileManager = new FileManager(account, channel),
+    protected sdkClient:
+      | AlephHttpClient
+      | AuthenticatedAlephHttpClient = !account
+      ? new AlephHttpClient(apiServer)
+      : new AuthenticatedAlephHttpClient(account, apiServer),
+    protected fileManager: FileManager = new FileManager(
+      account,
+      channel,
+      sdkClient,
+    ),
   ) {}
 
   async getCCNNodes(): Promise<CCN[]> {
@@ -397,12 +408,12 @@ export class NodeManager {
   }
 
   async newCoreChannelNode(newCCN: NewCCN): Promise<string> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
 
     newCCN = await NodeManager.newCCNSchema.parseAsync(newCCN)
 
-    const res = await post.Publish({
-      account: this.account,
+    const res = await this.sdkClient.createPost({
       postType,
       channel,
       content: {
@@ -411,19 +422,18 @@ export class NodeManager {
         details: newCCN,
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
 
     return res.item_hash
   }
 
   async newComputeResourceNode(newCRN: NewCRN): Promise<string> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
 
     newCRN = await NodeManager.newCRNSchema.parseAsync(newCRN)
 
-    const res = await post.Publish({
-      account: this.account,
+    const res = await this.sdkClient.createPost({
       postType,
       channel,
       content: {
@@ -432,7 +442,6 @@ export class NodeManager {
         details: { ...newCRN, type: 'compute' },
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
 
     return res.item_hash
@@ -455,7 +464,8 @@ export class NodeManager {
   }
 
   async removeNode(hash: string): Promise<string> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
 
     // const res = await forget.Publish({
     //   hashes: [hash],
@@ -465,8 +475,7 @@ export class NodeManager {
     //   APIServer: apiServer,
     // })
 
-    const res = await post.Publish({
-      account: this.account,
+    const res = await this.sdkClient.createPost({
       postType,
       channel,
       ref: hash,
@@ -475,7 +484,6 @@ export class NodeManager {
         action: 'drop-node',
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
 
     return res.item_hash
@@ -483,10 +491,10 @@ export class NodeManager {
 
   // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/components/NodesTable.vue#L298
   async linkComputeResourceNode(crnHash: string): Promise<void> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
 
-    await post.Publish({
-      account: this.account,
+    await this.sdkClient.createPost({
       postType,
       channel,
       ref: crnHash,
@@ -495,16 +503,15 @@ export class NodeManager {
         action: 'link',
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
   }
 
   // https://github.com/aleph-im/aleph-account/blob/8b920e34fab9f4f70e3387eed2bd5839ae923971/src/components/NodesTable.vue#L298
   async unlinkComputeResourceNode(crnHash: string): Promise<void> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
 
-    await post.Publish({
-      account: this.account,
+    await this.sdkClient.createPost({
       postType,
       channel,
       ref: crnHash,
@@ -513,7 +520,6 @@ export class NodeManager {
         action: 'unlink',
       },
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
   }
 
@@ -538,7 +544,9 @@ export class NodeManager {
     { hash, ...details }: U,
     action: 'create-node' | 'create-resource-node',
   ): Promise<[string, Partial<N>]> {
-    if (!this.account) throw new Error('Invalid account')
+    if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
+      throw Err.InvalidAccount
+
     if (!hash) throw new Error('Invalid node hash')
 
     if (!details.locked) {
@@ -553,7 +561,7 @@ export class NodeManager {
       details.banner = await this.fileManager.uploadFile(details.banner)
     }
 
-    const res = await post.Publish({
+    const res = await this.sdkClient.createPost({
       postType: 'amend',
       ref: hash,
       content: {
@@ -562,9 +570,7 @@ export class NodeManager {
         details,
       },
       channel,
-      account: this.account,
       storageEngine: ItemType.inline,
-      APIServer: apiServer,
     })
 
     return [
@@ -937,10 +943,10 @@ export class NodeManager {
     ccn: CCNScore[]
     crn: CRNScore[]
   }> {
-    const res = await post.Get({
+    const res = await this.sdkClient.getPosts({
       types: 'aleph-scoring-scores',
       addresses: [scoringAddress],
-      pagination: 1,
+      pageSize: 1,
       page: 1,
     })
 
@@ -951,10 +957,10 @@ export class NodeManager {
     ccn: CCNMetrics[]
     crn: CRNMetrics[]
   }> {
-    const res = await post.Get({
+    const res = await this.sdkClient.getPosts({
       types: 'aleph-network-metrics',
       addresses: [scoringAddress],
-      pagination: 1,
+      pageSize: 1,
       page: 1,
     })
 

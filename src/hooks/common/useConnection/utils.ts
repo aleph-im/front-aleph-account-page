@@ -1,9 +1,9 @@
 import { web3Connect, getAccountBalance } from '@/helpers/aleph'
-import { Chain } from 'aleph-sdk-ts/dist/messages/types'
+import { Blockchain } from '@aleph-sdk/core'
 import { Providers } from './useConnection'
 
 // note: web3Connect makes the initial connection to the provider
-export async function getAccountInfo(chain: Chain, provider: Providers) {
+export async function getAccountInfo(chain: Blockchain, provider: Providers) {
   const account = await web3Connect(chain, provider)
   const balance = await getAccountBalance(account)
   return { account, balance }
@@ -14,23 +14,23 @@ export enum ProviderType {
   WalletConnect = 'WalletConnect',
 }
 
-export function chainToId(chain: Chain): number {
+export function chainToId(chain: Blockchain): number {
   switch (chain) {
-    case Chain.ETH:
+    case Blockchain.ETH:
       return 1
-    case Chain.AVAX:
+    case Blockchain.AVAX:
       return 43114
     default:
       throw new Error('Chain not supported')
   }
 }
 
-export function idToChain(chain: number): Chain {
+export function idToChain(chain: number): Blockchain {
   switch (chain) {
     case 1:
-      return Chain.ETH
+      return Blockchain.ETH
     case 43114:
-      return Chain.AVAX
+      return Blockchain.AVAX
     default:
       throw new Error('Chain not supported')
   }
@@ -47,26 +47,26 @@ export function walletToEnum(walletName?: string): ProviderType {
   }
 }
 
-export function chainNameToEnum(chainName?: string): Chain {
+export function chainNameToEnum(chainName?: string): Blockchain {
   switch (chainName) {
     case 'Ethereum':
-      return Chain.ETH
+      return Blockchain.ETH
     case 'Avalanche':
-      return Chain.AVAX
+      return Blockchain.AVAX
     case 'Solana':
-      return Chain.SOL
+      return Blockchain.SOL
     default:
-      return Chain.ETH
+      return Blockchain.ETH
   }
 }
 
-export function chainEnumToName(chain: Chain): string {
+export function chainEnumToName(chain: Blockchain): string {
   switch (chain) {
-    case Chain.ETH:
+    case Blockchain.ETH:
       return 'Ethereum'
-    case Chain.AVAX:
+    case Blockchain.AVAX:
       return 'Avalanche'
-    case Chain.SOL:
+    case Blockchain.SOL:
       return 'Solana'
     default:
       return 'Ethereum'

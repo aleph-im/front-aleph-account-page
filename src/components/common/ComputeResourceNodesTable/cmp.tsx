@@ -7,7 +7,7 @@ import {
   NotificationBadge,
   TableColumn,
 } from '@aleph-front/core'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { CCN, CRN, NodeLastVersions } from '@/domain/node'
 import NodesTable from '@/components/common/NodesTable'
 import NodeDecentralization from '../NodeDecentralization'

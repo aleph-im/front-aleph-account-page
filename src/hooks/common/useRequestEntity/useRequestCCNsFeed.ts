@@ -1,16 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CCN, NodeManager, NodesResponse } from '@/domain/node'
+import { CCN, CRN, NodeManager, NodesResponse } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
 import { EntitySetAction } from '@/store/entity'
 import { Future } from '@/helpers/utils'
 
-export type UseRequestCCNsFeedReturn = {
+export type UseRequestNodesFeedProps = {
+  ccn?: boolean
+  crn?: boolean
+}
+
+export type UseRequestNodesFeedReturn = {
   nodes?: NodesResponse
 }
 
-export function useRequestCCNsFeed(): UseRequestCCNsFeedReturn {
-  const { state: appState, dispatch } = useAppState()
-  const { account } = appState.connection
+export function useRequestNodesFeed({
+  ccn = true,
+  crn = true,
+}: UseRequestNodesFeedProps = {}): UseRequestNodesFeedReturn {
+  const { state, dispatch } = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const manager = useMemo(() => new NodeManager(account), [account])
@@ -39,13 +47,24 @@ export function useRequestCCNsFeed(): UseRequestCCNsFeedReturn {
   useEffect(() => {
     if (!nodes) return
 
-    dispatch(
-      new EntitySetAction<CCN>({
-        name: 'ccns',
-        state: { data: nodes.ccns, loading: false, error: undefined },
-      }),
-    )
-  }, [dispatch, nodes])
+    if (ccn) {
+      dispatch(
+        new EntitySetAction<CCN>({
+          name: 'ccns',
+          state: { data: nodes.ccns, loading: false, error: undefined },
+        }),
+      )
+    }
+
+    if (crn) {
+      dispatch(
+        new EntitySetAction<CRN>({
+          name: 'crns',
+          state: { data: nodes.crns, loading: false, error: undefined },
+        }),
+      )
+    }
+  }, [ccn, crn, dispatch, nodes])
 
   return { nodes }
 }

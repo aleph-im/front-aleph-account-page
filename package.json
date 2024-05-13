@@ -1,6 +1,6 @@
 {
   "name": "front-aleph-account-page",
-  "version": "0.6.4",
+  "version": "0.7.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,7 +11,14 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
-    "@aleph-front/core": "^1.15.72",
+    "@aleph-front/core": "^1.16.7",
+    "@aleph-sdk/account": "^1.0.3",
+    "@aleph-sdk/client": "^1.0.3",
+    "@aleph-sdk/core": "^1.0.3",
+    "@aleph-sdk/ethereum": "^1.0.3",
+    "@aleph-sdk/evm": "^1.0.3",
+    "@aleph-sdk/message": "^1.0.3",
+    "@aleph-sdk/solana": "^1.0.3",
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@helia/unixfs": "^1.4.1",
     "@hookform/resolvers": "^3.1.1",
@@ -23,7 +30,6 @@
     "@types/react-dom": "18.0.11",
     "@walletconnect/modal": "^2.6.2",
     "@walletconnect/universal-provider": "^2.12.2",
-    "aleph-sdk-ts": "^3.9.2",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.1",
     "ethers": "^5.7.2",

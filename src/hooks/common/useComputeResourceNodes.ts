@@ -1,9 +1,10 @@
 import { useAppState } from '@/contexts/appState'
 import { CRN, NodeLastVersions } from '@/domain/node'
-import { useDebounceState } from '@aleph-front/core'
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { Account } from '@aleph-sdk/account'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseSortedListReturn, useSortedList } from './useSortedList'
+import { UseFiltersReturn } from './useFilters'
+import { useFilter } from './useFilter'
 
 export type UseComputeResourceNodesProps = {
   nodes?: CRN[]
@@ -14,11 +15,11 @@ export type UseComputeResourceNodesReturn = {
   accountBalance?: number
   nodes?: CRN[]
   filteredNodes?: CRN[]
-  filter: string
+  filter?: string
   lastVersion?: NodeLastVersions
   handleSortItems: UseSortedListReturn<CRN>['handleSortItems']
   handleFilterChange: (e: ChangeEvent<HTMLInputElement>) => void
-}
+} & Pick<UseFiltersReturn, 'filters'>
 
 export function useComputeResourceNodes({
   nodes: prefetchNodes,
@@ -27,22 +28,37 @@ export function useComputeResourceNodes({
   const { account, balance: accountBalance = 0 } = state.connection
   const { data: lastVersion } = state.lastCRNVersion
   const { entities: data } = state.crns
+  const filters = state.filter
 
   // -----------------------------
 
-  const [filter, setFilter] = useState('')
+  const [crnqFilter, setCrnqFilter] = useFilter({
+    key: 'crnq',
+    debounced: 200,
+  })
 
-  const debouncedFilter = useDebounceState(filter, 200)
+  const [filter, setFilter] = useState<string>()
 
-  const handleFilterChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const filter = e.target.value
-    setFilter(filter)
-  }, [])
+  const handleFilterChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const filter = e.target.value
+      setFilter(filter)
+      setCrnqFilter(filter)
+    },
+    [setCrnqFilter],
+  )
+
+  useEffect(() => {
+    if (filter !== undefined) return
+    if (!crnqFilter) return
+
+    setFilter(crnqFilter)
+  }, [crnqFilter, filter])
 
   // -----------------------------
 
   const filterNodes = useCallback(
-    (query: string, nodes?: CRN[]): CRN[] | undefined => {
+    (query?: string, nodes?: CRN[]): CRN[] | undefined => {
       if (!nodes) return
       if (!query) return nodes
 
@@ -65,8 +81,8 @@ export function useComputeResourceNodes({
   }, [prefetchNodes, data])
 
   const filteredNodes = useMemo(
-    () => filterNodes(debouncedFilter, nodes),
-    [filterNodes, debouncedFilter, nodes],
+    () => filterNodes(crnqFilter, nodes),
+    [filterNodes, crnqFilter, nodes],
   )
 
   // -----------------------------
@@ -84,6 +100,7 @@ export function useComputeResourceNodes({
     filteredNodes: sortedFilteredNodes,
     filter,
     lastVersion,
+    filters,
     handleSortItems,
     handleFilterChange,
   }

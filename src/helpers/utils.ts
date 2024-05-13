@@ -1,6 +1,6 @@
 import { apiServer } from './constants'
-import E_ from './errors'
-import { BaseMessage, MessageType } from 'aleph-sdk-ts/dist/messages/types'
+import Err from './errors'
+import { Message, MessageType } from '@aleph-sdk/message'
 
 /**
  * Takes a string and returns a shortened version of it, with the first 6 and last 4 characters separated by '...'
@@ -44,7 +44,7 @@ export const getERC20Balance = async (address: string) => {
     const { balance } = await query.json()
     return balance
   } catch (error) {
-    throw E_.RequestFailed(error)
+    throw Err.RequestFailed(error)
   }
 }
 
@@ -64,7 +64,7 @@ export const getSOLBalance = async (address: string) => {
     const { balance } = await query.json()
     return balance
   } catch (error) {
-    throw E_.RequestFailed(error)
+    throw Err.RequestFailed(error)
   }
 }
 
@@ -175,23 +175,20 @@ export const humanReadableCurrency = (value?: number) => {
   else return (value / 10 ** 9).toFixed(1) + 'B'
 }
 
-const messageTypeWhitelist = new Set(...Object.values(MessageType))
+const messageTypeWhitelist = new Set(Object.values(MessageType))
 
 /**
  * Returns a link to the Aleph explorer for a given message
  */
-export const getExplorerURL = ({
-  item_hash,
-  chain,
-  sender,
-  type,
-}: BaseMessage) => {
-  type = messageTypeWhitelist.has(type) ? type : MessageType.post
+export const getExplorerURL = ({ item_hash, chain, sender, type }: Message) => {
+  type = messageTypeWhitelist.has(type as MessageType) ? type : MessageType.post
   return `https://explorer.aleph.im/address/${chain}/${sender}/message/${type}/${item_hash}`
 }
 
-export const getDate = (time: number): string => {
-  const [date, hour] = new Date(time * 1000).toISOString().split('T')
+export const getDate = (time: number | string): string => {
+  const dateTime =
+    typeof time === 'string' ? time : new Date(time * 1000).toISOString()
+  const [date, hour] = dateTime.split('T')
   const [hours] = hour.split('.')
 
   return `${date} ${hours}`

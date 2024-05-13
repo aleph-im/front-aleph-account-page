@@ -7,7 +7,7 @@ export type Card1Props = HTMLAttributes<HTMLDivElement> & {
   loading?: boolean
 }
 
-export const Card1 = ({ children, disabled, ...rest }: Card1Props) => {
+export const Card1 = ({ children, disabled, loading, ...rest }: Card1Props) => {
   return (
     <StyledContainer {...rest}>
       {/* <SpinnerOverlay show={loading} center /> */}

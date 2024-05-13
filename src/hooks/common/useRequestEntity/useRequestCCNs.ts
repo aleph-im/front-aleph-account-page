@@ -15,7 +15,7 @@ export type UseRequestCCNsReturn = {
 
 export function useRequestCCNs({
   triggerDeps,
-}: UseRequestCCNsProps): UseRequestCCNsReturn {
+}: UseRequestCCNsProps = {}): UseRequestCCNsReturn {
   const { state: appState } = useAppState()
   const { account } = appState.connection
 

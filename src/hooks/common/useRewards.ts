@@ -34,16 +34,16 @@ export function useAccountRewards({
 }: UseAccountRewardsProps): UseAccountRewardsReturn {
   const { lastRewardsCalculation, lastRewardsDistribution } = useLastRewards()
 
-  if (!lastRewardsCalculation) return {}
-  if (!lastRewardsDistribution) return {}
+  const calculatedTimestamp = lastRewardsCalculation?.timestamp
+  const distributionTimestamp = lastRewardsDistribution?.timestamp
+
+  const calculatedHeight = lastRewardsCalculation?.lastHeight || 0
+  const distributionHeight = lastRewardsDistribution?.lastHeight || 0
 
   const calculatedRewards =
-    lastRewardsCalculation.lastHeight > lastRewardsDistribution?.lastHeight
+    calculatedHeight >= distributionHeight
       ? lastRewardsCalculation?.rewards[address] || 0
       : 0
-
-  const calculatedTimestamp = lastRewardsCalculation.timestamp
-  const distributionTimestamp = lastRewardsDistribution.timestamp
 
   return { calculatedRewards, calculatedTimestamp, distributionTimestamp }
 }

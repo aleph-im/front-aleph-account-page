@@ -64,7 +64,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   const { node } = useComputeResourceNode({ hash })
 
-  const { userNode } = useUserCoreChannelNode({})
+  const { userNode } = useUserCoreChannelNode()
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

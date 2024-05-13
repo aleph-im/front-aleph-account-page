@@ -2,6 +2,7 @@ import { NodeAvatar, addClasses } from '@aleph-front/core'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 import HiddenFileInput from '../HiddenFileInput'
+import Image from 'next/image'
 
 export type StyledContainerProps = {
   $hash?: string
@@ -118,6 +119,7 @@ export const StyledNodeAvatarContainer = styled.div`
 export const StyledNodeAvatar = styled(NodeAvatar).attrs((props) => {
   return {
     size: 'lg',
+    Image,
     ...props,
   }
 })``

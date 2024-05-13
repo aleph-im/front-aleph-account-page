@@ -3,6 +3,7 @@ import { ConnectionState, getConnectionReducer } from './connection'
 import { EntityState, getEntityReducer } from './entity'
 import { RequestState, getRequestReducer } from './request'
 import { RewardsResponse } from '@/domain/stake'
+import { FilterState, getFilterReducer } from './filter'
 
 export type StoreSubstate = Record<string, unknown>
 
@@ -50,10 +51,12 @@ export type StoreState = {
   lastCCNVersion: RequestState<NodeLastVersions>
   ccns: EntityState<CCN>
   crns: EntityState<CRN>
+  filter: FilterState
 }
 
 export const storeReducer = mergeReducers<StoreState>({
   connection: getConnectionReducer(),
+  filter: getFilterReducer(),
   ccns: getEntityReducer<CCN>('ccns', 'hash', 'virtual'),
   crns: getEntityReducer<CRN>('crns', 'hash', 'virtual'),
   lastCRNVersion: getRequestReducer<NodeLastVersions>('lastCRNVersion'),

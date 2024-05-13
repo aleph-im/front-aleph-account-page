@@ -22,6 +22,7 @@ import ButtonLink from '@/components/common/ButtonLink'
 import { StreamNotSupportedIssue } from '@/domain/node'
 import { ThreeDots } from 'react-loader-spinner'
 import { useTheme } from 'styled-components'
+import { LinkedStatusDotIcon } from '@/components/common/NodeLinkedNodes'
 // import InfoTooltipButton from '@/components/common/InfoTooltipButton'
 
 export const ComputeResourceNodeDetailPage = () => {
@@ -356,51 +357,57 @@ export const ComputeResourceNodeDetailPage = () => {
           </div>
           <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="LINKED CORE NODE">
-              {!isLinked ? (
-                <div tw="inline-flex gap-3 items-center">
-                  <div tw="w-6 h-6 rounded-full bg-[#C4C4C433]" />
-                  <div className="fs-10" tw="leading-4">
-                    {isLinkableByUser ? (
-                      <Button
-                        color="main2"
-                        size="md"
-                        kind="neon"
-                        variant="textOnly"
-                        onClick={handleLink}
-                      >
-                        <div>
-                          <Icon name="link" tw="w-3.5 h-3.5" /> link now
-                        </div>
-                      </Button>
-                    ) : (
-                      <>not linked</>
+              <div tw="flex gap-3 items-center">
+                {!isLinked ? (
+                  <>
+                    <LinkedStatusDotIcon />
+                    <div tw="w-6 h-6 rounded-full bg-[#C4C4C433]" />
+                    <div className="fs-10" tw="leading-4">
+                      {isLinkableByUser ? (
+                        <Button
+                          color="main2"
+                          size="md"
+                          kind="neon"
+                          variant="textOnly"
+                          onClick={handleLink}
+                        >
+                          <div>
+                            <Icon name="link" tw="w-3.5 h-3.5" /> link now
+                          </div>
+                        </Button>
+                      ) : (
+                        <>not linked</>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {node?.parentData && (
+                      <>
+                        <LinkedStatusDotIcon $score={node.parentData.score} />
+                        <Link
+                          href={`/earn/ccn/${node.parentData.hash}`}
+                          legacyBehavior
+                        >
+                          <NodeName
+                            hash={node.parentData.hash}
+                            name={node.parentData.name}
+                            picture={node.parentData.picture}
+                            tw="mr-auto w-auto cursor-pointer"
+                            apiServer={apiServer}
+                            ImageCmp={Image}
+                          />
+                        </Link>
+                      </>
                     )}
-                  </div>
-                </div>
-              ) : (
-                <div tw="flex items-center">
-                  {node?.parentData && (
-                    <Link
-                      href={`/earn/ccn/${node.parentData.hash}`}
-                      legacyBehavior
-                    >
-                      <NodeName
-                        hash={node.parentData.hash}
-                        name={node.parentData.name}
-                        picture={node.parentData.picture}
-                        tw="mr-auto w-auto cursor-pointer"
-                        apiServer={apiServer}
-                        ImageCmp={Image}
-                      />
-                    </Link>
-                  )}
-                  {isUnlinkableByUser && (
-                    <button onClick={handleUnlink}>
-                      <Icon name="trash" color="error" />
-                    </button>
-                  )}
-                </div>
-              )}
+                    {isUnlinkableByUser && (
+                      <button onClick={handleUnlink}>
+                        <Icon name="trash" color="error" />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
             </Card2>
 
             <Card2 title="DECENTRALIZED SCORE">
