@@ -13,7 +13,7 @@ export type UseCoreChannelNodeReturn = {
 export function useCoreChannelNode({
   hash,
 }: UseCoreChannelNodeProps): UseCoreChannelNodeReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { entities } = state.ccns
 
   const nodes = useMemo(() => {

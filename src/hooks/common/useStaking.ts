@@ -64,7 +64,7 @@ function calculateVirtualNodesUnstake(
 }
 
 export function useStaking(): UseStakingReturn {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account, balance = 0 } = state.connection
   const { entities: nodes } = state.ccns
 

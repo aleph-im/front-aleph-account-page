@@ -15,8 +15,8 @@ export type UseRequestCRNBenchmarkReturn = {
 export function useRequestCRNBenchmark({
   nodes,
 }: UseRequestCRNBenchmarkProps): UseRequestCRNBenchmarkReturn {
-  const { state: appState } = useAppState()
-  const { account } = appState.connection
+  const [state] = useAppState()
+  const { account } = state.connection
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
   const [benchmark, setBenchmark] = useState<

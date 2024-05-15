@@ -61,7 +61,7 @@ function calculateVirtualNode(
 
 export function useNewComputeResourceNodeForm(): UseNewComputeResourceNodeFormReturn {
   const router = useRouter()
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.connection
 
   const noti = useNotification()

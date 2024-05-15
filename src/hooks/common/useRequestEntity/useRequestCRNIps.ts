@@ -15,8 +15,8 @@ export type UseRequestCRNIpsReturn = {
 export function useRequestCRNIps({
   nodes,
 }: UseRequestCRNIpsProps): UseRequestCRNIpsReturn {
-  const { state: appState } = useAppState()
-  const { account } = appState.connection
+  const [state] = useAppState()
+  const { account } = state.connection
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
   const [ips, setIps] = useState<Record<string, RequestState<CRNIps>>>({})

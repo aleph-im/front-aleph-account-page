@@ -24,7 +24,7 @@ export type UseComputeResourceNodesReturn = {
 export function useComputeResourceNodes({
   nodes: prefetchNodes,
 }: UseComputeResourceNodesProps): UseComputeResourceNodesReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.connection
   const { data: lastVersion } = state.lastCRNVersion
   const { entities: data } = state.crns

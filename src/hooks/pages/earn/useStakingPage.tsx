@@ -40,7 +40,7 @@ export type UseStakingPageReturn = UseCoreChannelNodesReturn & {
 export function useStakingPage(
   props: UseStakingPageProps,
 ): UseStakingPageReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.connection
 
   // @todo: Refactor this (use singleton)

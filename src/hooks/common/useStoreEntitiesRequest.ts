@@ -55,7 +55,7 @@ export type UseAppStoreEntityRequestProps<T> = Omit<
 export function useAppStoreEntityRequest<T>(
   props: UseAppStoreEntityRequestProps<T>,
 ): UseStoreEntityRequestReturn<T> {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
 
   return useStoreEntityRequest<T, StoreState>({ state, dispatch, ...props })
 }

@@ -33,7 +33,7 @@ export type UseCoreChannelNodesPageReturn = UseCoreChannelNodesReturn & {
 export function useCoreChannelNodesPage(
   props: UseCoreChannelNodesPageProps,
 ): UseCoreChannelNodesPageReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.connection
 
   const { nodes, filteredNodes, ...rest } = useCoreChannelNodes(props)

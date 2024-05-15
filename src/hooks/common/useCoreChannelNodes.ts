@@ -26,7 +26,7 @@ export function useCoreChannelNodes({
   nodes: prefetchNodes,
   filterKey = 'ccnq',
 }: UseCoreChannelNodesProps): UseCoreChannelNodesReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account, balance: accountBalance = 0 } = state.connection
   const { data: lastVersion } = state.lastCCNVersion
   const { entities: data } = state.ccns

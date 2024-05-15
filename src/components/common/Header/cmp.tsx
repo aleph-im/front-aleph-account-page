@@ -1,12 +1,13 @@
 import { memo } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
-import { Button, Icon, RenderLinkProps } from '@aleph-front/core'
+import { Button, RenderLinkProps } from '@aleph-front/core'
 import {
   StyledNavbarDesktop,
   StyledWalletPicker,
   StyledNavbarMobile,
   StyledHeader,
+  StyledIcon,
 } from './styles'
 import { ellipseAddress } from '@/helpers/utils'
 import {
@@ -22,7 +23,6 @@ export type AccountButtonProps = UseAccountButtonProps & {
 
 export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
   const {
-    theme,
     account,
     accountBalance,
     displayWalletPicker,
@@ -41,37 +41,26 @@ export const AccountButton = ({ isMobile, ...rest }: AccountButtonProps) => {
 
   return (
     <>
-      {account ? (
-        <Button
-          ref={walletPickerTriggerRef}
-          as="button"
-          variant="secondary"
-          color="main1"
-          kind="neon"
-          size="md"
-          onClick={handleDisplayWalletPicker}
-        >
-          <div tw="flex items-center gap-2.5">
-            {!isMobile && ellipseAddress(account.address)}
-            <Icon name="meteor" size="lg" color={theme.color.main1} />
-          </div>
-        </Button>
-      ) : (
-        <Button
-          ref={walletPickerTriggerRef}
-          as="button"
-          variant="tertiary"
-          color="main0"
-          kind="neon"
-          size="md"
-          onClick={handleDisplayWalletPicker}
-        >
-          <div tw="flex items-center gap-2.5">
-            {!isMobile && 'Connect'}
-            <Icon name="meteor" size="lg" color={theme.color.main0} />
-          </div>
-        </Button>
-      )}
+      <Button
+        ref={walletPickerTriggerRef}
+        as="button"
+        variant={account ? 'secondary' : 'tertiary'}
+        color={account ? 'main1' : 'main0'}
+        kind="neon"
+        size="md"
+        onClick={handleDisplayWalletPicker}
+      >
+        <div tw="flex items-center gap-3">
+          {!isMobile && (account ? ellipseAddress(account.address) : 'Connect')}
+          {(isMobile || account) && (
+            <StyledIcon
+              $network={selectedNetwork}
+              $isConnected={!!account}
+              $isMobile={isMobile}
+            />
+          )}
+        </div>
+      </Button>
       {displayWalletPicker &&
         createPortal(
           <StyledWalletPicker

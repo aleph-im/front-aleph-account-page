@@ -17,7 +17,7 @@ export function useRequestNodesFeed({
   ccn = true,
   crn = true,
 }: UseRequestNodesFeedProps = {}): UseRequestNodesFeedReturn {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.connection
 
   // @todo: Refactor this (use singleton)

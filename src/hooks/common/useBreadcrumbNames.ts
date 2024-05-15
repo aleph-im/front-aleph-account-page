@@ -17,7 +17,7 @@ export type UseBreadcrumbNamesReturn = {
 }
 
 export function useBreadcrumbNames(): UseBreadcrumbNamesReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
 
   const nameGetter = useCallback((entities?: AlephNode[]) => {
     if (!entities) return ''

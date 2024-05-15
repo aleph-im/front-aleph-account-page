@@ -62,7 +62,7 @@ function calculateVirtualNodesUnlink(
 }
 
 export function useLinking(): UseLinkingReturn {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.connection
   const { entities: crns } = state.crns
   const { entities: ccns } = state.ccns

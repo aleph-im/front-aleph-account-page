@@ -14,7 +14,7 @@ export type UseFilterUserLinkedNodesReturn = {
 export function useFilterUserLinkedNodes({
   nodes,
 }: UseFilterUserLinkedNodesProps): UseFilterUserLinkedNodesReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account } = state.connection
 
   // @todo: Refactor this (use singleton)

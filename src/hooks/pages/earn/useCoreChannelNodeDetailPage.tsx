@@ -35,7 +35,7 @@ export function useCoreChannelNodeDetailPage(): UseCoreChannelNodeDetailPageRetu
   const router = useRouter()
   const { hash } = router.query
 
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { entities: nodes } = state.ccns
 
   const { node } = useCoreChannelNode({ hash })

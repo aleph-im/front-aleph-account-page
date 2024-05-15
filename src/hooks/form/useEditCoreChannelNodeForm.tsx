@@ -62,7 +62,7 @@ function calculateVirtualNode(node: CCN, updated: Partial<CCN>): CCN {
 export function useEditCoreChannelNodeForm({
   defaultValues,
 }: UseEditCoreChannelNodeFormProps): UseEditCoreChannelNodeFormReturn {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.connection
   const { entities: nodes } = state.ccns
 

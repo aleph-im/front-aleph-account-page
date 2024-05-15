@@ -16,8 +16,8 @@ export type UseRequestCRNsReturn = {
 export function useRequestCRNs({
   triggerDeps,
 }: UseRequestCRNsProps): UseRequestCRNsReturn {
-  const { state: appState } = useAppState()
-  const { account } = appState.connection
+  const [state] = useAppState()
+  const { account } = state.connection
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])

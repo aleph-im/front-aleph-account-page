@@ -58,7 +58,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
   const router = useRouter()
   const { hash } = router.query
 
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account } = state.connection
   const { entities: nodes } = state.crns
 

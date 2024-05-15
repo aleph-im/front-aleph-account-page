@@ -68,7 +68,7 @@ function calculateVirtualNode(node: CRN, updated: Partial<CRN>): CRN {
 export function useEditComputeResourceNodeForm({
   defaultValues,
 }: UseEditComputeResourceNodeFormProps): UseEditComputeResourceNodeFormReturn {
-  const { state, dispatch } = useAppState()
+  const [state, dispatch] = useAppState()
   const { account } = state.connection
   const { entities: nodes } = state.crns
 

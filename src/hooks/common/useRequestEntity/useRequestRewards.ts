@@ -15,7 +15,7 @@ export type UseRequestRewardsReturn = {
 export function useRequestRewards({
   triggerDeps,
 }: UseRequestRewardsProps = {}): UseRequestRewardsReturn {
-  const { state } = useAppState()
+  const [state] = useAppState()
   const { account } = state.connection
 
   // @todo: Refactor this (use singleton)

@@ -19,14 +19,14 @@ export type UseRequestAlephNodesReturn = {
 export function useRequestAlephNodes({
   triggerDeps,
 }: UseRequestAlephNodesProps): UseRequestAlephNodesReturn {
-  const { state: appState, dispatch } = useAppState()
-  const { account } = appState.connection
-  const { ccns, crns } = appState
+  const [state, dispatch] = useAppState()
+  const { account } = state.connection
+  const { ccns, crns } = state
 
   // @todo: Refactor this (use singleton)
   const nodeManager = useMemo(() => new NodeManager(account), [account])
 
-  const state = useMemo(() => {
+  const requestState = useMemo(() => {
     return {
       data: {
         ccns: { data: ccns.entities, loading: ccns.loading, error: ccns.error },
@@ -39,7 +39,7 @@ export function useRequestAlephNodes({
   }, [ccns, crns])
 
   const { data } = useRequest({
-    state,
+    state: requestState,
     setState: (newState) => {
       const { ccns, crns } = newState.data || {}
       ccns && dispatch(new EntitySetAction({ name: 'ccns', state: ccns }))

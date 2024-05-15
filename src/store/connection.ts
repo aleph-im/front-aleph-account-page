@@ -1,90 +1,86 @@
-import { Account } from 'aleph-sdk-ts/dist/accounts/account'
+import { Account } from '@aleph-sdk/account'
 import { StoreReducer } from './store'
-import { Chain } from 'aleph-sdk-ts/dist/messages/types'
-import { ProviderType } from '@/hooks/common/useConnection/utils'
+import { BlockchainId, ProviderId } from '@/domain/connect/base'
 
 export type ConnectionState = {
   account?: Account
   balance?: number
-  network?: Chain
-  provider?: ProviderType
+  blockchain?: BlockchainId
+  provider?: ProviderId
 }
 
 export const initialState: ConnectionState = {
-  network: undefined,
+  blockchain: undefined,
   provider: undefined,
   account: undefined,
   balance: undefined,
 }
 
 export enum ConnectionActionType {
-  CONNECT = 'CONNECT',
-  DISCONNECT = 'DISCONNECT',
-  SWITCH_NETWORK = 'SWITCH_NETWORK',
-  SET_BALANCE = 'SET_BALANCE',
+  CONNECTION_CONNECT = 'CONNECTION_CONNECT',
+  CONNECTION_DISCONNECT = 'CONNECTION_DISCONNECT',
+  CONNECTION_SET_ACCOUNT = 'CONNECTION_SET_ACCOUNT',
+  CONNECTION_SET_BALANCE = 'CONNECTION_SET_BALANCE',
 }
 
-export type ConnectAction = {
-  readonly type: ConnectionActionType.CONNECT
-  payload: {
-    account: Account
-    balance: number
-    network: Chain
-    provider: ProviderType
-  }
+export class ConnectionConnectAction {
+  readonly type = ConnectionActionType.CONNECTION_CONNECT
+  constructor(
+    public payload: {
+      provider?: ProviderId
+      blockchain: BlockchainId
+    },
+  ) {}
 }
 
-export type DisconnectAction = {
-  readonly type: ConnectionActionType.DISCONNECT
-  payload: null
+export class ConnectionDisconnectAction {
+  readonly type = ConnectionActionType.CONNECTION_DISCONNECT
+  payload = null
 }
 
-export type SwitchNetworkAction = {
-  readonly type: ConnectionActionType.SWITCH_NETWORK
-  payload: {
-    account: Account
-    balance: number
-    network: Chain
-  }
+export class ConnectionSetAccountAction {
+  readonly type = ConnectionActionType.CONNECTION_SET_ACCOUNT
+  constructor(
+    public payload: {
+      account: Account
+      balance?: number
+      provider?: ProviderId
+      blockchain?: BlockchainId
+    },
+  ) {}
 }
 
-export type SetBalanceAction = {
-  readonly type: ConnectionActionType.SET_BALANCE
-  payload: { balance: number }
+export class ConnectionSetBalanceAction {
+  readonly type = ConnectionActionType.CONNECTION_SET_BALANCE
+  constructor(
+    public payload: {
+      balance: number
+    },
+  ) {}
 }
 
 export type ConnectionAction =
-  | ConnectAction
-  | DisconnectAction
-  | SwitchNetworkAction
-  | SetBalanceAction
+  | ConnectionConnectAction
+  | ConnectionDisconnectAction
+  | ConnectionSetAccountAction
+  | ConnectionSetBalanceAction
 
 export type ConnectionReducer = StoreReducer<ConnectionState, ConnectionAction>
 
 export function getConnectionReducer(): ConnectionReducer {
   return (state = initialState, action) => {
     switch (action.type) {
-      case ConnectionActionType.CONNECT: {
-        return action.payload
+      case ConnectionActionType.CONNECTION_DISCONNECT: {
+        return { ...initialState }
       }
 
-      case ConnectionActionType.DISCONNECT: {
-        return initialState
-      }
-
-      case ConnectionActionType.SWITCH_NETWORK: {
-        const { account, balance, network } = action.payload
+      case ConnectionActionType.CONNECTION_CONNECT:
+      case ConnectionActionType.CONNECTION_SET_ACCOUNT:
+      case ConnectionActionType.CONNECTION_SET_BALANCE: {
         return {
           ...state,
-          account,
-          balance,
-          network,
+          ...action.payload,
         }
-      }
-
-      case ConnectionActionType.SET_BALANCE: {
-        const { balance } = action.payload
-        return { ...state, balance }
       }
 
       default: {
