@@ -15,9 +15,12 @@ import {
 } from '@aleph-sdk/avalanche'
 import { createFromAvalancheAccount } from '@aleph-sdk/superfluid'
 import Err from '../../helpers/errors'
-import { getERC20Balance, getSOLBalance } from '@/helpers/utils'
-import UniversalProvider from '@walletconnect/universal-provider/dist/types/UniversalProvider'
+import { Mutex, getERC20Balance, getSOLBalance, sleep } from '@/helpers/utils'
 import { MetaMaskInpageProvider } from '@metamask/providers'
+import type {
+  Provider as EthersProvider,
+  CombinedProvider,
+} from '@web3modal/scaffold-utils/ethers'
 
 export { BlockchainId }
 
@@ -51,6 +54,9 @@ export type Blockchain = {
   name: string
   chainId: number
   eip155: boolean
+  currency: string
+  explorerUrl?: string
+  rpcUrl?: string
 }
 
 export const blockchains: Record<BlockchainId, Blockchain> = {
@@ -59,18 +65,25 @@ export const blockchains: Record<BlockchainId, Blockchain> = {
     name: 'Ethereum',
     chainId: 1,
     eip155: true,
+    currency: 'ETH',
+    explorerUrl: 'https://etherscan.io',
+    rpcUrl: 'https://eth.drpc.org',
   },
   [BlockchainId.AVAX]: {
     id: BlockchainId.AVAX,
     name: 'Avalanche',
     chainId: 43114,
     eip155: true,
+    currency: 'AVAX',
+    explorerUrl: 'https://snowtrace.io/',
+    rpcUrl: 'https://avalanche.drpc.org',
   },
   [BlockchainId.SOL]: {
     id: BlockchainId.SOL,
     name: 'Solana',
     chainId: 900,
     eip155: false,
+    currency: 'SOL',
   },
 } as Record<BlockchainId, Blockchain>
 
@@ -85,9 +98,155 @@ export const networks: Record<number, Blockchain> = {
 export abstract class BaseConnectionProviderManager {
   public events: EventEmitter = new EventEmitter()
 
-  abstract isSupported(): Promise<boolean>
-  abstract connect(blockchainId: BlockchainId): Promise<void>
-  abstract disconnect(): Promise<void>
+  protected providerId!: ProviderId
+  protected mutex = new Mutex()
+  protected isReady = false
+
+  constructor(protected supportedBlockchains: BlockchainId[]) {}
+
+  abstract isConnected(): Promise<boolean>
+  protected abstract onConnect(blockchainId: BlockchainId): Promise<void>
+  protected abstract onDisconnect(): Promise<void>
+  protected abstract getProvider():
+    | EthersProvider
+    | CombinedProvider
+    | MetaMaskInpageProvider
+
+  async connect(blockchainId: BlockchainId): Promise<void> {
+    const release = await this.mutex.acquire()
+
+    try {
+      const blockchain = blockchains[blockchainId]
+
+      if (!this.supportedBlockchains.includes(blockchainId)) {
+        throw new Error(
+          `Blockchain "${blockchain?.name || blockchainId}" not supported`,
+        )
+      }
+
+      await this.onConnect(blockchainId)
+      this.events.emit('connect', { provider: this.providerId })
+
+      this.isReady = true
+      await this.switchBlockchain(blockchainId)
+      await this.onUpdate(blockchainId)
+    } finally {
+      release()
+    }
+  }
+
+  async disconnect(error?: Error): Promise<void> {
+    const release = await this.mutex.acquire()
+
+    try {
+      this.isReady = false
+
+      await this.onDisconnect()
+      this.events.emit('disconnect', { provider: this.providerId, error })
+    } finally {
+      release()
+    }
+  }
+
+  async switchBlockchain(blockchainId: BlockchainId): Promise<void> {
+    const prevBlockchain = await this.getBlockchain().catch(() => undefined)
+    if (prevBlockchain === blockchainId) return
+
+    try {
+      const blockchain = blockchains[blockchainId]
+      if (!blockchain)
+        throw new Error(`Blockchain "${blockchainId}" not supported`)
+
+      const provider = this.getProvider()
+      const chainId = `0x${blockchain.chainId.toString(16)}`
+
+      await provider.request?.({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId }],
+      })
+    } catch (e) {
+      await this.onUpdate(prevBlockchain)
+      throw e
+    }
+  }
+
+  protected async onUpdate(blockchainId?: BlockchainId): Promise<void> {
+    if (!this.isReady) return
+
+    const blockchain = blockchainId || (await this.getBlockchain())
+    const account = await this.getAccount()
+    const balance = await this.getBalance(account)
+
+    this.events.emit('update', {
+      provider: this.providerId,
+      blockchain,
+      account,
+      balance,
+    })
+  }
+
+  protected async onBlockchain(chainId: string | number): Promise<void> {
+    if (!this.isReady) return
+
+    chainId =
+      typeof chainId === 'string' ? parseInt(chainId as string, 16) : chainId
+
+    const blockchain = networks[chainId]
+    const blockchainId = blockchain?.id
+
+    if (!this.supportedBlockchains.includes(blockchainId)) {
+      await sleep(0)
+
+      await this.onDisconnect()
+      this.events.emit('disconnect', {
+        provider: this.providerId,
+        error: new Error(
+          `Blockchain "${blockchain?.name || chainId}" not supported`,
+        ),
+      })
+      return
+    }
+
+    return this.onUpdate(blockchainId)
+  }
+
+  protected async onAccount(): Promise<void> {
+    return this.onUpdate()
+  }
+
+  protected async getBlockchain(): Promise<BlockchainId> {
+    const provider = this.getProvider()
+
+    let chainId = (await provider.request?.({
+      method: 'eth_chainId',
+    })) as number | string
+
+    chainId = typeof chainId === 'string' ? parseInt(chainId, 16) : chainId
+
+    const blockchain = networks[chainId]
+    if (!blockchain) throw new Error(`Blockchain "${chainId}" not supported`)
+
+    return blockchain.id
+  }
+
+  protected async getAccount(): Promise<Account> {
+    const provider = this.getProvider()
+    const blockchainId = await this.getBlockchain()
+
+    switch (blockchainId) {
+      case BlockchainId.ETH:
+        return getETHAccount(provider as any)
+
+      case BlockchainId.AVAX:
+        return getAVAXAccount(provider as any)
+
+      case BlockchainId.SOL:
+        return getSOLAccount(provider as any)
+
+      default:
+        throw Err.ChainNotYetSupported
+    }
+  }
 
   async getBalance(account: Account): Promise<number> {
     if (account instanceof AvalancheAccount) {
@@ -107,55 +266,5 @@ export abstract class BaseConnectionProviderManager {
     }
 
     throw Err.ChainNotYetSupported
-  }
-
-  protected async getAccount(
-    provider: UniversalProvider | MetaMaskInpageProvider,
-  ): Promise<Account> {
-    const blockchainId = await this.getBlockchain(provider)
-
-    switch (blockchainId) {
-      case BlockchainId.ETH:
-        return getETHAccount(provider as any)
-
-      case BlockchainId.AVAX:
-        return getAVAXAccount(provider as any)
-
-      case BlockchainId.SOL:
-        return getSOLAccount(provider as any)
-
-      default:
-        throw Err.ChainNotYetSupported
-    }
-  }
-
-  protected async getBlockchain(
-    provider: UniversalProvider | MetaMaskInpageProvider,
-  ): Promise<BlockchainId> {
-    let chainId = (await provider.request?.({
-      method: 'eth_chainId',
-    })) as number | string
-
-    chainId = typeof chainId === 'string' ? parseInt(chainId, 16) : chainId
-
-    const blockchain = networks[chainId]
-    if (!blockchain) throw new Error('')
-
-    return blockchain.id
-  }
-
-  protected async switchBlockchain(
-    blockchainId: BlockchainId,
-    provider: UniversalProvider | MetaMaskInpageProvider,
-  ): Promise<void> {
-    const blockchain = blockchains[blockchainId]
-    if (!blockchain) throw new Error('')
-
-    const chainId = `0x${blockchain.chainId.toString(16)}`
-
-    await provider.request?.({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId }],
-    })
   }
 }

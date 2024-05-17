@@ -1,16 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect } from 'react'
 import { useNotification } from '@aleph-front/core'
 import {
   ConnectionConnectAction,
   ConnectionDisconnectAction,
-  ConnectionSetAccountAction,
+  ConnectionUpdateAction,
 } from '@/store/connection'
 import { connectionProviderManager } from '@/domain/connect'
 import { useAppState } from '@/contexts/appState'
+import { useSessionStorage } from 'usehooks-ts'
 
 export type UseConnectionProps = {
   triggerOnMount?: boolean
-  triggerDeps?: any[]
 }
 
 export type UseConnectionReturn = {
@@ -20,7 +21,6 @@ export type UseConnectionReturn = {
 
 export const useConnection = ({
   triggerOnMount,
-  triggerDeps = [],
 }: UseConnectionProps): UseConnectionReturn => {
   const [state, dispatch] = useAppState()
   const { blockchain, provider } = state.connection
@@ -39,50 +39,94 @@ export const useConnection = ({
     [dispatch],
   )
 
-  // @note: Auto loggin
+  const [storedConnection, setStoredConnection] = useSessionStorage<
+    ConnectionConnectAction['payload'] | undefined
+  >('connection', undefined)
+
+  useEffect(() => {
+    if (!triggerOnMount) return
+    if (!storedConnection) return
+
+    handleConnect(storedConnection)
+  }, [triggerOnMount])
+
+  // @note: Switch the wallet provider each time there is a new one selected
   useEffect(() => {
     if (!triggerOnMount) return
     if (!provider) return
 
     const connectionProvider = connectionProviderManager.of(provider)
 
-    const handleAccountChange = (
-      payload: ConnectionSetAccountAction['payload'],
-    ) => dispatch(new ConnectionSetAccountAction(payload))
+    const handleUpdate = (payload: ConnectionUpdateAction['payload']) => {
+      dispatch(new ConnectionUpdateAction(payload))
+    }
 
-    const handleBlockchainChange = (
-      payload: ConnectionConnectAction['payload'],
-    ) => dispatch(new ConnectionConnectAction(payload))
+    const handleDisconnect = ({ error }: { error?: Error }) => {
+      dispatch(new ConnectionDisconnectAction())
 
-    async function connect() {
+      if (!error) return
+
+      addNotification &&
+        addNotification({
+          variant: 'error',
+          title: 'Error',
+          text: error?.message,
+        })
+    }
+
+    async function exec() {
       if (!blockchain) return
 
-      connectionProvider.events.on('account', handleAccountChange)
-      connectionProvider.events.on('blockchain', handleBlockchainChange)
+      connectionProvider.events.on('update', handleUpdate)
+      connectionProvider.events.on('disconnect', handleDisconnect)
 
       try {
         await connectionProvider.connect(blockchain)
+        setStoredConnection({ provider, blockchain })
       } catch (error) {
-        dispatch(new ConnectionDisconnectAction())
+        handleDisconnect({ error: error as Error })
+      }
+    }
 
+    exec()
+
+    return () => {
+      connectionProvider.events.off('update', handleUpdate)
+      connectionProvider.events.off('disconnect', handleDisconnect)
+
+      connectionProvider.disconnect()
+      setStoredConnection(undefined)
+    }
+  }, [triggerOnMount, provider])
+
+  // @note: Switch the blockchain network without recconecting to the providers
+  useEffect(() => {
+    if (!triggerOnMount) return
+
+    async function exec() {
+      if (!provider) return
+      if (!blockchain) return
+
+      const connectionProvider = connectionProviderManager.of(provider)
+      const isConnected = await connectionProvider.isConnected()
+
+      if (!isConnected) return
+
+      try {
+        await connectionProvider.switchBlockchain(blockchain)
+        setStoredConnection({ provider, blockchain })
+      } catch (error) {
         addNotification &&
           addNotification({
             variant: 'error',
             title: 'Error',
-            text: (error as Error).message,
+            text: (error as Error)?.message,
           })
       }
     }
 
-    connect()
-
-    return () => {
-      connectionProvider.events.off('account', handleAccountChange)
-      connectionProvider.events.off('blockchain', handleBlockchainChange)
-
-      connectionProvider.disconnect()
-    }
-  }, [triggerOnMount, provider, blockchain, addNotification, dispatch, noti])
+    exec()
+  }, [triggerOnMount, provider, blockchain])
 
   return {
     handleConnect,

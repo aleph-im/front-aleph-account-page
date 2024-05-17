@@ -1,62 +1,30 @@
-import {
-  BaseConnectionProviderManager,
-  BlockchainId,
-  ProviderId,
-  networks,
-} from './base'
+import { BaseConnectionProviderManager, BlockchainId, ProviderId } from './base'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 
 export class MetamaskConnectionProviderManager extends BaseConnectionProviderManager {
+  protected providerId = ProviderId.Metamask
   protected handleAccountChange = this.onAccount.bind(this)
-  protected handleBlockchainChange = this.onBlockchain.bind(this)
+  protected handleBlockchainChange = this.onBlockchain.bind(this) as any
+  protected handleDisconnect = this.disconnect.bind(this, undefined)
 
-  async isSupported(): Promise<boolean> {
-    const provider = this.getProvider()
-    return !!provider?.isMetaMask
+  async isConnected(): Promise<boolean> {
+    return !!window.ethereum?.isMetaMask
   }
 
-  async connect(blockchainId: BlockchainId): Promise<void> {
+  async onConnect(blockchainId: BlockchainId): Promise<void> {
     const provider = this.getProvider()
 
     provider.on('accountsChanged', this.handleAccountChange)
     provider.on('chainChanged', this.handleBlockchainChange)
-
-    await this.switchBlockchain(blockchainId, provider)
-    await this.onAccount()
+    provider.on('disconnect', this.handleDisconnect)
   }
 
-  async disconnect(): Promise<void> {
+  async onDisconnect(): Promise<void> {
     const provider = this.getProvider()
 
     provider.off('accountsChanged', this.handleAccountChange)
     provider.off('chainChanged', this.handleBlockchainChange)
-  }
-
-  protected async onAccount(): Promise<void> {
-    const provider = this.getProvider()
-
-    const blockchain = await this.getBlockchain(provider)
-    const account = await this.getAccount(provider)
-    const balance = await this.getBalance(account)
-
-    this.events.emit('account', {
-      provider: ProviderId.Metamask,
-      blockchain,
-      account,
-      balance,
-    })
-  }
-
-  protected async onBlockchain(hexChainId: unknown): Promise<void> {
-    const chainId = parseInt(hexChainId as string, 16)
-
-    const blockchain = networks[chainId]
-    if (!blockchain) throw new Error('')
-
-    this.events.emit('blockchain', {
-      provider: ProviderId.Metamask,
-      blockchain: blockchain.id,
-    })
+    provider.off('disconnect', this.handleDisconnect)
   }
 
   protected getProvider(): MetaMaskInpageProvider {

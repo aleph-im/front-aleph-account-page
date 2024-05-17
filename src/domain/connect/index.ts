@@ -1,12 +1,17 @@
-import { BaseConnectionProviderManager, ProviderId } from './base'
+import { BaseConnectionProviderManager, BlockchainId, ProviderId } from './base'
 import { MetamaskConnectionProviderManager } from './metamask'
 import { WalletConnectConnectionProviderManager } from './walletConnect'
 
 export class ConnectionProviderManager {
   constructor(
+    private supportedBlockchains: BlockchainId[],
     private providers: Record<string, BaseConnectionProviderManager> = {
-      [ProviderId.Metamask]: new MetamaskConnectionProviderManager(),
-      [ProviderId.WalletConnect]: new WalletConnectConnectionProviderManager(),
+      [ProviderId.Metamask]: new MetamaskConnectionProviderManager(
+        supportedBlockchains,
+      ),
+      [ProviderId.WalletConnect]: new WalletConnectConnectionProviderManager(
+        supportedBlockchains,
+      ),
     },
   ) {}
 
@@ -16,4 +21,7 @@ export class ConnectionProviderManager {
 }
 
 // @todo: move to global state
-export const connectionProviderManager = new ConnectionProviderManager()
+export const connectionProviderManager = new ConnectionProviderManager([
+  BlockchainId.ETH,
+  // BlockchainId.AVAX,
+])

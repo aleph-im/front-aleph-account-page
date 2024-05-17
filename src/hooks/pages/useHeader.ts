@@ -4,14 +4,14 @@ import { Account } from '@aleph-sdk/account'
 import { useAppState } from '@/contexts/appState'
 import {
   BreakpointId,
-  NetworkProps,
+  Network,
   useClickOutside,
   useFloatPosition,
   useTransition,
   useWindowScroll,
   useWindowSize,
   WalletPickerProps,
-  WalletProps,
+  Wallet,
 } from '@aleph-front/core'
 import {
   UseBreadcrumbNamesReturn,
@@ -87,7 +87,7 @@ export function useAccountButton({
   const walletPickerOpen = stage === 'enter'
 
   const handleConnect = useCallback(
-    (wallet: WalletProps, network: NetworkProps['network']) => {
+    (wallet: Wallet, network: Network) => {
       handleConnectProp(wallet, network)
       setDisplayWalletPicker(false)
     },
@@ -117,7 +117,7 @@ export function useAccountButton({
 // -----------------------------
 
 export type UseHeaderReturn = UseRoutesReturn & {
-  networks: NetworkProps['network'][]
+  networks: Network[]
   pathname: string
   breadcrumbNames: UseBreadcrumbNamesReturn['names']
   breakpoint: BreakpointId
@@ -126,7 +126,7 @@ export type UseHeaderReturn = UseRoutesReturn & {
   selectedNetwork: WalletPickerProps['selectedNetwork']
   handleSwitchNetwork: WalletPickerProps['onSwitchNetwork']
   handleToggle: (isOpen: boolean) => void
-  handleConnect: (wallet: WalletProps, network: NetworkProps['network']) => void
+  handleConnect: (wallet: Wallet, network: Network) => void
   handleDisconnect: () => void
 }
 
@@ -157,7 +157,7 @@ export function useHeader(): UseHeaderReturn {
 
   // --------------------
 
-  const wallets: WalletProps[] = useMemo(
+  const wallets: Wallet[] = useMemo(
     () => [
       {
         id: ProviderId.Metamask,
@@ -175,7 +175,7 @@ export function useHeader(): UseHeaderReturn {
     [],
   )
 
-  const networks: NetworkProps['network'][] = useMemo(
+  const networks: Network[] = useMemo(
     () => [
       {
         id: BlockchainId.ETH,
@@ -183,12 +183,12 @@ export function useHeader(): UseHeaderReturn {
         name: 'Ethereum',
         wallets,
       },
-      {
-        id: BlockchainId.AVAX,
-        icon: 'avalanche',
-        name: 'Avalanche',
-        wallets,
-      },
+      // {
+      //   id: BlockchainId.AVAX,
+      //   icon: 'avalanche',
+      //   name: 'Avalanche',
+      //   wallets,
+      // },
     ],
     [wallets],
   )
@@ -196,7 +196,7 @@ export function useHeader(): UseHeaderReturn {
   // --------------------
 
   const handleConnect = useCallback(
-    async (wallet: WalletProps, network: NetworkProps['network']) => {
+    async (wallet: Wallet, network: Network) => {
       const provider = (wallet as any).id as ProviderId
       const blockchain = (network as any).id as BlockchainId
       connect({ provider, blockchain })
@@ -205,7 +205,7 @@ export function useHeader(): UseHeaderReturn {
   )
 
   const handleSwitchNetwork = useCallback(
-    (network: NetworkProps['network']) => {
+    (network: Network) => {
       const blockchain = (network as any).id as BlockchainId
       connect({ provider, blockchain })
     },
@@ -219,8 +219,8 @@ export function useHeader(): UseHeaderReturn {
   const selectedNetwork = useMemo(() => {
     if (!blockchain) return
 
-    const name = blockchains[blockchain].name
-    return networks.find((network) => network.name === name)
+    const id = blockchains[blockchain].id
+    return networks.find((network) => (network as any).id === id)
   }, [networks, blockchain])
 
   // -----------------------

@@ -1,164 +1,166 @@
-import UniversalProvider from '@walletconnect/universal-provider'
-import { WalletConnectModal } from '@walletconnect/modal'
+import type {
+  Provider as EthersProvider,
+  CombinedProvider,
+  Chain,
+} from '@web3modal/scaffold-utils/ethers'
 import {
   BaseConnectionProviderManager,
   BlockchainId,
   ProviderId,
   blockchains,
 } from './base'
-import { Future, sleep } from '@/helpers/utils'
-
-const chains = Object.values(blockchains)
-  .filter((b) => b.eip155)
-  .map((b) => `eip155:${b.chainId}`)
+import { Future, Mutex } from '@/helpers/utils'
+import { Web3Modal, createWeb3Modal, defaultConfig } from '@web3modal/ethers5'
 
 export class WalletConnectConnectionProviderManager extends BaseConnectionProviderManager {
-  protected provider?: UniversalProvider
-  protected modal?: WalletConnectModal
-  protected closeModalFuture = new Future()
-  protected connectionUri?: string
+  protected providerId = ProviderId.WalletConnect
+  protected chains!: Chain[]
+  protected modal!: Web3Modal
+  protected provider?: EthersProvider | CombinedProvider
+  protected connectModalFuture?: Future<void>
+  protected prevAddress?: string
+  protected prevChainId?: number
+  protected mutex = new Mutex()
+  protected handleEvent = this.onEvent.bind(this)
+  protected handleProvider = this.onProvider.bind(this)
+  protected handleWalletInfo = this.onWalletInfo.bind(this)
 
-  protected handleAccountChange = this.onAccount.bind(this)
-  protected handleDisconnect = this.disconnect.bind(this)
-  protected handleSessionUpdate = this.onSessionUpdate.bind(this)
-  protected handleDisplayUrl = this.onDisplayUrl.bind(this)
-  protected handleModalState = this.onModalState.bind(this)
-
-  async isSupported(): Promise<boolean> {
-    const provider = this.getProvider()
-    return !!provider?.isWalletConnect
+  async isConnected(): Promise<boolean> {
+    return !!this.provider
   }
 
-  async connect(blockchainId: BlockchainId): Promise<void> {
+  async onConnect(blockchainId: BlockchainId): Promise<void> {
     await this.init()
 
-    const provider = this.getProvider()
+    this.connectModalFuture = new Future()
 
-    provider.on('display_uri', this.handleDisplayUrl)
-    provider.on('session_update', this.handleSessionUpdate)
-    provider.on('session_delete', this.handleDisconnect)
+    await this.modal.open()
+    await this.connectModalFuture.promise
+    await this.modal.close()
+  }
 
-    if (!provider.session) {
-      try {
-        const r = await Promise.race([
-          this.closeModalFuture.promise,
-          provider.connect({
-            optionalNamespaces: {
-              eip155: {
-                methods: [
-                  'eth_requestAccounts',
-                  'eth_sendTransaction',
-                  'eth_signTransaction',
-                  'eth_sign',
-                  'personal_sign',
-                  'eth_signTypedData',
-                  'wallet_addEthereumChain',
-                  'wallet_switchEthereumChain',
-                ],
-                chains,
-                events: ['chainChanged', 'accountsChanged'],
-              },
-            },
-          }),
-        ])
+  async onDisconnect(): Promise<void> {
+    if (this.modal.getIsConnected()) await this.modal.disconnect()
+    if (this.modal.getState().open) await this.modal.close()
 
-        console.log(r)
-      } finally {
-        this.modal?.closeModal()
-      }
+    this.provider = undefined
+    this.prevChainId = undefined
+    this.prevAddress = undefined
+  }
+
+  protected onWalletInfo(info: any) {
+    if (!info) {
+      this.disconnect()
+      return
+    }
+  }
+
+  protected onProvider({
+    provider,
+    address,
+    chainId,
+  }: {
+    provider?: EthersProvider | CombinedProvider
+    address?: any
+    chainId?: number
+  }) {
+    this.provider = provider
+
+    if (this.prevChainId !== chainId && chainId) {
+      this.prevChainId = chainId
+      this.onBlockchain(chainId).catch(() => 'ignore')
     }
 
-    await this.switchBlockchain(blockchainId, provider)
-    await this.onAccount()
+    if (this.prevAddress !== address && address) {
+      this.prevAddress = address
+      this.onAccount().catch(() => 'ignore')
+    }
+
+    this.prevChainId = chainId
+    this.prevAddress = address
+
+    if (this.provider && this.connectModalFuture) {
+      const future = this.connectModalFuture
+      this.connectModalFuture = undefined
+      future.resolve()
+    }
   }
 
-  async disconnect(): Promise<void> {
-    const provider = this.getProvider()
+  protected async onEvent({ data }: any) {
+    if (data.event === 'MODAL_CLOSE' && !data.properties.connected) {
+      if (this.connectModalFuture) {
+        const future = this.connectModalFuture
+        this.connectModalFuture = undefined
+        future.reject(new Error('User cancelled the action'))
+      }
 
-    provider.session && (await provider.disconnect())
+      this.disconnect()
+    }
 
-    provider.off('display_uri', this.handleDisplayUrl)
-    provider.off('session_update', this.handleSessionUpdate)
-    provider.off('session_delete', this.handleDisconnect)
+    if (data.event === 'MODAL_OPEN') {
+      if (!!data.properties.connected) {
+        this.modal.close()
+        return
+      }
 
-    // this.provider = undefined
-    // this.modal = undefined
-  }
+      // const state = this.modal.getState()
+      // const isSupported =
+      //   !state.selectedNetworkId ||
+      //   this.chains.some((c) => c.chainId === state.selectedNetworkId)
 
-  protected async onAccount(): Promise<void> {
-    const provider = this.getProvider()
-
-    const blockchain = await this.getBlockchain(provider)
-    const account = await this.getAccount(provider)
-    const balance = await this.getBalance(account)
-
-    this.events.emit('account', {
-      provider: ProviderId.WalletConnect,
-      blockchain,
-      account,
-      balance,
-    })
-  }
-
-  protected async onSessionUpdate(event: any) {
-    // TODO
-    console.log('session_update')
-
-    // @note: Let the current task execute to update the provider object before reading from it
-    sleep(0)
-      .then(async () => {
-        const provider = this.getProvider()
-        const blockchainId = await this.getBlockchain(provider)
-
-        const blockchain = blockchains[blockchainId]
-        if (!blockchain) throw new Error('')
-
-        this.events.emit('blockchain', {
-          provider: ProviderId.WalletConnect,
-          blockchain: blockchainId,
-        })
-      })
-      .catch(() => 'ignore')
+      // if (!isSupported) this.modal.close()
+    }
   }
 
   protected async init(): Promise<void> {
+    if (this.modal) return
+
+    this.chains = Object.values(blockchains)
+      .filter((b) => b.eip155 && this.supportedBlockchains.includes(b.id))
+      .map((b) => {
+        return {
+          chainId: b.chainId,
+          name: b.name,
+          currency: b.currency,
+          explorerUrl: b.explorerUrl as string,
+          rpcUrl: b.rpcUrl as string,
+        }
+      })
+
+    const ethersConfig = defaultConfig({
+      metadata: {
+        name: 'Aleph.im',
+        description: 'Aleph.im: Web3 cloud solution',
+        url: 'https://account.aleph.im',
+        icons: ['https://account.aleph.im/favicon-32x32.png'],
+      },
+      enableEIP6963: true,
+      enableInjected: true,
+      enableCoinbase: false,
+    })
+
     const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_ID as string
 
-    if (!this.modal) {
-      this.modal = new WalletConnectModal({ projectId, chains })
-      this.modal.subscribeModal(this.handleModalState)
-    }
+    this.modal = createWeb3Modal({
+      ethersConfig,
+      chains: this.chains,
+      projectId,
+      enableAnalytics: false,
+      enableOnramp: false,
+    })
 
-    if (!this.provider) {
-      this.provider = await UniversalProvider.init({
-        projectId,
-        metadata: {
-          name: 'Aleph.im',
-          description: 'Aleph.im: Web3 cloud solution',
-          url: 'https://aleph.im',
-          icons: [],
-        },
-      })
-    }
+    // this.modal.subscribeWalletInfo((...e) => console.log('WalletInfo', ...e))
+    // this.modal.subscribeEvents((...e) => console.log('Events', ...e))
+    // this.modal.subscribeProvider((...e) => console.log('Provider', ...e))
+    // this.modal.subscribeState((...e) => console.log('State', ...e))
+    // this.modal.subscribeTheme((...e) => console.log('Theme', ...e))
+
+    this.modal.subscribeEvents(this.handleEvent)
+    this.modal.subscribeProvider(this.handleProvider)
+    this.modal.subscribeWalletInfo(this.handleWalletInfo)
   }
 
-  protected onDisplayUrl(uri: string) {
-    this.connectionUri = uri
-
-    if (!this.modal) return
-    this.modal.closeModal()
-    this.modal.openModal({ uri })
-  }
-
-  protected async onModalState({ open }: { open: boolean }) {
-    if (open) return
-
-    const future = this.closeModalFuture
-    this.closeModalFuture = new Future()
-    future.reject(new Error('User cancelled the action'))
-  }
-
-  protected getProvider(): UniversalProvider {
+  protected getProvider(): EthersProvider | CombinedProvider {
     if (!this.provider) throw new Error('WalletConnect is not initialized')
     return this.provider
   }

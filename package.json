@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
-    "@aleph-front/core": "^1.16.13",
+    "@aleph-front/core": "^1.16.15",
     "@aleph-sdk/account": "^1.0.3",
     "@aleph-sdk/avalanche": "^1.0.3",
     "@aleph-sdk/client": "^1.0.3",
@@ -29,8 +29,7 @@
     "@types/node": "18.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "@walletconnect/modal": "^2.6.2",
-    "@walletconnect/universal-provider": "^2.12.2",
+    "@web3modal/ethers5": "^4.2.1",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.1",
     "ethers": "^5.7.2",

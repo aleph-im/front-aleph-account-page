@@ -10,7 +10,7 @@ export type ConnectionState = {
 }
 
 export const initialState: ConnectionState = {
-  blockchain: undefined,
+  blockchain: BlockchainId.ETH,
   provider: undefined,
   account: undefined,
   balance: undefined,
@@ -19,7 +19,7 @@ export const initialState: ConnectionState = {
 export enum ConnectionActionType {
   CONNECTION_CONNECT = 'CONNECTION_CONNECT',
   CONNECTION_DISCONNECT = 'CONNECTION_DISCONNECT',
-  CONNECTION_SET_ACCOUNT = 'CONNECTION_SET_ACCOUNT',
+  CONNECTION_UPDATE = 'CONNECTION_UPDATE',
   CONNECTION_SET_BALANCE = 'CONNECTION_SET_BALANCE',
 }
 
@@ -38,14 +38,14 @@ export class ConnectionDisconnectAction {
   payload = null
 }
 
-export class ConnectionSetAccountAction {
-  readonly type = ConnectionActionType.CONNECTION_SET_ACCOUNT
+export class ConnectionUpdateAction {
+  readonly type = ConnectionActionType.CONNECTION_UPDATE
   constructor(
     public payload: {
       account: Account
+      provider: ProviderId
+      blockchain: BlockchainId
       balance?: number
-      provider?: ProviderId
-      blockchain?: BlockchainId
     },
   ) {}
 }
@@ -62,7 +62,7 @@ export class ConnectionSetBalanceAction {
 export type ConnectionAction =
   | ConnectionConnectAction
   | ConnectionDisconnectAction
-  | ConnectionSetAccountAction
+  | ConnectionUpdateAction
   | ConnectionSetBalanceAction
 
 export type ConnectionReducer = StoreReducer<ConnectionState, ConnectionAction>
@@ -75,7 +75,7 @@ export function getConnectionReducer(): ConnectionReducer {
       }
 
       case ConnectionActionType.CONNECTION_CONNECT:
-      case ConnectionActionType.CONNECTION_SET_ACCOUNT:
+      case ConnectionActionType.CONNECTION_UPDATE:
       case ConnectionActionType.CONNECTION_SET_BALANCE: {
         return {
           ...state,
