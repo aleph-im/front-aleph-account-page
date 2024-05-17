@@ -15,7 +15,7 @@ import { Web3Modal, createWeb3Modal, defaultConfig } from '@web3modal/ethers5'
 export class WalletConnectConnectionProviderManager extends BaseConnectionProviderManager {
   protected providerId = ProviderId.WalletConnect
   protected chains!: Chain[]
-  protected modal!: Web3Modal
+  protected modal?: Web3Modal
   protected provider?: EthersProvider | CombinedProvider
   protected connectModalFuture?: Future<void>
   protected prevAddress?: string
@@ -34,14 +34,14 @@ export class WalletConnectConnectionProviderManager extends BaseConnectionProvid
 
     this.connectModalFuture = new Future()
 
-    await this.modal.open()
+    await this.modal?.open()
     await this.connectModalFuture.promise
-    await this.modal.close()
+    await this.modal?.close()
   }
 
   async onDisconnect(): Promise<void> {
-    if (this.modal.getIsConnected()) await this.modal.disconnect()
-    if (this.modal.getState().open) await this.modal.close()
+    if (this.modal?.getIsConnected()) await this.modal.disconnect()
+    if (this.modal?.getState().open) await this.modal.close()
 
     this.provider = undefined
     this.prevChainId = undefined
@@ -99,7 +99,7 @@ export class WalletConnectConnectionProviderManager extends BaseConnectionProvid
 
     if (data.event === 'MODAL_OPEN') {
       if (!!data.properties.connected) {
-        this.modal.close()
+        this.modal?.close()
         return
       }
 

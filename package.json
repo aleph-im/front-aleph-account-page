@@ -11,15 +11,16 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
-    "@aleph-front/core": "^1.16.15",
+    "@aleph-front/core": "^1.16.16",
     "@aleph-sdk/account": "^1.0.3",
     "@aleph-sdk/avalanche": "^1.0.3",
-    "@aleph-sdk/client": "^1.0.3",
+    "@aleph-sdk/client": "^1.0.4",
     "@aleph-sdk/core": "^1.0.3",
     "@aleph-sdk/ethereum": "^1.0.3",
     "@aleph-sdk/evm": "^1.0.3",
     "@aleph-sdk/message": "^1.0.3",
     "@aleph-sdk/solana": "^1.0.3",
+    "@aleph-sdk/superfluid": "^1.0.4",
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@helia/unixfs": "^1.4.1",
     "@hookform/resolvers": "^3.1.1",
@@ -49,7 +50,6 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@aleph-sdk/superfluid": "^1.0.4",
     "@babel/plugin-syntax-typescript": "^7.24.1",
     "@metamask/providers": "^16.1.0",
     "@types/styled-components": "^5.1.26",
