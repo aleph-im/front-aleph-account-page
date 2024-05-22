@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-import { CCN, CRN, NodeLastVersions, NodeManager } from '@/domain/node'
+import { CCN, CRN, NodeManager } from '@/domain/node'
 import { useAppState } from '@/contexts/appState'
-import { useAppStoreRequest } from '../useStoreRequest'
 import { useRequest } from '@aleph-front/core'
 import { EntitySetAction } from '@/store/entity'
 
@@ -12,8 +11,6 @@ export type UseRequestAlephNodesProps = {
 export type UseRequestAlephNodesReturn = {
   ccns?: CCN[]
   crns?: CRN[]
-  ccnLastVersion?: NodeLastVersions
-  crnLastVersion?: NodeLastVersions
 }
 
 export function useRequestAlephNodes({
@@ -59,32 +56,8 @@ export function useRequestAlephNodes({
     triggerDeps,
   })
 
-  // -----------------------------
-
-  const { data: ccnLastVersion } = useAppStoreRequest({
-    name: 'lastCCNVersion',
-    doRequest: () => nodeManager.getLatestCCNVersion(),
-    onSuccess: () => null,
-    onError: () => null,
-    flushData: false,
-    triggerOnMount: true,
-  })
-
-  // -----------------------------
-
-  const { data: crnLastVersion } = useAppStoreRequest({
-    name: 'lastCRNVersion',
-    doRequest: () => nodeManager.getLatestCRNVersion(),
-    onSuccess: () => null,
-    onError: () => null,
-    flushData: false,
-    triggerOnMount: true,
-  })
-
   return {
     ccns: data?.ccns.data,
     crns: data?.crns.data,
-    ccnLastVersion,
-    crnLastVersion,
   }
 }

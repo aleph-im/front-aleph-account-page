@@ -4,6 +4,7 @@ import { StyledViewport } from './styles'
 import { useRequestNodesFeed } from '@/hooks/common/useRequestEntity/useRequestCCNsFeed'
 import { useRequestRewardsFeed } from '@/hooks/common/useRequestEntity/useRequestRewardsFeed'
 import { useFilters } from '@/hooks/common/useFilters'
+import { useRequestNodeVersions } from '@/hooks/common/useRequestEntity/useRequestNodeVersions'
 
 export const Viewport = ({ children }: ViewportProps) => {
   useFilters({ syncUrl: true })
@@ -12,6 +13,7 @@ export const Viewport = ({ children }: ViewportProps) => {
   // useRequestAlephNodes()
   // useRequestRewards()
 
+  useRequestNodeVersions()
   useRequestNodesFeed()
   useRequestRewardsFeed()
 
