@@ -315,13 +315,14 @@ export class NodeManager {
 
     crns = this.parseResourceNodes(crns)
 
-    ccns = this.parseChildrenResourceNodes(ccns, crns)
+    crns = await this.parseScores(crns, true)
+    crns = await this.parseMetrics(crns, true)
+
     ccns = await this.parseScores(ccns, false)
     ccns = await this.parseMetrics(ccns, false)
 
-    crns = this.parseParentNodes(crns, ccns)
-    crns = await this.parseScores(crns, true)
-    crns = await this.parseMetrics(crns, true)
+    this.linkChildrenNodes(ccns, crns)
+    this.linkParentNodes(crns, ccns)
 
     return { ccns, crns, timestamp }
   }
@@ -346,18 +347,19 @@ export class NodeManager {
         key === 'corechannel' &&
         (nodes !== undefined || resource_nodes !== undefined)
       ) {
-        let crns: CRN[] = resource_nodes
-        let ccns: CCN[] = nodes
+        let crns: CRN[] = resource_nodes as any
+        let ccns: CCN[] = nodes as any
 
         crns = this.parseResourceNodes(crns)
 
-        ccns = this.parseChildrenResourceNodes(ccns, crns)
+        crns = await this.parseScores(crns, true)
+        crns = await this.parseMetrics(crns, true)
+
         ccns = await this.parseScores(ccns, false)
         ccns = await this.parseMetrics(ccns, false)
 
-        crns = this.parseParentNodes(crns, ccns)
-        crns = await this.parseScores(crns, true)
-        crns = await this.parseMetrics(crns, true)
+        this.linkChildrenNodes(ccns, crns)
+        this.linkParentNodes(crns, ccns)
 
         const timestamp = Math.trunc(time * 1000)
 
@@ -831,7 +833,7 @@ export class NodeManager {
     })
   }
 
-  protected parseChildrenResourceNodes(ccns: CCN[], crns: CRN[]): CCN[] {
+  protected linkChildrenNodes(ccns: CCN[], crns: CRN[]): void {
     const crnsMap = crns.reduce(
       (ac, cu) => {
         if (!cu.parent) return ac
@@ -844,18 +846,15 @@ export class NodeManager {
       {} as Record<string, CRN[]>,
     )
 
-    return ccns.map((ccn) => {
+    ccns.forEach((ccn) => {
       const crnsData = crnsMap[ccn.hash] || []
-      if (!crnsData) return ccn
+      if (!crnsData) return
 
-      return {
-        ...ccn,
-        crnsData,
-      }
+      ccn.crnsData = crnsData
     })
   }
 
-  protected parseParentNodes(crns: CRN[], ccns: CCN[]): CRN[] {
+  protected linkParentNodes(crns: CRN[], ccns: CCN[]): void {
     const ccnsMap = ccns.reduce(
       (ac, cu) => {
         ac[cu.hash] = cu
@@ -864,16 +863,13 @@ export class NodeManager {
       {} as Record<string, CCN>,
     )
 
-    return crns.map((crn) => {
-      if (!crn.parent) return crn
+    crns.forEach((crn) => {
+      if (!crn.parent) return
 
       const parentData = ccnsMap[crn.parent]
-      if (!parentData) return crn
+      if (!parentData) return
 
-      return {
-        ...crn,
-        parentData,
-      }
+      crn.parentData = parentData
     })
   }
 
