@@ -717,7 +717,7 @@ export class NodeManager {
     if (!node.address) return
 
     const address = node.address.toLowerCase().replace(/\/$/, '')
-    const url = `${address}/vm/78451e20da3c19a3e2cd8e97526e09244631fba12f451b9b60cdb2915ab0e414/about/usage/system`
+    const url = `${address}/about/usage/system`
 
     const { success } = urlSchema.safeParse(url)
     if (!success) return
@@ -725,7 +725,7 @@ export class NodeManager {
     try {
       return await fetchAndCache(
         url,
-        `3crn_specs_${node.hash}`,
+        `crn_specs_${node.hash}_1`,
         3_600,
         (res: CRNSpecs) => {
           if (res.cpu === undefined) throw new Error('invalid response')
@@ -755,8 +755,8 @@ export class NodeManager {
     try {
       return await fetchAndCache(
         url,
-        `3crn_ips_${node.hash}`,
-        4_600,
+        `crn_ips_${node.hash}_1`,
+        3_600,
         (res: CRNIps) => {
           if (res.vm === undefined) throw new Error('invalid response')
 
