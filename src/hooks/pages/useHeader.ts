@@ -10,8 +10,8 @@ import {
   useTransition,
   useWindowScroll,
   useWindowSize,
-  WalletPickerProps,
   Wallet,
+  AccountPickerProps,
 } from '@aleph-front/core'
 import {
   UseBreadcrumbNamesReturn,
@@ -117,22 +117,29 @@ export function useAccountButton({
 // -----------------------------
 
 export type UseHeaderReturn = UseRoutesReturn & {
+  accountAddress?: string
+  accountBalance?: number
   networks: Network[]
   pathname: string
   breadcrumbNames: UseBreadcrumbNamesReturn['names']
   breakpoint: BreakpointId
   isOpen: boolean
-  rewards?: WalletPickerProps['rewards']
-  selectedNetwork: WalletPickerProps['selectedNetwork']
-  handleSwitchNetwork: WalletPickerProps['onSwitchNetwork']
+  rewards?: AccountPickerProps['rewards']
+  selectedNetwork: AccountPickerProps['selectedNetwork']
   handleToggle: (isOpen: boolean) => void
-  handleConnect: (wallet: Wallet, network: Network) => void
-  handleDisconnect: () => void
+  handleSwitchNetwork: AccountPickerProps['handleSwitchNetwork']
+  handleConnect: AccountPickerProps['handleConnect']
+  handleDisconnect: AccountPickerProps['handleDisconnect']
 }
 
 export function useHeader(): UseHeaderReturn {
   const [state] = useAppState()
-  const { account, provider, blockchain } = state.connection
+  const {
+    account,
+    balance: accountBalance,
+    provider,
+    blockchain,
+  } = state.connection
 
   const { handleConnect: connect, handleDisconnect: disconnect } =
     useConnection({ triggerOnMount: true })
@@ -197,8 +204,8 @@ export function useHeader(): UseHeaderReturn {
 
   const handleConnect = useCallback(
     async (wallet: Wallet, network: Network) => {
-      const provider = (wallet as any).id as ProviderId
-      const blockchain = (network as any).id as BlockchainId
+      const provider = (wallet as Wallet).id as ProviderId
+      const blockchain = (network as Network).id as BlockchainId
       connect({ provider, blockchain })
     },
     [connect],
@@ -206,7 +213,7 @@ export function useHeader(): UseHeaderReturn {
 
   const handleSwitchNetwork = useCallback(
     (network: Network) => {
-      const blockchain = (network as any).id as BlockchainId
+      const blockchain = (network as Network).id as BlockchainId
       connect({ provider, blockchain })
     },
     [connect, provider],
@@ -220,7 +227,7 @@ export function useHeader(): UseHeaderReturn {
     if (!blockchain) return
 
     const id = blockchains[blockchain].id
-    return networks.find((network) => (network as any).id === id)
+    return networks.find((network) => (network as Network).id === id)
   }, [networks, blockchain])
 
   // -----------------------
@@ -261,6 +268,8 @@ export function useHeader(): UseHeaderReturn {
   }, [pendingDays, userRewards])
 
   return {
+    accountAddress: account?.address,
+    accountBalance,
     networks,
     pathname,
     routes,
@@ -268,7 +277,7 @@ export function useHeader(): UseHeaderReturn {
     breakpoint,
     isOpen,
     rewards,
-    selectedNetwork,
+    selectedNetwork: selectedNetwork || networks[0],
     handleSwitchNetwork,
     handleToggle,
     handleConnect,
