@@ -2,7 +2,6 @@ import { AnchorHTMLAttributes, ReactNode, memo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { IconName, LinkComponent, RouterSidebar } from '@aleph-front/core'
-import { useUserStoreAllowance } from '@/hooks/common/useUserStoreAllowance'
 import { useRoutes } from '@/hooks/common/useRoutes'
 
 export type SidebarLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
@@ -19,22 +18,16 @@ const Sidebar = memo(() => {
   const [open, setOpen] = useState<boolean>()
 
   // --------------------------------------------
-
-  // @todo: fix types in core and install new version
-  const allowanceInfo: any = useUserStoreAllowance()
   const breakpoint = 'lg'
 
   return (
     <RouterSidebar
-      {...{
-        breakpoint,
-        routes,
-        pathname,
-        Link: Link as LinkComponent,
-        allowanceInfo,
-        open,
-        onToggle: setOpen,
-      }}
+      breakpoint={breakpoint}
+      routes={routes}
+      pathname={pathname}
+      Link={Link as LinkComponent}
+      open={open}
+      onToggle={setOpen}
     />
   )
 })
