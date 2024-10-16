@@ -219,7 +219,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
     const isLoading = nodeIssue === undefined
     return !isLoading && !nodeIssue
-      ? `${consoleNewInstanceUrl}/${node.hash}`
+      ? `${consoleNewInstanceUrl}?crn=${node.hash}`
       : undefined
   }, [node, nodeIssue])
 
