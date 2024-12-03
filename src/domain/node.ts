@@ -923,8 +923,8 @@ export class NodeManager {
     crn: CRNScore[]
   }> {
     const res = await this.sdkClient.getPosts({
-      types: 'aleph-scoring-scores',
-      addresses: [scoringAddress],
+      types: 'aleph-scoring-scores-beta',
+      addresses: ['0x4Ec8b55e73F5f32118a90B8FD555706bD5dd42e7'],
       pageSize: 1,
       page: 1,
     })
