@@ -925,7 +925,7 @@ export class NodeManager {
     const res = await this.sdkClient.getPosts({
       types: 'aleph-scoring-scores',
       addresses: [scoringAddress],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 
@@ -939,7 +939,7 @@ export class NodeManager {
     const res = await this.sdkClient.getPosts({
       types: 'aleph-network-metrics',
       addresses: [scoringAddress],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 

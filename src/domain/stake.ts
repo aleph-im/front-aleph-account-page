@@ -48,7 +48,7 @@ export class StakeManager {
       types: 'staking-rewards-distribution',
       addresses: [monitorAddress],
       tags: ['calculation'],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 
@@ -68,7 +68,7 @@ export class StakeManager {
       types: 'staking-rewards-distribution',
       addresses: [senderAddress],
       tags: ['distribution'],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 

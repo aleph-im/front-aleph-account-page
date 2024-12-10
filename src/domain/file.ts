@@ -74,7 +74,7 @@ export class FileManager {
     const items = await this.sdkClient.getMessages({
       messageTypes: [MessageType.store],
       addresses: [address],
-      pageSize: 1000,
+      pagination: 1000,
     })
 
     const files = (items?.messages || []) as StoreMessage[]
