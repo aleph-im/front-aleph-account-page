@@ -9,7 +9,7 @@ import {
 } from '@/domain/node'
 import { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   UseNodeDetailReturn,
   useNodeDetail,
@@ -29,6 +29,8 @@ import { consoleNewInstanceUrl } from '@/helpers/constants'
 import { convertByteUnits } from '@/helpers/utils'
 import { useRequestCRNIps } from '@/hooks/common/useRequestEntity/useRequestCRNIps'
 import { StakeManager } from '@/domain/stake'
+import { TabsProps } from '@aleph-front/core'
+import { DefaultTheme, useTheme } from 'styled-components'
 // import { useRequestCRNBenchmark } from '@/hooks/common/useRequestEntity/useRequestCRNBenchmark'
 
 export type UseComputeResourceNodeDetailPageProps = {
@@ -37,6 +39,7 @@ export type UseComputeResourceNodeDetailPageProps = {
 
 export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
   UseEditComputeResourceNodeFormReturn & {
+    theme: DefaultTheme
     nodes?: CRN[]
     node?: CRN
     userNode?: CCN
@@ -49,12 +52,17 @@ export type UseComputeResourceNodeDetailPageReturn = UseNodeDetailReturn<CRN> &
     isLinked?: boolean
     isLinkableByUser?: boolean
     isUnlinkableByUser?: boolean
+    tabs: TabsProps['tabs']
+    tabId: string
+    setTabId: (tab: string) => void
+    handleRemovePolicies: () => void
     handleRemove: () => void
     handleLink: () => Promise<boolean>
     handleUnlink: () => Promise<boolean>
   }
 
 export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetailPageReturn {
+  const theme = useTheme()
   const router = useRouter()
   const { hash } = router.query
 
@@ -81,6 +89,23 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
   // -----------------------------
 
   const details = useNodeDetail({ node, nodes })
+
+  // -----------------------------
+
+  const [tabId, setTabId] = useState('overview')
+
+  const tabs: TabsProps['tabs'] = useMemo(() => {
+    return [
+      {
+        id: 'overview',
+        name: 'Overview',
+      },
+      {
+        id: 'policies',
+        name: 'Policies',
+      },
+    ]
+  }, [])
 
   // -----------------------------
 
@@ -247,12 +272,19 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
       picture: node?.picture,
       banner: node?.banner,
       address: node?.address,
+      terms_and_conditions: undefined,
     }
   }, [node])
 
   const formProps = useEditComputeResourceNodeForm({ defaultValues })
 
+  //@todo: implement this
+  const handleRemovePolicies = useCallback(async () => {
+    return true
+  }, [])
+
   return {
+    theme,
     nodes,
     node,
     userNode,
@@ -261,10 +293,13 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
     nodeSpecs,
     nodeIssue,
     createInstanceUrl,
-    // nodeBenchmark,
     isLinked,
     isLinkableByUser,
     isUnlinkableByUser,
+    tabs,
+    tabId,
+    setTabId,
+    handleRemovePolicies,
     handleLink,
     handleUnlink,
     ...formProps,

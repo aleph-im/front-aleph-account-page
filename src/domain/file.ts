@@ -107,7 +107,9 @@ export class FileManager {
     }
   }
 
-  async uploadFile(fileObject: File): Promise<string> {
+  async uploadFile(
+    fileObject: File,
+  ): Promise<{ contentItemHash: string; messageItemHash: string }> {
     if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
       throw new Error('Account needed to perform this action')
 
@@ -117,8 +119,21 @@ export class FileManager {
     const message = await this.sdkClient.createStore({
       channel,
       fileObject: buffer,
+      metadata: {
+        name: fileObject.name,
+        format: fileObject.type,
+      },
     })
 
-    return message.content.item_hash
+    return {
+      contentItemHash: message.content.item_hash,
+      messageItemHash: message.item_hash,
+    }
+  }
+
+  async downloadFile(fileHash: string): Promise<File> {
+    const file = await this.sdkClient.downloadFile(fileHash)
+
+    return new File([file], fileHash)
   }
 }
