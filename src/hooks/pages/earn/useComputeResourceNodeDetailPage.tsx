@@ -7,7 +7,7 @@ import {
   NodeManager,
   StreamNotSupportedIssue,
 } from '@/domain/node'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { useComputeResourceNode } from '@/hooks/common/useComputeResourceNode'
 import { useCallback, useMemo, useState } from 'react'
 import {
@@ -272,7 +272,7 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
       picture: node?.picture,
       banner: node?.banner,
       address: node?.address,
-      terms_and_conditions: undefined,
+      terms_and_conditions: node?.terms_and_conditions,
     }
   }, [node])
 
@@ -280,8 +280,12 @@ export function useComputeResourceNodeDetailPage(): UseComputeResourceNodeDetail
 
   //@todo: implement this
   const handleRemovePolicies = useCallback(async () => {
-    return true
-  }, [])
+    await nodeManager.updateComputeResourceNode({
+      ...formProps.values,
+      terms_and_conditions: '',
+    })
+    Router.reload()
+  }, [formProps.values, nodeManager])
 
   return {
     theme,

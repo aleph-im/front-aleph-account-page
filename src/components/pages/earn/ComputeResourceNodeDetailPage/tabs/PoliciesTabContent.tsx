@@ -78,7 +78,7 @@ export const PoliciesTabContent = ({
     return new FileManager()
   }, [])
 
-  const downloadFile = useCallback(
+  const handleDownloadFile = useCallback(
     async (fileHash: string, fileName: string) => {
       const downloadedFile = await fileManager.downloadFile(fileHash)
       const customDownloadUrl = window.URL.createObjectURL(downloadedFile)
@@ -140,7 +140,7 @@ export const PoliciesTabContent = ({
           const policiesMessageHash =
             message.content?.content?.details.terms_and_conditions
 
-          if (!policiesMessageHash) continue
+          if (!policiesMessageHash) break
 
           let storeMessageContent
           try {
@@ -185,9 +185,7 @@ export const PoliciesTabContent = ({
             <Card2Field
               name="DOCUMENT NAME"
               value={
-                isLoadingHistoryMessages
-                  ? ''
-                  : currentPolicies?.name || 'UNKNOWN'
+                isLoadingHistoryMessages ? '' : currentPolicies?.name || ' '
               }
             />
             <Card2Field
@@ -245,10 +243,10 @@ export const PoliciesTabContent = ({
                         : policies.time.toLocaleDateString()}
                     </div>
                     <ExternalLink
-                      text={ellipseText(policies.cid, 12, 6)}
+                      text={policies.name || ellipseText(policies.cid, 12, 6)}
                       href="#"
                       onClick={() =>
-                        downloadFile(
+                        handleDownloadFile(
                           policies.cid,
                           policies.name || policies.cid,
                         )
