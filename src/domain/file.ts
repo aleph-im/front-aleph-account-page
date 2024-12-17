@@ -1,6 +1,6 @@
 import { Account } from '@aleph-sdk/account'
 import { apiServer, channel, defaultAccountChannel } from '@/helpers/constants'
-import { MessageType, StoreMessage } from '@aleph-sdk/message'
+import { ItemType, MessageType, StoreMessage } from '@aleph-sdk/message'
 import {
   AlephHttpClient,
   AuthenticatedAlephHttpClient,
@@ -119,6 +119,7 @@ export class FileManager {
     const message = await this.sdkClient.createStore({
       channel,
       fileObject: buffer,
+      storageEngine: ItemType.ipfs,
       metadata: {
         name: fileObject.name,
         format: fileObject.type,
