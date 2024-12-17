@@ -1,5 +1,5 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { UseComputeResourceNodeDetailPageReturn } from '@/hooks/pages/earn/useComputeResourceNodeDetailPage'
+import { memo } from 'react'
+import { UseComputeResourceNodeDetailPageReturn } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/useComputeResourceNodeDetailPage'
 import Card2, { Card2Field } from '@/components/common/Card2'
 import {
   Button,
@@ -10,200 +10,37 @@ import {
   Row,
   Spinner,
 } from '@aleph-front/core'
-import { apiServer } from '@/helpers/constants'
 import ExternalLink from '@/components/common/ExternalLink'
-import { MessageManager } from '@/domain/message'
-import { MessageType } from '@aleph-sdk/message'
-import { FileManager } from '@/domain/file'
+import { usePoliciesTabContent } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/usePoliciesTabContent'
 
 export type PoliciesTabContentProps = Pick<
   UseComputeResourceNodeDetailPageReturn,
   'termsAndConditionsCtrl' | 'handleRemovePolicies' | 'node'
 >
 
-export const PoliciesTabContent = ({
-  node,
-  termsAndConditionsCtrl,
-  handleRemovePolicies,
-}: PoliciesTabContentProps) => {
+export const PoliciesTabContent = (props: PoliciesTabContentProps) => {
   const {
-    field: { onChange, value },
-  } = termsAndConditionsCtrl
-
-  // @todo: Refactor FileInputProps to accept File too
-  // Adjust the file value to match FileInputProps
-  const fileValue = useMemo(() => {
-    if (value instanceof File) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const extFile = value as any
-      return extFile
-    }
-    return undefined
-  }, [value])
-
-  // Adjust the onChange function to accept ExtFile | ExtFile[] | undefined
-  const handleChange = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (files?: any) => {
-      const file = Array.isArray(files) ? files[0] : files
-      onChange(file)
-    },
-    [onChange],
-  )
-
-  type PoliciesRecord = {
-    time: Date
-    cid: string
-    name: string
-  }
-  type PoliciesHistory = Map<string, PoliciesRecord>
-
-  const [amendMessages, setAmendMessages] = useState<any[]>()
-  const [isLoadingAmendMessages, setIsLoadingAmendMessages] = useState(true)
-  const [policiesHistory, setPoliciesHistory] = useState<PoliciesHistory>()
-  const [isLoadingHistoryMessages, setIsLoadingHistoryMessages] = useState(true)
-
-  const currentPolicies = useMemo(() => {
-    if (!policiesHistory) return
-    if (!node?.terms_and_conditions) return
-
-    return policiesHistory.get(node.terms_and_conditions)
-  }, [node, policiesHistory])
-
-  const messageManager = useMemo(() => {
-    return new MessageManager()
-  }, [])
-
-  const fileManager = useMemo(() => {
-    return new FileManager()
-  }, [])
-
-  const handleDownloadFile = useCallback(
-    async (fileHash: string, fileName: string) => {
-      const downloadedFile = await fileManager.downloadFile(fileHash)
-      const customDownloadUrl = window.URL.createObjectURL(downloadedFile)
-      const a = document.createElement('a')
-      a.href = customDownloadUrl
-      a.download = fileName
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.URL.revokeObjectURL(customDownloadUrl)
-    },
-    [fileManager],
-  )
-
-  const isCurrentVersion = useCallback(
-    (policies: PoliciesRecord) => {
-      if (!currentPolicies) return false
-
-      return policies === currentPolicies
-    },
-    [currentPolicies],
-  )
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      setIsLoadingAmendMessages(true)
-      if (!messageManager) return setAmendMessages(undefined)
-      if (!node) return setAmendMessages(undefined)
-
-      try {
-        const { messages } = await messageManager?.getAll({
-          messageTypes: [MessageType['post']],
-          refs: [node.hash],
-          addresses: [node.owner],
-        })
-
-        setAmendMessages(messages)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setIsLoadingAmendMessages(false)
-      }
-    }
-
-    fetchMessages()
-  }, [messageManager, node])
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      setIsLoadingHistoryMessages(true)
-
-      if (isLoadingAmendMessages) return setPoliciesHistory(undefined)
-      if (!messageManager) return setPoliciesHistory(undefined)
-      if (!amendMessages) return setPoliciesHistory(undefined)
-
-      try {
-        const history = new Map<string, PoliciesRecord>()
-        for (const message of amendMessages) {
-          const policiesMessageHash =
-            message.content?.content?.details.terms_and_conditions
-
-          if (!policiesMessageHash) break
-
-          let storeMessageContent
-          try {
-            const { content } =
-              await messageManager?.get<MessageType.store>(policiesMessageHash)
-            storeMessageContent = content
-          } catch (e) {
-            console.error(e)
-          }
-
-          if (!storeMessageContent) continue
-
-          history.set(policiesMessageHash, {
-            time: new Date(message.content.time * 1000),
-            cid: storeMessageContent.item_hash,
-            name: storeMessageContent.metadata?.name as string,
-          })
-        }
-
-        const sortedHistory = new Map(
-          Array.from(history).sort(
-            ([, { time: a }], [, { time: b }]) => b.getTime() - a.getTime(),
-          ),
-        )
-
-        setPoliciesHistory(sortedHistory)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setIsLoadingHistoryMessages(false)
-      }
-    }
-
-    fetchMessages()
-  }, [amendMessages, isLoadingAmendMessages, messageManager])
+    documentName,
+    documentCID,
+    documentLink,
+    termsAndConditionsCtrl,
+    isLoadingHistoryMessages,
+    policiesHistory,
+    fileValue,
+    isCurrentVersion,
+    handleFileChange,
+    handleDownloadFile,
+    handleRemovePolicies,
+  } = usePoliciesTabContent(props)
 
   return (
     <section tw="mt-8">
       <Row count={1} xl={5} xlGap={'2rem'}>
         <Col span={3}>
           <Card2 title="CURRENT VERSION">
-            <Card2Field
-              name="DOCUMENT NAME"
-              value={
-                isLoadingHistoryMessages ? '' : currentPolicies?.name || ' '
-              }
-            />
-            <Card2Field
-              name="CID"
-              value={
-                isLoadingHistoryMessages ? '' : currentPolicies?.cid || ' '
-              }
-            />
-            <Card2Field
-              name="LINK"
-              value={
-                isLoadingHistoryMessages
-                  ? ''
-                  : currentPolicies
-                    ? `${apiServer}/api/v0/storage/raw/${currentPolicies?.cid}`
-                    : ' '
-              }
-            />
+            <Card2Field name="DOCUMENT NAME" value={documentName} />
+            <Card2Field name="CID" value={documentCID} />
+            <Card2Field name="LINK" value={documentLink} />
           </Card2>
           <Button
             kind="flat"
@@ -220,7 +57,7 @@ export const PoliciesTabContent = ({
             {...termsAndConditionsCtrl.field}
             {...termsAndConditionsCtrl.fieldState}
             value={fileValue}
-            onChange={handleChange}
+            onChange={handleFileChange}
           />
         </Col>
         <Col span={2}>

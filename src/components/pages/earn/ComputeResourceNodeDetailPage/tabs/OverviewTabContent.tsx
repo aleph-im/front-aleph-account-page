@@ -19,7 +19,7 @@ import ButtonLink from '@/components/common/ButtonLink'
 import { StreamNotSupportedIssue } from '@/domain/node'
 import { ThreeDots } from 'react-loader-spinner'
 import { LinkedStatusDotIcon } from '@/components/common/NodeLinkedNodes'
-import { UseComputeResourceNodeDetailPageReturn } from '@/hooks/pages/earn/useComputeResourceNodeDetailPage'
+import { UseComputeResourceNodeDetailPageReturn } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/useComputeResourceNodeDetailPage'
 
 export type OverviewTabContentProps = Pick<
   UseComputeResourceNodeDetailPageReturn,
