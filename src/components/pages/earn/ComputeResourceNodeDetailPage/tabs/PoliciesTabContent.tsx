@@ -15,11 +15,12 @@ import { usePoliciesTabContent } from '@/hooks/pages/earn/ComputeResourceNodeDet
 
 export type PoliciesTabContentProps = Pick<
   UseComputeResourceNodeDetailPageReturn,
-  'termsAndConditionsCtrl' | 'handleRemovePolicies' | 'node'
+  'termsAndConditionsCtrl' | 'handleRemovePolicies' | 'node' | 'isOwner'
 >
 
 export const PoliciesTabContent = (props: PoliciesTabContentProps) => {
   const {
+    isOwner,
     documentName,
     documentCID,
     documentLink,
@@ -27,6 +28,7 @@ export const PoliciesTabContent = (props: PoliciesTabContentProps) => {
     isLoadingHistoryMessages,
     policiesHistory,
     fileValue,
+    removePoliciesDisabled,
     isCurrentVersion,
     handleFileChange,
     handleDownloadFile,
@@ -42,23 +44,38 @@ export const PoliciesTabContent = (props: PoliciesTabContentProps) => {
             <Card2Field name="CID" value={documentCID} />
             <Card2Field name="LINK" value={documentLink} />
           </Card2>
-          <Button
-            kind="flat"
-            variant="secondary"
-            size="md"
-            color="error"
-            onClick={handleRemovePolicies}
-            tw="my-8!"
-          >
-            <Icon name="trash" color="error" size="lg" />
-            remove policies
-          </Button>
-          <FileInput
-            {...termsAndConditionsCtrl.field}
-            {...termsAndConditionsCtrl.fieldState}
-            value={fileValue}
-            onChange={handleFileChange}
-          />
+          {isOwner && (
+            <>
+              <Button
+                kind="flat"
+                variant="secondary"
+                size="md"
+                color="error"
+                onClick={handleRemovePolicies}
+                tw="my-8!"
+                disabled={removePoliciesDisabled}
+              >
+                <Icon
+                  name="trash"
+                  color={removePoliciesDisabled ? '' : 'error'}
+                  size="lg"
+                />
+                remove policies
+              </Button>
+              <FileInput
+                {...termsAndConditionsCtrl.field}
+                {...termsAndConditionsCtrl.fieldState}
+                value={fileValue}
+                onChange={handleFileChange}
+              />
+              <div
+                tw="mt-2 pr-7 w-full text-right opacity-70"
+                className="tp-info text-base"
+              >
+                Max. file size is 100 MB
+              </div>
+            </>
+          )}
         </Col>
         <Col span={2}>
           <div className="tp-h7" tw="my-8">

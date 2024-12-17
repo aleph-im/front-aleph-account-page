@@ -114,6 +114,7 @@ export const ComputeResourceNodeDetailPage = () => {
       ) : tabId === 'policies' ? (
         <PoliciesTabContent
           node={node}
+          isOwner={isOwner}
           termsAndConditionsCtrl={termsAndConditionsCtrl}
           handleRemovePolicies={handleRemovePolicies}
         />

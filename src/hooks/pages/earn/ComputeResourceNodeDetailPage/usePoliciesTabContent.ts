@@ -7,10 +7,11 @@ import { FileManager } from '@/domain/file'
 
 export type usePoliciesTabContentProps = Pick<
   UseComputeResourceNodeDetailPageReturn,
-  'termsAndConditionsCtrl' | 'handleRemovePolicies' | 'node'
+  'termsAndConditionsCtrl' | 'handleRemovePolicies' | 'node' | 'isOwner'
 >
 
 export type usePoliciesTabContentReturn = {
+  isOwner?: boolean
   documentName: string
   documentCID: string
   documentLink: string
@@ -18,6 +19,7 @@ export type usePoliciesTabContentReturn = {
   termsAndConditionsCtrl: UseComputeResourceNodeDetailPageReturn['termsAndConditionsCtrl']
   isLoadingHistoryMessages: boolean
   fileValue: any
+  removePoliciesDisabled: boolean
   isCurrentVersion: (policies: PoliciesRecord) => boolean
   handleFileChange: (files?: any) => void
   handleDownloadFile: (fileHash: string, fileName: string) => Promise<void>
@@ -35,6 +37,7 @@ export function usePoliciesTabContent({
   node,
   termsAndConditionsCtrl,
   handleRemovePolicies,
+  ...props
 }: usePoliciesTabContentProps): usePoliciesTabContentReturn {
   const {
     field: { onChange, value },
@@ -86,6 +89,11 @@ export function usePoliciesTabContent({
           ? `${apiServer}/api/v0/storage/raw/${currentPolicies?.cid}`
           : ' ',
     [isLoadingHistoryMessages, currentPolicies],
+  )
+
+  const removePoliciesDisabled = useMemo(
+    () => !policiesHistory?.size,
+    [policiesHistory],
   )
 
   // @todo: Refactor FileInputProps to accept File too
@@ -225,9 +233,11 @@ export function usePoliciesTabContent({
     termsAndConditionsCtrl,
     isLoadingHistoryMessages,
     fileValue,
+    removePoliciesDisabled,
     isCurrentVersion,
     handleFileChange,
     handleDownloadFile,
     handleRemovePolicies,
+    ...props,
   }
 }
