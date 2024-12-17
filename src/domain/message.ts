@@ -5,10 +5,11 @@ import {
 } from '@aleph-sdk/client'
 import Err from '../helpers/errors'
 import { apiServer, defaultAccountChannel } from '@/helpers/constants'
+import { GetMessagesConfiguration, MessageType } from '@aleph-sdk/message'
 
 export class MessageManager {
   constructor(
-    protected account: Account,
+    protected account?: Account,
     protected channel = defaultAccountChannel,
     protected sdkClient:
       | AlephHttpClient
@@ -20,11 +21,24 @@ export class MessageManager {
   /**
    * Returns an aleph program message for a given hash
    */
-  async get(hash: string) {
+  async get<T extends MessageType>(hash: string) {
     try {
-      const msg = await this.sdkClient.getMessage(hash)
+      const msg = await this.sdkClient.getMessage<T>(hash)
 
       return msg
+    } catch (error) {
+      throw Err.RequestFailed(error)
+    }
+  }
+
+  /**
+   * Returns aleph program messages for a given configuration
+   */
+  async getAll(config: GetMessagesConfiguration) {
+    try {
+      const msgs = await this.sdkClient.getMessages(config)
+
+      return msgs
     } catch (error) {
       throw Err.RequestFailed(error)
     }

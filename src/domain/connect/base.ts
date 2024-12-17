@@ -9,18 +9,19 @@ import {
   getAccountFromProvider as getSOLAccount,
   SOLAccount,
 } from '@aleph-sdk/solana'
+import { getAccountFromProvider as getAVAXAccount } from '@aleph-sdk/avalanche'
 import {
-  getAccountFromProvider as getAVAXAccount,
-  AvalancheAccount,
-} from '@aleph-sdk/avalanche'
-import { createFromAvalancheAccount } from '@aleph-sdk/superfluid'
+  createFromEVMAccount,
+  isAccountSupported as isAccountPAYGCompatible,
+} from '@aleph-sdk/superfluid'
 import Err from '../../helpers/errors'
-import { Mutex, getERC20Balance, getSOLBalance, sleep } from '@/helpers/utils'
+import { Mutex, getAddressBalance, sleep } from '@/helpers/utils'
 import { MetaMaskInpageProvider } from '@metamask/providers'
 import type {
   Provider as EthersProvider,
   CombinedProvider,
 } from '@web3modal/scaffold-utils/ethers'
+import { EVMAccount } from '@aleph-sdk/evm'
 
 export { BlockchainId }
 
@@ -249,12 +250,11 @@ export abstract class BaseConnectionProviderManager {
   }
 
   async getBalance(account: Account): Promise<number> {
-    if (account instanceof AvalancheAccount) {
+    if (isAccountPAYGCompatible(account)) {
       try {
-        // @note: refactor in SDK calling init inside this method
-        const superfluidAccount = createFromAvalancheAccount(account)
-        await superfluidAccount.init()
-
+        const superfluidAccount = await createFromEVMAccount(
+          account as EVMAccount,
+        )
         const balance = await superfluidAccount.getALEPHBalance()
         return balance.toNumber()
       } catch (e) {
@@ -262,11 +262,8 @@ export abstract class BaseConnectionProviderManager {
         return 0
       }
     }
-    if (account instanceof ETHAccount) {
-      return getERC20Balance(account.address)
-    }
-    if (account instanceof SOLAccount) {
-      return getSOLBalance(account.address)
+    if (account instanceof ETHAccount || account instanceof SOLAccount) {
+      return getAddressBalance(account.address)
     }
 
     throw Err.ChainNotYetSupported

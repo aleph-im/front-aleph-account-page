@@ -87,6 +87,7 @@ export type CRN = BaseNode & {
   metricsData?: CRNMetrics
   parentData?: CCN
   stream_reward?: string
+  terms_and_conditions?: string
 }
 
 export type AlephNode = CCN | CRN
@@ -189,6 +190,7 @@ export type UpdateCCN = BaseUpdateNode & {
 export type UpdateCRN = BaseUpdateNode & {
   address?: string
   stream_reward?: string
+  terms_and_conditions?: string | File
 }
 
 export type UpdateAlephNode = UpdateCCN | UpdateCRN
@@ -539,11 +541,27 @@ export class NodeManager {
     }
 
     if (details.picture instanceof File) {
-      details.picture = await this.fileManager.uploadFile(details.picture)
+      const { contentItemHash } = await this.fileManager.uploadFile(
+        details.picture,
+      )
+      details.picture = contentItemHash
     }
 
     if (details.banner instanceof File) {
-      details.banner = await this.fileManager.uploadFile(details.banner)
+      const { contentItemHash } = await this.fileManager.uploadFile(
+        details.banner,
+      )
+      details.banner = contentItemHash
+    }
+
+    if (
+      'terms_and_conditions' in details &&
+      details.terms_and_conditions instanceof File
+    ) {
+      const { messageItemHash } = await this.fileManager.uploadFile(
+        details.terms_and_conditions,
+      )
+      details.terms_and_conditions = messageItemHash
     }
 
     const res = await this.sdkClient.createPost({
@@ -925,7 +943,7 @@ export class NodeManager {
     const res = await this.sdkClient.getPosts({
       types: 'aleph-scoring-scores',
       addresses: [scoringAddress],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 
@@ -939,7 +957,7 @@ export class NodeManager {
     const res = await this.sdkClient.getPosts({
       types: 'aleph-network-metrics',
       addresses: [scoringAddress],
-      pageSize: 1,
+      pagination: 1,
       page: 1,
     })
 

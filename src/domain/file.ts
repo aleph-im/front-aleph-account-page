@@ -1,6 +1,6 @@
 import { Account } from '@aleph-sdk/account'
 import { apiServer, channel, defaultAccountChannel } from '@/helpers/constants'
-import { MessageType, StoreMessage } from '@aleph-sdk/message'
+import { ItemType, MessageType, StoreMessage } from '@aleph-sdk/message'
 import {
   AlephHttpClient,
   AuthenticatedAlephHttpClient,
@@ -74,7 +74,7 @@ export class FileManager {
     const items = await this.sdkClient.getMessages({
       messageTypes: [MessageType.store],
       addresses: [address],
-      pageSize: 1000,
+      pagination: 1000,
     })
 
     const files = (items?.messages || []) as StoreMessage[]
@@ -107,7 +107,9 @@ export class FileManager {
     }
   }
 
-  async uploadFile(fileObject: File): Promise<string> {
+  async uploadFile(
+    fileObject: File,
+  ): Promise<{ contentItemHash: string; messageItemHash: string }> {
     if (!(this.sdkClient instanceof AuthenticatedAlephHttpClient))
       throw new Error('Account needed to perform this action')
 
@@ -117,8 +119,22 @@ export class FileManager {
     const message = await this.sdkClient.createStore({
       channel,
       fileObject: buffer,
+      storageEngine: ItemType.ipfs,
+      metadata: {
+        name: fileObject.name,
+        format: fileObject.type,
+      },
     })
 
-    return message.content.item_hash
+    return {
+      contentItemHash: message.content.item_hash,
+      messageItemHash: message.item_hash,
+    }
+  }
+
+  async downloadFile(fileHash: string): Promise<File> {
+    const file = await this.sdkClient.downloadFile(fileHash)
+
+    return new File([file], fileHash)
   }
 }

@@ -50,6 +50,10 @@ export type UseEditComputeResourceNodeFormReturn = {
     UseEditComputeResourceNodeFormState,
     'registration_url'
   >
+  termsAndConditionsCtrl: UseControllerReturn<
+    UseEditComputeResourceNodeFormState,
+    'terms_and_conditions'
+  >
   errors: FieldErrors<UseEditComputeResourceNodeFormState>
   isDirty: boolean
   handleSubmit: (e: FormEvent) => Promise<void>
@@ -176,6 +180,11 @@ export function useEditComputeResourceNodeForm({
     name: 'registration_url',
   })
 
+  const termsAndConditionsCtrl = useController({
+    control,
+    name: 'terms_and_conditions',
+  })
+
   return {
     values,
     control,
@@ -189,6 +198,7 @@ export function useEditComputeResourceNodeForm({
     authorizedCtrl,
     lockedCtrl,
     registrationUrlCtrl,
+    termsAndConditionsCtrl,
     errors,
     isDirty,
     handleSubmit,

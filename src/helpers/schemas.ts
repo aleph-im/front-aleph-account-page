@@ -43,6 +43,7 @@ export const newCRNSchema = z.object({
 })
 
 // --------------------------
+const fileSchema = z.custom<File>()
 
 export const imgFileSchema = z
   .custom<File>((val) => val instanceof File, 'Invalid file type')
@@ -82,4 +83,5 @@ export const updateCCNSchema = updateBaseNodeSchema.extend({
 export const updateCRNSchema = updateBaseNodeSchema.extend({
   address: optionalString(urlSchema),
   stream_reward: optionalString(ethereumAddressSchema),
+  terms_and_conditions: optionalStringSchema.or(fileSchema),
 })
