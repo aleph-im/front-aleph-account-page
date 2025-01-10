@@ -27,7 +27,6 @@ import { NodeManager } from '@/domain/node'
 export const CoreChannelNodeDetailPage = () => {
   const {
     node,
-    // nodesOnSameASN,
     baseLatency,
     aggregateLatency,
     fileDownloadLatency,
@@ -47,7 +46,6 @@ export const CoreChannelNodeDetailPage = () => {
     lockedCtrl,
     registrationUrlCtrl,
     isDirty,
-    account,
     isUnlinkableByUser,
     handleUnlink,
     handleRemove,
@@ -111,6 +109,7 @@ export const CoreChannelNodeDetailPage = () => {
                   <NodeDetailLink
                     href={getETHExplorerURL({ address: node?.owner })}
                     isOwner={false}
+                    textToCopy={node?.owner}
                   >
                     {node?.owner && ellipseAddress(node?.owner)}
                   </NodeDetailLink>
@@ -131,6 +130,7 @@ export const CoreChannelNodeDetailPage = () => {
                         tokenAddress: rewardCtrl.field.value,
                       })}
                       isOwner={isOwner}
+                      textToCopy={rewardCtrl.field.value}
                     >
                       {rewardCtrl.field.value &&
                         ellipseAddress(rewardCtrl.field.value)}
@@ -153,6 +153,7 @@ export const CoreChannelNodeDetailPage = () => {
                         multiaddress: multiaddressCtrl.field.value,
                       })}
                       isOwner={isOwner}
+                      textToCopy={multiaddressCtrl.field.value}
                     >
                       {multiaddressCtrl.field.value &&
                         ellipseAddress(multiaddressCtrl.field.value)}
@@ -177,6 +178,7 @@ export const CoreChannelNodeDetailPage = () => {
                         address: managerCtrl.field.value,
                       })}
                       isOwner={isOwner}
+                      textToCopy={managerCtrl.field.value}
                     >
                       {managerCtrl.field.value &&
                         ellipseAddress(managerCtrl.field.value)}
@@ -197,6 +199,7 @@ export const CoreChannelNodeDetailPage = () => {
                     <NodeDetailLink
                       href={registrationUrlCtrl.field.value}
                       isOwner={isOwner}
+                      textToCopy={registrationUrlCtrl.field.value}
                     >
                       {registrationUrlCtrl.field.value}
                     </NodeDetailLink>
