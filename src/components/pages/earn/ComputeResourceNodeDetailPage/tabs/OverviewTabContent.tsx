@@ -81,6 +81,7 @@ export const OverviewTabContent = ({
                 <NodeDetailLink
                   href={getETHExplorerURL({ address: node?.owner })}
                   isOwner={false}
+                  textToCopy={node?.owner}
                 >
                   {node?.owner && ellipseAddress(node?.owner)}
                 </NodeDetailLink>
@@ -101,6 +102,7 @@ export const OverviewTabContent = ({
                       tokenAddress: rewardCtrl.field.value,
                     })}
                     isOwner={isOwner}
+                    textToCopy={rewardCtrl.field.value}
                   >
                     {rewardCtrl.field.value &&
                       ellipseAddress(rewardCtrl.field.value)}
@@ -123,6 +125,7 @@ export const OverviewTabContent = ({
                       tokenAddress: streamRewardCtrl.field.value,
                     })}
                     isOwner={isOwner}
+                    textToCopy={streamRewardCtrl.field.value}
                   >
                     {streamRewardCtrl.field.value &&
                       ellipseAddress(streamRewardCtrl.field.value)}
@@ -140,7 +143,11 @@ export const OverviewTabContent = ({
                   placeholder="address"
                   isOwner={isOwner}
                 >
-                  <NodeDetailLink href={node?.address} isOwner={isOwner}>
+                  <NodeDetailLink
+                    href={node?.address}
+                    isOwner={isOwner}
+                    textToCopy={node?.address}
+                  >
                     {node?.address}
                   </NodeDetailLink>
                 </NodeDetailEditableField>

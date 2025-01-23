@@ -121,7 +121,7 @@ export const NodeDetailEditableField = ({
       )}
       {isOwner && (
         <div
-          tw="shrink-0 flex justify-end overflow-hidden"
+          tw="shrink-0 flex items-center justify-end overflow-hidden"
           css={{
             maxWidth: isEditing ? '0' : '1.75rem',
             transition: 'max-width ease-in-out 0.25s 0s',
