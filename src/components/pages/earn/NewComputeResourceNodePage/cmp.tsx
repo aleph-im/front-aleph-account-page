@@ -18,10 +18,10 @@ export const NewComputeResourceNodePage = () => {
   return (
     <>
       <Head>
-        <title>Aleph.im | Create CRN</title>
+        <title>Aleph Cloud | Create CRN</title>
         <meta
           name="description"
-          content="Aleph.im Create Compute Resource Node"
+          content="Aleph Cloud Create Compute Resource Node"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>

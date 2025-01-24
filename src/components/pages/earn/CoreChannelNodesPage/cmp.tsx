@@ -60,8 +60,8 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
   return (
     <>
       <Head>
-        <title>Aleph.im | Account</title>
-        <meta name="description" content="Aleph.im Account Dashboard" />
+        <title>Aleph Cloud | Account</title>
+        <meta name="description" content="Aleph Cloud Account Dashboard" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <section>
@@ -94,13 +94,13 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
                   What is a core node?
                 </h1>
                 <p className="fs-16">
-                  CCNs are the cornerstone of Aleph.im, responsible for the
+                  CCNs are the cornerstone of Aleph Cloud, responsible for the
                   security and functionality of our peer-to-peer network. These
                   dedicated nodes, backed by a commitment of 200,000 Aleph
                   tokens, play a pivotal role in network control and governance.
-                  As non-custodial operators, they are at the forefront of
-                  Aleph.im&apos;s innovative ecosystem. For more information on
-                  how to set up a node and detailed technical and token
+                  As non-custodial operators, they are at the forefront of Aleph
+                  Cloud&apos;s innovative ecosystem. For more information on how
+                  to set up a node and detailed technical and token
                   requirements, please visit our
                 </p>
                 <ExternalLinkButton

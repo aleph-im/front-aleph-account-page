@@ -45,8 +45,8 @@ export const ComputeResourceNodeDetailPage = () => {
   return (
     <>
       <Head>
-        <title>Aleph.im | CRN Detail</title>
-        <meta name="description" content="Aleph.im Compute Resource Node" />
+        <title>Aleph Cloud | CRN Detail</title>
+        <meta name="description" content="Aleph Cloud Compute Resource Node" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <section>

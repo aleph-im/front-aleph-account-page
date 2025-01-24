@@ -41,8 +41,8 @@ export const StakingPage = (props: UseStakingPageProps) => {
   return (
     <>
       <Head>
-        <title>Aleph.im | Account</title>
-        <meta name="description" content="Aleph.im Account Dashboard" />
+        <title>Aleph Cloud | Account</title>
+        <meta name="description" content="Aleph Cloud Account Dashboard" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <section>
@@ -55,18 +55,18 @@ export const StakingPage = (props: UseStakingPageProps) => {
           <div tw="flex items-start gap-6 flex-wrap 2xl:flex-nowrap">
             <div tw="flex-auto self-stretch">
               <h2 className="tp-h7" tw="mb-0">
-                What is staking with Aleph.im?
+                What is staking with Aleph Cloud?
               </h2>
               <p className="fs-16">
-                What is staking with Aleph.im? Staking is the heartbeat of our
-                dynamic peer-to-peer network, driving security,
+                What is staking with Aleph Cloud? Staking is the heartbeat of
+                our dynamic peer-to-peer network, driving security,
                 decentralization, and rewards. With a minimum of 10,000 Aleph
                 tokens, stakeholders form the network&apos;s foundation. Rewards
                 are distributed every 10 days and are auto-compounded, allowing
                 your stake to grow organically. The APY depends on factors like
                 linked Compute Resource Nodes (CRNs) and node scoring, ensuring
-                a fair and dynamic experience. Aleph.im staking empowers you to
-                control the controllers, shaping decentralized connectivity
+                a fair and dynamic experience. Aleph Cloud staking empowers you
+                to control the controllers, shaping decentralized connectivity
                 while earning rewards. Plus, it&apos;s non-custodial.{' '}
                 <strong className="text-main1" tw="font-bold">
                   Join us today!
