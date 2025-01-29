@@ -222,6 +222,7 @@ export const CoreChannelNodeDetailPage = () => {
           </div>
           <div tw="flex-1 w-1/3 min-w-[20rem] flex flex-col gap-9">
             <Card2 title="REWARD INDICATORS">
+              <Card2Field name="LAST CHECK" value={lastMetricsCheck} />
               {/* <Card2Field name="NODES ON ASN" value={nodesOnSameASN} /> */}
               <Card2Field name="VERSION" value={node?.metricsData?.version} />
               <Card2Field name="BASE LATENCY" value={baseLatency} />
@@ -239,7 +240,6 @@ export const CoreChannelNodeDetailPage = () => {
                 $percent={relativeETHHeightPercent || 0}
                 $color="main0"
               />
-              <Card2Field name="LAST CHECK" value={lastMetricsCheck} />
               <Card2Field
                 name="linked resources"
                 value={
