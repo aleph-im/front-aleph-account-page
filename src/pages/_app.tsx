@@ -17,7 +17,7 @@ import Loading from './_loading'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={themes.aleph}>
+    <ThemeProvider theme={themes.twentysix}>
       <GlobalStyles />
       <GlobalStylesOverride />
       <AppStateProvider>
