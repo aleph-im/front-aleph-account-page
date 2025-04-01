@@ -57,7 +57,7 @@ export const StakeButton = ({
           kind="gradient"
           size="md"
           variant="secondary"
-          color="main2"
+          color="main1"
           onClick={handleOnClick}
         >
           Unstake

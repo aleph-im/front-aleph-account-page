@@ -88,7 +88,7 @@ export const CoreChannelNodeDetailPage = () => {
             kind="gradient"
             variant="primary"
             size="md"
-            color="main2"
+            color="main0"
             onClick={handleSubmit}
             disabled={!isDirty}
           >

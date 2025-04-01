@@ -337,7 +337,7 @@ export const OverviewTabContent = ({
                   <div className="fs-10" tw="leading-4">
                     {isLinkableByUser ? (
                       <Button
-                        color="main2"
+                        color="main0"
                         size="md"
                         kind="gradient"
                         variant="textOnly"

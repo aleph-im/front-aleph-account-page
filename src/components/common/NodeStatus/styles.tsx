@@ -7,7 +7,7 @@ export type StyledStatusIconProps = { $status: AlephNode['status'] }
 export const StyledStatusIcon = styled(ColorDot).attrs<StyledStatusIconProps>(
   ({ $status, ...rest }) => {
     const $color =
-      $status === 'active' || $status === 'linked' ? 'main1' : 'main2'
+      $status === 'active' || $status === 'linked' ? 'main0' : 'main1'
 
     return {
       $color,
