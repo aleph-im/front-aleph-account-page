@@ -1,11 +1,12 @@
-import { addClasses } from '@aleph-front/core'
+import { NoisyContainer } from '@aleph-front/core'
 import { ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 import tw from 'twin.macro'
 
-export const StyledContainer = styled.div.attrs(addClasses('fx-dark-main0'))`
-  ${tw`p-6 rounded-3xl relative max-w-full h-full`}
-  background: #00000019 !important;
+export const StyledContainer = styled(NoisyContainer).attrs({
+  type: 'grain-3',
+})`
+  ${tw`p-6 rounded-3xl! relative max-w-full h-full`}
 `
 
 export const StyledContent = styled.div<{
