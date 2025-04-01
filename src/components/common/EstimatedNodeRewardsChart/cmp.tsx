@@ -38,14 +38,14 @@ export const EstimatedNodeRewardsChart = ({
         label: 'per month',
         value: `${perMonthRewards.toFixed(2)}`,
         percentage: perMonthRewards / total,
-        gradient: 'main1',
+        gradient: 'main0',
         color: '',
       },
       {
         label: 'per day',
         value: `${perDayRewards.toFixed(2)}`,
         percentage: perDayRewards / total,
-        gradient: 'main2',
+        gradient: 'main1',
         color: '',
       },
     ]

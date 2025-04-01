@@ -39,13 +39,13 @@ export const NetworkHealthChart = ({
         label: 'active nodes',
         value: `${activeNodes} nodes`,
         percentage: activeNodes / totalNodes,
-        gradient: 'main1',
+        gradient: 'main0',
       },
       {
         label: '50% < 80%',
         value: `${warningNodes} nodes`,
         percentage: warningNodes / totalNodes,
-        gradient: 'main2',
+        gradient: 'main1',
       },
       {
         label: '< 50%',
