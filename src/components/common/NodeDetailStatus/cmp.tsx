@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { AlephNode } from '@/domain/node'
 import NodeStatus from '../NodeStatus'
+import { StyledContainer } from './styles'
 
 export type NodeDetailStatusProps = {
   status?: AlephNode['status']
@@ -11,10 +12,10 @@ export const NodeDetailStatus = ({
   ...rest
 }: NodeDetailStatusProps) => {
   return (
-    <div tw="px-3 py-1.5 bg-[#00000033]" {...rest}>
+    <StyledContainer {...rest}>
       <div className="tp-body fs-10">STATUS</div>
       <NodeStatus status={status || 'waiting'} />
-    </div>
+    </StyledContainer>
   )
 }
 NodeDetailStatus.displayName = 'NodeDetailStatus'
