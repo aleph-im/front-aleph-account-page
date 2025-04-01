@@ -8,7 +8,7 @@ export const Price = ({ value, ...rest }: PriceProps) => {
   return (
     <StyledPrice {...rest}>
       {humanReadableCurrency(value)}
-      <Logo color="currentColor" />
+      <Logo img="aleph" color="currentColor" />
     </StyledPrice>
   )
 }
