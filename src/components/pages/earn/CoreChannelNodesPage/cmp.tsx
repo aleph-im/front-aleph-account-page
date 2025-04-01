@@ -42,7 +42,7 @@ export const CoreChannelNodesPage = (props: UseCoreChannelNodesPageProps) => {
     <Link href="/earn/ccn/new" passHref legacyBehavior>
       <Button
         color="main0"
-        kind="neon"
+        kind="gradient"
         variant="secondary"
         size="md"
         tw="gap-2.5"

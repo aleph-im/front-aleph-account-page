@@ -81,7 +81,7 @@ export const NewComputeResourceNodePage = () => {
         <section tw="flex gap-10">
           <Button
             color="main0"
-            kind="neon"
+            kind="gradient"
             variant="primary"
             size="md"
             type="submit"

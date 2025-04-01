@@ -43,7 +43,7 @@ export const StakeButton = ({
     <>
       {!isStakeNode ? (
         <Button
-          kind="neon"
+          kind="gradient"
           size="md"
           variant="secondary"
           color="main0"
@@ -54,7 +54,7 @@ export const StakeButton = ({
         </Button>
       ) : (
         <Button
-          kind="neon"
+          kind="gradient"
           size="md"
           variant="secondary"
           color="main2"

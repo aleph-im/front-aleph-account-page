@@ -220,7 +220,7 @@ export const OverviewTabContent = ({
               <ButtonLink
                 href={createInstanceUrl || '#'}
                 target="_blank"
-                kind="neon"
+                kind="gradient"
                 variant="primary"
                 size="md"
                 disabled={!createInstanceUrl}
@@ -339,7 +339,7 @@ export const OverviewTabContent = ({
                       <Button
                         color="main2"
                         size="md"
-                        kind="neon"
+                        kind="gradient"
                         variant="textOnly"
                         onClick={handleLink}
                       >

@@ -139,7 +139,7 @@ export const ComputeResourceNodesTable = ({
               }}
             />
             <ButtonLink
-              kind="neon"
+              kind="gradient"
               size="md"
               variant="secondary"
               color="main0"

@@ -36,7 +36,7 @@ export const ToggleDashboard = ({
             {children}
             <Button
               color="main0"
-              kind="neon"
+              kind="gradient"
               variant="textOnly"
               size="md"
               onClick={handleToogle}
@@ -52,7 +52,7 @@ export const ToggleDashboard = ({
             {buttons}
             <Button
               color="main0"
-              kind="neon"
+              kind="gradient"
               variant="secondary"
               size="md"
               onClick={handleToogle}

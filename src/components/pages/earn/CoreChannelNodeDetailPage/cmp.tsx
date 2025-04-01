@@ -85,7 +85,7 @@ export const CoreChannelNodeDetailPage = () => {
             remove node
           </Button>
           <Button
-            kind="neon"
+            kind="gradient"
             variant="primary"
             size="md"
             color="main2"
@@ -278,7 +278,7 @@ export const CoreChannelNodeDetailPage = () => {
                                 href="/earn/crn"
                                 color="main0"
                                 size="md"
-                                kind="neon"
+                                kind="gradient"
                                 variant="textOnly"
                               >
                                 <div>

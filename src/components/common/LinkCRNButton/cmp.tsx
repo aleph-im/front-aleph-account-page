@@ -52,7 +52,7 @@ export const LinkCRNButton = ({
     <>
       {!isUnlinkableByUser ? (
         <Button
-          kind="neon"
+          kind="gradient"
           size="md"
           variant="secondary"
           color="main0"
@@ -63,7 +63,7 @@ export const LinkCRNButton = ({
         </Button>
       ) : (
         <Button
-          kind="neon"
+          kind="gradient"
           size="md"
           variant="secondary"
           color="main2"

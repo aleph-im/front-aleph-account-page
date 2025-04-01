@@ -74,7 +74,7 @@ export const ComputeResourceNodeDetailPage = () => {
             remove node
           </Button>
           <Button
-            kind="neon"
+            kind="gradient"
             variant="primary"
             size="md"
             color="main2"

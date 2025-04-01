@@ -109,7 +109,7 @@ export const CoreChannelNodesTable = ({
         render: (node) => (
           <div tw="inline-flex gap-3 justify-end">
             <ButtonLink
-              kind="neon"
+              kind="gradient"
               size="md"
               variant="secondary"
               color="main0"

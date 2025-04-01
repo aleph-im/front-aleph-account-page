@@ -7,7 +7,7 @@ export const StyledH1Button = styled(Button).attrs((props) => {
     ...props,
     variant: 'secondary',
     size: 'lg',
-    kind: 'neon',
+    kind: 'gradient',
     color: 'main0',
   }
 })``
@@ -22,7 +22,7 @@ export const StyledLink = styled(Button).attrs((props) => {
   return {
     ...props,
     forwardedAs: 'a',
-    kind: 'neon',
+    kind: 'gradient',
     variant: 'textOnly',
     size: 'md',
     color: 'main0',
