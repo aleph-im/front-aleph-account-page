@@ -9,7 +9,7 @@ import {
   StyledTitle,
 } from './styles'
 import { AlephNode } from '@/domain/node'
-import { UseCoreChannelNodeDetailPageReturn } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
+import { UseCoreChannelNodeDetailPageReturn } from '@/components/pages/earn/CoreChannelNodeDetailPage/hook'
 import NodeDetailEditableField from '../NodeDetailEditableField'
 import { Icon } from '@aleph-front/core'
 import { useFileToImg } from '@/hooks/common/useFileToImg'

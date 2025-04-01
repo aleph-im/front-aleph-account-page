@@ -2,10 +2,10 @@ import { memo } from 'react'
 import Link from 'next/link'
 import { AccountPicker, RenderLinkProps } from '@aleph-front/core'
 import { StyledNavbarDesktop, StyledNavbarMobile, StyledHeader } from './styles'
-import { useHeader } from '@/hooks/pages/useHeader'
 import AutoBreadcrumb from '@/components/common/AutoBreadcrumb'
 import { blockchains } from '@/domain/connect/base'
 import { useEnsNameLookup } from '@/hooks/common/useENSLookup'
+import { useHeader } from './hook'
 
 const CustomLink = (props: RenderLinkProps) => {
   return props.route.children ? <span {...props} /> : <Link {...props} />

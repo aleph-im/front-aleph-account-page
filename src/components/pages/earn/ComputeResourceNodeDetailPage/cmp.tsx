@@ -1,9 +1,9 @@
 import { memo } from 'react'
 import Head from 'next/head'
-import { useComputeResourceNodeDetailPage } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/useComputeResourceNodeDetailPage'
+import { useComputeResourceNodeDetailPage } from './hook'
 import { Button, Icon, Tabs } from '@aleph-front/core'
 import NodeDetailHeader from '@/components/common/NodeDetailHeader'
-import OverviewTabContent from './tabs/OverviewTabContent'
+import OverviewTabContent from './tabs/OverviewTabContent/cmp'
 import PoliciesTabContent from './tabs/PoliciesTabContent'
 
 export const ComputeResourceNodeDetailPage = () => {

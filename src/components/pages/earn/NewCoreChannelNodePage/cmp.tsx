@@ -7,7 +7,7 @@ import {
   NoisyContainer,
   TextInput,
 } from '@aleph-front/core'
-import { useNewCoreChannelNodePage } from '@/hooks/pages/earn/useNewCoreChannelNodePage'
+import { useNewCoreChannelNodePage } from './hook'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ButtonLink from '@/components/common/ButtonLink'
 

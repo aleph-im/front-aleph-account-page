@@ -13,14 +13,14 @@ import {
   Wallet,
   AccountPickerProps,
 } from '@aleph-front/core'
-import {
-  UseBreadcrumbNamesReturn,
-  useBreadcrumbNames,
-} from '../common/useBreadcrumbNames'
-import { UseRoutesReturn, useRoutes } from '../common/useRoutes'
-import { useAccountRewards } from '../common/useRewards'
-import { useConnection } from '../common/useConnection'
 import { BlockchainId, ProviderId, blockchains } from '@/domain/connect/base'
+import { useRoutes, UseRoutesReturn } from '@/hooks/common/useRoutes'
+import {
+  useBreadcrumbNames,
+  UseBreadcrumbNamesReturn,
+} from '@/hooks/common/useBreadcrumbNames'
+import { useConnection } from '@/hooks/common/useConnection'
+import { useAccountRewards } from '@/hooks/common/useRewards'
 
 export type UseAccountButtonProps = Pick<
   UseHeaderReturn,

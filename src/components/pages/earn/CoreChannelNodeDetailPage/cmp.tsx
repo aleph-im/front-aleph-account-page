@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useCoreChannelNodeDetailPage } from '@/hooks/pages/earn/useCoreChannelNodeDetailPage'
+import { useCoreChannelNodeDetailPage } from './hook'
 import { Button, Icon, NodeName } from '@aleph-front/core'
 import {
   ellipseAddress,

@@ -1,10 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import { Checkbox, Icon, Tabs, TextInput } from '@aleph-front/core'
-import {
-  UseStakingPageProps,
-  useStakingPage,
-} from '@/hooks/pages/earn/useStakingPage'
+import { UseStakingPageProps, useStakingPage } from './hook'
 import RewardCalculator from '@/components/common/RewardCalculator'
 import StakingNodesTable from '@/components/common/StakingNodesTable'
 import ToggleDashboard from '@/components/common/ToggleDashboard'

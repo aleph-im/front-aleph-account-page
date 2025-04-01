@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { UseComputeResourceNodeDetailPageReturn } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/useComputeResourceNodeDetailPage'
+import { UseComputeResourceNodeDetailPageReturn } from '@/components/pages/earn/ComputeResourceNodeDetailPage/hook'
 import Card2, { Card2Field } from '@/components/common/Card2'
 import {
   Button,
@@ -11,7 +11,7 @@ import {
   Spinner,
 } from '@aleph-front/core'
 import ExternalLink from '@/components/common/ExternalLink'
-import { usePoliciesTabContent } from '@/hooks/pages/earn/ComputeResourceNodeDetailPage/usePoliciesTabContent'
+import { usePoliciesTabContent } from './hook'
 
 export type PoliciesTabContentProps = Pick<
   UseComputeResourceNodeDetailPageReturn,

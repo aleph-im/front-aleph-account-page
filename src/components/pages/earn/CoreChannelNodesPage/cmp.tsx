@@ -1,10 +1,7 @@
 import { memo } from 'react'
 import Head from 'next/head'
 import { Button, Icon, Tabs, TextInput } from '@aleph-front/core'
-import {
-  UseCoreChannelNodesPageProps,
-  useCoreChannelNodesPage,
-} from '@/hooks/pages/earn/useCoreChannelNodesPage'
+import { UseCoreChannelNodesPageProps, useCoreChannelNodesPage } from './hook'
 import CoreChannelNodesTable from '@/components/common/CoreChannelNodesTable'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'

@@ -2,10 +2,6 @@ import { memo } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { Button, Checkbox, Icon, Tabs, TextInput } from '@aleph-front/core'
-import {
-  UseComputeResourceNodesPageProps,
-  useComputeResourceNodesPage,
-} from '@/hooks/pages/earn/useComputeResourceNodesPage'
 import ComputeResourceNodesTable from '@/components/common/ComputeResourceNodesTable'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ToggleDashboard from '@/components/common/ToggleDashboard'
@@ -14,6 +10,10 @@ import NetworkHealthChart from '@/components/common/NetworkHealthChart'
 import HostingProviderChart from '@/components/common/HostingProviderChart'
 import { useLazyRender } from '@/hooks/common/useLazyRender'
 import TotalNetworkResourcesChart from '@/components/common/TotalNetworkResourcesChart'
+import {
+  useComputeResourceNodesPage,
+  UseComputeResourceNodesPageProps,
+} from './hook'
 
 export const ComputeResourceNodesPage = (
   props: UseComputeResourceNodesPageProps,

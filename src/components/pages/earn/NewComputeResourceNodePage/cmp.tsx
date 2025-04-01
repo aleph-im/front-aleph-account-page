@@ -7,7 +7,7 @@ import {
   NoisyContainer,
   TextInput,
 } from '@aleph-front/core'
-import { useNewComputeResourceNodePage } from '@/hooks/pages/earn/useNewComputeResourceNodePage'
+import { useNewComputeResourceNodePage } from './hook'
 import ExternalLinkButton from '@/components/common/ExternalLinkButton'
 import ButtonLink from '@/components/common/ButtonLink'
 
