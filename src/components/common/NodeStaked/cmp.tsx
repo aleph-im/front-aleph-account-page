@@ -16,7 +16,7 @@ export const NodeStaked = ({
   const minStaked = 500_000
   const percent = Math.min(staked, minStaked) / minStaked
   const amount = Number(staked / 1_000).toFixed(0)
-  const color = percent >= 1 ? 'main1' : 'main0'
+  const color = percent >= 1 ? 'success' : 'main0'
 
   return (
     <div className="fs-10" tw="leading-4 w-full">

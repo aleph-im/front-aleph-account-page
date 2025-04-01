@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 
 export const StyledDotIcon = styled.div<{ $active: boolean }>(
   ({ theme, $active }) => {
-    const color = $active ? theme.color.main1 : theme.color.disabled2
+    const color = $active ? theme.color.success : theme.color.disabled2
 
     return [
       tw`h-3 w-2`,
