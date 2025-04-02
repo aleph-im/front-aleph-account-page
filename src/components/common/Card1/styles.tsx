@@ -6,7 +6,7 @@ import tw from 'twin.macro'
 export const StyledContainer = styled(NoisyContainer).attrs({
   type: 'grain-3',
 })`
-  ${tw`p-6 rounded-3xl! relative max-w-full h-full`}
+  ${tw`p-6 relative max-w-full h-full`}
 `
 
 export const StyledContent = styled.div<{
